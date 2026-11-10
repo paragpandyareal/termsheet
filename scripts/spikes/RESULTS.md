@@ -1,6 +1,6 @@
 # Sandbox spike results
 
-Written by the scripts in this folder. Emails are masked. No secrets.
+Written by the scripts in this folder. Emails and saved account (vault) IDs are masked. No secrets.
 
 ## S1 step 1 (create setup token). FAIL
 Run at 2026-11-10T22:41:05.197Z
@@ -161,7 +161,7 @@ Order status COMPLETED, capture status COMPLETED, order 4LY60806B3765842M, captu
   ],
   "payment_source": {
     "paypal": {
-      "vault_id": "7x1984862c1507812"
+      "vault_id": "<vault id masked>"
     }
   }
 }
@@ -191,7 +191,7 @@ Method C produced INSTRUMENT_DECLINED. Debug ID of the failed call `f711539b3a81
   ],
   "payment_source": {
     "paypal": {
-      "vault_id": "7x1984862c1507812"
+      "vault_id": "<vault id masked>"
     }
   }
 }
@@ -231,7 +231,7 @@ null
   ],
   "payment_source": {
     "paypal": {
-      "vault_id": "7x1984862c1507812"
+      "vault_id": "<vault id masked>"
     }
   }
 }
@@ -293,3 +293,72 @@ Batch M7TMQ46TR4S5Y ended as SUCCESS, item SUCCESS. Webhook not tested here (no 
 ```
 </details>
 - `GET /v1/payments/payouts/M7TMQ46TR4S5Y` -> **200**, debug ID `f1529982e6e54`
+
+## S3 extra. Method C with intent CAPTURE. PASS
+Run at 2026-11-10T23:27:29.492Z
+
+Mock header on a CAPTURE order create gives INSTRUMENT_DECLINED. No order created, no money moved.
+
+- `POST /v2/checkout/orders` -> **422**, debug ID `f7866046ff4b4`
+  - extra headers `{"PayPal-Mock-Response":"{\"mock_application_codes\":\"INSTRUMENT_DECLINED\"}"}`
+  <details><summary>sent</summary>
+
+```json
+{
+  "intent": "CAPTURE",
+  "purchase_units": [
+    {
+      "reference_id": "S3CC-1794353246837",
+      "invoice_id": "TS-S3CC-1794353246837",
+      "amount": {
+        "currency_code": "USD",
+        "value": "15.00"
+      }
+    }
+  ],
+  "payment_source": {
+    "paypal": {
+      "vault_id": "<vault id masked>"
+    }
+  }
+}
+```
+</details>
+  <details><summary>response</summary>
+
+```json
+{
+  "name": "UNPROCESSABLE_ENTITY",
+  "details": [
+    {
+      "issue": "INSTRUMENT_DECLINED",
+      "description": "The instrument presented  was either declined by the processor or bank, or it can't be used for this payment."
+    }
+  ],
+  "message": "The requested action could not be performed, semantically incorrect, or failed business validation.",
+  "debug_id": "70c28ae654da",
+  "links": [
+    {
+      "href": "https://developer.paypal.com/api/rest/reference/orders/v2/errors/#INSTRUMENT_DECLINED",
+      "rel": "information_link",
+      "method": "GET"
+    }
+  ]
+}
+```
+</details>
+
+## Refund of the $1 S1 fallback deposit (verification charge). PASS
+Run at 2026-11-10T23:27:43.682Z
+
+Capture 4EM07518CA296962F, refund 18G485739D0474422 status COMPLETED.
+
+- `POST /v2/payments/captures/4EM07518CA296962F/refund` -> **201**, debug ID `f17861065bc81`
+  <details><summary>sent</summary>
+
+```json
+{
+  "note_to_payer": "Refund of the $1.00 account verification charge"
+}
+```
+</details>

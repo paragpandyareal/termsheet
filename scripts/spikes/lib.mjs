@@ -63,7 +63,8 @@ export async function pp(method, url, body, extraHeaders = {}) {
 // Strip emails and secrets before anything goes into git.
 function scrub(v) {
   const s = JSON.stringify(v, null, 2) ?? '';
-  return s.replace(/[\w.+-]+@[\w-]+\.[\w.]+/g, '<email>');
+  return s.replace(/[\w.+-]+@[\w-]+\.[\w.]+/g, '<email>')
+    .replace(/("vault_id": ")[^"]+"/g, '$1<vault id masked>"');
 }
 
 export function record(test, pass, calls, note = '') {

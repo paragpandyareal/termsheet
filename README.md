@@ -23,7 +23,7 @@ Last updated Tuesday 10 Nov 2026, 22.00 UTC.
 |---|---|---|
 | S1 save account without purchase | **FAIL.** `/v3/vault/setup-tokens` returns 403 NOT_AUTHORIZED. The app token has no vault payment token scope even with "Save payment methods" ticked | **Fallback passes.** Save during a $1 deposit order with `attributes.vault.store_in_vault: ON_SUCCESS` (PRD 6.7). Retry the setup token once PayPal applies the feature, it is the nicer demo |
 | S2 buyer absent charge, business payer | **PASS.** COMPLETED at create | PRD 6.4 as written |
-| S3 test decline | **PASS with method C.** A returned 403, B did not apply | Mock header on order create. Label SIMULATED DECLINE |
+| S3 test decline | **PASS with method C,** with both intent AUTHORIZE and intent CAPTURE. A returned 403, B did not apply | Mock header on order create. Label SIMULATED DECLINE |
 | S4 payout to supplier | **PASS.** Batch and item SUCCESS by polling | PRD 6.5. Webhook not yet tested (no public address) |
 
 Sandbox setup that now exists (US, all Business). TermSheet Funding `funder@termsheet.example.com` with REST app "TermSheet Funding". Ridgeline Roasters `ridgeline.termsheet@example.com`. Larkspur Café `larkspur.termsheet@example.com`. Second Shot, Northgate, Pier 9 and the walk in account are not made yet. Ridgeline and Larkspur have no REST apps yet.
@@ -50,7 +50,7 @@ Next step. Report to the entrant, then seed history (PRD 11), then build in PRD 
 | Background only | Everything else in `research/` | Earlier rounds, the competitor survey (`census.md`), the fact check (`redteam_r2.md`) |
 
 **If the PRDs and the research disagree, the PRDs win.** They are newer and include every judge fix. Known differences.
-- `research/final_termsheet.md` says the test decline header goes on order create. That is probably wrong. Use the method in PRD section 6.6.
+- `research/final_termsheet.md` says the test decline header goes on order create. **Spike S3 on 11 Nov proved this works** (method C). Use method C, see PRD section 6.6.
 - The TermSheet PRD adds reading each café's own PayPal sales, a money strip, a locked backtest and a reordered video.
 - The Everyone Goes PRD removes the "payday on the 28th" moment and adds a sponsor joining on camera.
 - The Blindfold PRD widens the pitch to every small PayPal card merchant, drops the forced security check from the main plan, and publishes no working card testing tool.
@@ -67,7 +67,7 @@ Make the termsheet repo public before submitting. Do not open a pull request unl
 
 ## 4. What the entrant must supply before any build
 
-Nothing below has been provided yet. Ask for secrets through a secure form or environment settings. **Never ask for secrets in chat and never commit them.**
+**Update 11 Nov.** The funder account, Ridgeline, Larkspur and the TermSheet Funding REST app now exist (see section 1b). Everything else below is still to do. Ask for secrets through a secure form or environment settings. **Never ask for secrets in chat and never commit them.**
 
 ### 4.1 PayPal sandbox setup (developer.paypal.com, Testing Tools, Sandbox Accounts)
 All accounts must be **US** sandbox accounts. Full tables are in PRD section 5.3.

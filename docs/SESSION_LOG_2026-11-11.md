@@ -21,7 +21,7 @@ This file explains everything that happened so another person or AI tool can che
 ## 2. Setup done in this session
 
 ### 2.1 Local folder and repo
-- Cloned `github.com/paragpandyareal/Paypalai`, branch `claude/paypal-hackathon-termsheet-skt5o9`, into `C:\Users\rocks\OneDrive\Desktop\Claude Code\TermSheet`.
+- Cloned `github.com/paragpandyareal/Paypalai`, branch `claude/paypal-hackathon-termsheet-skt5o9`, into a local folder named `TermSheet`.
 - Afterwards a new **private** repo was made at `github.com/paragpandyareal/termsheet` and the same history was pushed as `main`. In the local folder, remote `origin` is the new repo and remote `paypalai` is the old one. The old branch was left untouched as a backup.
 - Added `.gitignore` covering `.env`, `.env.*`, `scripts/spikes/.state.json` and `node_modules/`. A check of the full git history (`git log --all --name-only`) found no `.env` or `.state.json` ever committed.
 

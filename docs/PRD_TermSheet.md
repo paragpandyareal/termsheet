@@ -319,7 +319,7 @@ POST /v1/payments/payouts
 Poll `GET /v1/payments/payouts/{batchId}` every 3 seconds for up to 60 seconds, and also listen for the webhook. Show PENDING honestly until SUCCESS arrives.
 
 ### 6.6 The failed charge (decline test)
-The judges found that a mock decline on order create probably does not work. Build it in this order and lock in the first method that passes spike S3.
+**Spike result, 11 Nov 2026. Use method C.** The mock header on order create gives a real 422 INSTRUMENT_DECLINED with both intent AUTHORIZE (debug `f711539b3a81e`) and intent CAPTURE (debug `f7866046ff4b4`). No order is created, so nothing needs voiding. Method A returned 403 with an empty body. Method B did not apply, because a vault ID order is already authorised at create. The judges' earlier doubt about method C turned out wrong. The table below is kept for history.
 
 | Method | Steps | Label on screen |
 |---|---|---|
