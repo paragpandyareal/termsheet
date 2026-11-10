@@ -5,7 +5,8 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 
 export const BASE = process.env.PAYPAL_BASE || 'https://api-m.sandbox.paypal.com';
-const here = path.dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1'));
+import { fileURLToPath } from 'node:url';
+const here = path.dirname(fileURLToPath(import.meta.url));
 const STATE = path.join(here, '.state.json');
 const RESULTS = path.join(here, 'RESULTS.md');
 
