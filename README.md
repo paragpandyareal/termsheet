@@ -2,7 +2,7 @@
 
 This repo holds the research and the build briefs for two entries to the PayPal AI Hackathon on Devpost. **No app code exists yet.** This file tells a new developer or AI model exactly where things stand and what to do next.
 
-Last updated Tuesday 10 Nov 2026, 21.40 UTC.
+Last updated Tuesday 10 Nov 2026, 22.00 UTC.
 
 ## 1. The situation in 60 seconds
 
@@ -12,8 +12,8 @@ Last updated Tuesday 10 Nov 2026, 21.40 UTC.
 | Who | One entrant in Melbourne, working with an AI coding model |
 | Entry 1 | **TermSheet.** Net 30 for business buyers inside PayPal checkout, with an AI credit analyst. Build this first and finish it fully |
 | Entry 2 | **Everyone Goes.** School and club money through PayPal invoices, with private sponsor funded help. Build only if time allows |
-| Third idea, parked | Blindfold (card testing defence). See `research/final_blindfold.md`. Not planned |
-| What is done | Research, three rounds of judging, refinements, and a full PRD for each entry |
+| Entry 2, alternative | **Blindfold.** Attack Mode for PayPal card forms. Bots testing stolen cards get no answer. A full PRD exists. Pick this or Everyone Goes as the second entry, not both unless time allows |
+| What is done | Research, three rounds of judging, refinements, and a full PRD for all three ideas |
 | What is not done | Sandbox tests, all code, hosting, statistics checks, Devpost text, video |
 
 ## 2. What to read, in order
@@ -23,6 +23,7 @@ Last updated Tuesday 10 Nov 2026, 21.40 UTC.
 | 1 | This file | Current state and next steps |
 | 2 | `docs/PRD_TermSheet.md` | **The build brief for entry 1. This is the source of truth** |
 | 3 | `docs/PRD_EveryoneGoes.md` | The build brief for entry 2 |
+| 3b | `docs/PRD_Blindfold.md` | The build brief for the alternative entry 2. Section 1.8 compares the two |
 | 4 | `research/scope_check.md` | The 15 checks every entry must pass |
 | 5 | `research/brief.md` | Official rules, judging criteria, prizes, what the sandbox can and cannot do |
 | 6 | `research/judge_final_A.md`, `judge_final_B.md`, `judge_final_C.md` | What the final judges liked, doubted and asked to fix |
@@ -33,6 +34,7 @@ Last updated Tuesday 10 Nov 2026, 21.40 UTC.
 - `research/final_termsheet.md` says the test decline header goes on order create. That is probably wrong. Use the method in PRD section 6.6.
 - The TermSheet PRD adds reading each café's own PayPal sales, a money strip, a locked backtest and a reordered video.
 - The Everyone Goes PRD removes the "payday on the 28th" moment and adds a sponsor joining on camera.
+- The Blindfold PRD widens the pitch to every small PayPal card merchant, drops the forced security check from the main plan, and publishes no working card testing tool.
 
 ## 3. Branches
 
@@ -68,6 +70,7 @@ Give the funder, buyer and walk in accounts large starting balances. For each RE
 - An AI API key (the PRDs assume the Anthropic API) and a spending cap for the public demo.
 - A hosting account that gives a public HTTPS address. The PRDs assume Render.
 - For entry 2, a second public GitHub repository.
+- If Blindfold is built, one more US business sandbox account with a REST app that has advanced card payments and Invoicing switched on, plus two personal accounts (PRD section 5.3).
 
 ## 5. Next steps for whoever picks this up
 
@@ -85,7 +88,7 @@ Do these in order. Details are in `docs/PRD_TermSheet.md`.
 7. **Verify every statistic at its original source** (PRD section 18) and record the quote in `docs/STATS_VERIFIED.md`. No number goes in the write up or video until this is done.
 8. **Write the deliverables.** Product README, `LICENSE` (already added, MIT), `docs/DEVPOST.md` with the five judging criteria as headings, `docs/VIDEO_SCRIPT.md`.
 9. **Run three full rehearsals on the hosted build**, then hand the entrant the script to record and upload the video.
-10. **Only then** consider entry 2, and only if at least 14 hours remain.
+10. **Only then** consider entry 2. Everyone Goes needs at least 14 hours. Blindfold needs at least 20.
 
 When the product README is written, move this file to `docs/HANDOVER.md`.
 
@@ -96,7 +99,7 @@ When the product README is written, move this file to `docs/HANDOVER.md`.
 | 1 | Who records the opening line and voiceover. A person on camera or a still image with voiceover | Still image with voiceover |
 | 2 | Are four café REST apps acceptable to set up | Read café sales for Larkspur and Second Shot only |
 | 3 | Which AI key and model, and what spending cap for judge mode | Anthropic API, model from env, 30 analyst runs an hour |
-| 4 | Is entry 2 Everyone Goes or Blindfold | Everyone Goes, since it reuses the same PayPal building blocks |
+| 4 | Is entry 2 Everyone Goes or Blindfold | Everyone Goes, since it reuses the same PayPal building blocks and is quicker to build. Blindfold has zero overlap with TermSheet but needs a whole new stack |
 | 5 | Name of the second public repo for entry 2 | Ask before starting entry 2 |
 | 6 | Does this repo become the public TermSheet repo, or is a fresh one created | Use this repo and make it public before submitting |
 
@@ -134,5 +137,6 @@ LICENSE                      MIT
 STATUS.md                    research summary and ranking
 docs/PRD_TermSheet.md        build brief, entry 1
 docs/PRD_EveryoneGoes.md     build brief, entry 2
+docs/PRD_Blindfold.md        build brief, alternative entry 2
 research/                    rules, ideas, three rounds of judging, final specs, scope checks
 ```
