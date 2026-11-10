@@ -14,7 +14,23 @@ Last updated Tuesday 10 Nov 2026, 22.00 UTC.
 | Entry 2 | **Everyone Goes.** School and club money through PayPal invoices, with private sponsor funded help. Build only if time allows |
 | Entry 2, alternative | **Blindfold.** Attack Mode for PayPal card forms. Bots testing stolen cards get no answer. A full PRD exists. Pick this or Everyone Goes as the second entry, not both unless time allows |
 | What is done | Research, three rounds of judging, refinements, and a full PRD for all three ideas |
-| What is not done | Sandbox tests, all code, hosting, statistics checks, Devpost text, video |
+| What is done, 11 Nov | Sandbox tests S1 to S4. See "Current state" below and `scripts/spikes/RESULTS.md` |
+| What is not done | Tests S5 to S8, all app code, hosting, statistics checks, Devpost text, video |
+
+## 1b. Current state (11 Nov 2026). Read this before building
+
+| Test | Result | Lock the build to |
+|---|---|---|
+| S1 save account without purchase | **FAIL.** `/v3/vault/setup-tokens` returns 403 NOT_AUTHORIZED. The app token has no vault payment token scope even with "Save payment methods" ticked | **Fallback passes.** Save during a $1 deposit order with `attributes.vault.store_in_vault: ON_SUCCESS` (PRD 6.7). Retry the setup token once PayPal applies the feature, it is the nicer demo |
+| S2 buyer absent charge, business payer | **PASS.** COMPLETED at create | PRD 6.4 as written |
+| S3 test decline | **PASS with method C.** A returned 403, B did not apply | Mock header on order create. Label SIMULATED DECLINE |
+| S4 payout to supplier | **PASS.** Batch and item SUCCESS by polling | PRD 6.5. Webhook not yet tested (no public address) |
+
+Sandbox setup that now exists (US, all Business). TermSheet Funding `funder@termsheet.example.com` with REST app "TermSheet Funding". Ridgeline Roasters `ridgeline.termsheet@example.com`. Larkspur Café `larkspur.termsheet@example.com`. Second Shot, Northgate, Pier 9 and the walk in account are not made yet. Ridgeline and Larkspur have no REST apps yet.
+
+How to run the spikes. Secrets live in `.env` at the repo root (git ignored). Run `node --env-file=.env scripts/spikes/<name>.mjs`. The saved vault ID lives in `scripts/spikes/.state.json` (git ignored). `scopes.mjs` lists which permissions the funder app has.
+
+Next step. Report to the entrant, then seed history (PRD 11), then build in PRD 13 order.
 
 ## 2. What to read, in order
 

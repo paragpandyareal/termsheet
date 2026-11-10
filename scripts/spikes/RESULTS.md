@@ -262,3 +262,34 @@ null
 </details>
 
 Note on S3. Method A, the mock header on authorisation capture, returned 403 with an empty body (debug `f931528eacd7f`), so that route is closed for this app. Method B did not apply, because the AUTHORIZE order with a vault ID was already authorised at create. Method C gave a real INSTRUMENT_DECLINED 422 with no order created, so nothing was left to void. The A authorisation was voided (200). **Lock the build to method C.**
+
+## S4. Payout funder to supplier. PASS
+Run at 2026-11-10T22:56:48.260Z
+
+Batch M7TMQ46TR4S5Y ended as SUCCESS, item SUCCESS. Webhook not tested here (no public address yet), polling only.
+
+- `POST /v1/payments/payouts` -> **201**, debug ID `f18712422d610`
+  <details><summary>sent</summary>
+
+```json
+{
+  "sender_batch_header": {
+    "sender_batch_id": "TS-PO-S4-1794351378902",
+    "email_subject": "TermSheet payout for order SPIKE"
+  },
+  "items": [
+    {
+      "recipient_type": "EMAIL",
+      "receiver": "<email>",
+      "amount": {
+        "currency": "USD",
+        "value": "19.40"
+      },
+      "sender_item_id": "TS-POI-S4-1794351378902",
+      "note": "Order SPIKE. $20.00 less 3% fee."
+    }
+  ]
+}
+```
+</details>
+- `GET /v1/payments/payouts/M7TMQ46TR4S5Y` -> **200**, debug ID `f1529982e6e54`
