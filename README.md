@@ -56,10 +56,11 @@ Next step. Report to the entrant, then seed history (PRD 11), then build in PRD 
 
 | Branch | Contents |
 |---|---|
-| `claude/paypal-hackathon-termsheet-skt5o9` | **Work here.** Research plus `docs/` plus this README |
+| `main` in github.com/paragpandyareal/termsheet (private) | **Work here from 11 Nov.** Same history as the old branch |
+| `claude/paypal-hackathon-termsheet-skt5o9` in Paypalai | Old home, kept as a backup. Research plus `docs/` plus this README |
 | `ccr-2774405b-ccejof` | Original research only. Already included in the branch above |
 
-There is no `main` branch yet. Do not open a pull request unless the entrant asks.
+Make the termsheet repo public before submitting. Do not open a pull request unless the entrant asks.
 
 ## 4. What the entrant must supply before any build
 
