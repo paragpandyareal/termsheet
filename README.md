@@ -28,6 +28,8 @@ Last updated Tuesday 10 Nov 2026, 22.00 UTC.
 
 Sandbox setup that now exists (US, all Business). TermSheet Funding `funder@termsheet.example.com` with REST app "TermSheet Funding". Ridgeline Roasters `ridgeline.termsheet@example.com`. Larkspur Café `larkspur.termsheet@example.com`. Second Shot, Northgate, Pier 9 and the walk in account are not made yet. Ridgeline and Larkspur have no REST apps yet.
 
+Full record of this session for checking by another tool. `docs/SESSION_LOG_2026-11-11.md`.
+
 How to run the spikes. Secrets live in `.env` at the repo root (git ignored). Run `node --env-file=.env scripts/spikes/<name>.mjs`. The saved vault ID lives in `scripts/spikes/.state.json` (git ignored). `scopes.mjs` lists which permissions the funder app has.
 
 Next step. Report to the entrant, then seed history (PRD 11), then build in PRD 13 order.
@@ -37,6 +39,7 @@ Next step. Report to the entrant, then seed history (PRD 11), then build in PRD 
 | Order | File | Why |
 |---|---|---|
 | 1 | This file | Current state and next steps |
+| 1a | `docs/SESSION_LOG_2026-11-11.md` | What was set up and tested on 11 Nov, with every PayPal debug ID |
 | 2 | `docs/PRD_TermSheet.md` | **The build brief for entry 1. This is the source of truth** |
 | 3 | `docs/PRD_EveryoneGoes.md` | The build brief for entry 2 |
 | 3b | `docs/PRD_Blindfold.md` | The build brief for the alternative entry 2. Section 1.8 compares the two |
