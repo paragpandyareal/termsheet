@@ -167,3 +167,98 @@ Order status COMPLETED, capture status COMPLETED, order 4LY60806B3765842M, captu
 }
 ```
 </details>
+
+## S3. Test decline. PASS
+Run at 2026-11-10T22:56:01.809Z
+
+Method C produced INSTRUMENT_DECLINED. Debug ID of the failed call `f711539b3a81e`. Real authorisations were voided.
+
+- `POST /v2/checkout/orders` -> **201**, debug ID `f68088968f187`
+  <details><summary>sent</summary>
+
+```json
+{
+  "intent": "AUTHORIZE",
+  "purchase_units": [
+    {
+      "reference_id": "S3A-1794351355062",
+      "invoice_id": "TS-S3A-1794351355062",
+      "amount": {
+        "currency_code": "USD",
+        "value": "15.00"
+      }
+    }
+  ],
+  "payment_source": {
+    "paypal": {
+      "vault_id": "7x1984862c1507812"
+    }
+  }
+}
+```
+</details>
+- `POST /v2/payments/authorizations/87R993326S965680S/capture` -> **403**, debug ID `f931528eacd7f`
+  - extra headers `{"PayPal-Mock-Response":"{\"mock_application_codes\":\"INSTRUMENT_DECLINED\"}"}`
+  <details><summary>sent</summary>
+
+```json
+{}
+```
+</details>
+  <details><summary>response</summary>
+
+```json
+null
+```
+</details>
+- `POST /v2/payments/authorizations/87R993326S965680S/void` -> **200**, debug ID `f3025458f881c`
+- `POST /v2/checkout/orders` -> **422**, debug ID `f711539b3a81e`
+  - extra headers `{"PayPal-Mock-Response":"{\"mock_application_codes\":\"INSTRUMENT_DECLINED\"}"}`
+  <details><summary>sent</summary>
+
+```json
+{
+  "intent": "AUTHORIZE",
+  "purchase_units": [
+    {
+      "reference_id": "S3C-1794351361044",
+      "invoice_id": "TS-S3C-1794351361044",
+      "amount": {
+        "currency_code": "USD",
+        "value": "15.00"
+      }
+    }
+  ],
+  "payment_source": {
+    "paypal": {
+      "vault_id": "7x1984862c1507812"
+    }
+  }
+}
+```
+</details>
+  <details><summary>response</summary>
+
+```json
+{
+  "name": "UNPROCESSABLE_ENTITY",
+  "details": [
+    {
+      "issue": "INSTRUMENT_DECLINED",
+      "description": "The instrument presented  was either declined by the processor or bank, or it can't be used for this payment."
+    }
+  ],
+  "message": "The requested action could not be performed, semantically incorrect, or failed business validation.",
+  "debug_id": "70c28ae654da",
+  "links": [
+    {
+      "href": "https://developer.paypal.com/api/rest/reference/orders/v2/errors/#INSTRUMENT_DECLINED",
+      "rel": "information_link",
+      "method": "GET"
+    }
+  ]
+}
+```
+</details>
+
+Note on S3. Method A, the mock header on authorisation capture, returned 403 with an empty body (debug `f931528eacd7f`), so that route is closed for this app. Method B did not apply, because the AUTHORIZE order with a vault ID was already authorised at create. Method C gave a real INSTRUMENT_DECLINED 422 with no order created, so nothing was left to void. The A authorisation was voided (200). **Lock the build to method C.**
