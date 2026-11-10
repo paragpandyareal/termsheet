@@ -136,3 +136,34 @@ Vault status VAULTED. Vault ID stored in the git ignored .state.json.
 {}
 ```
 </details>
+
+## S2. Charge vault ID, buyer absent, intent CAPTURE. PASS
+Run at 2026-11-10T22:55:48.304Z
+
+Order status COMPLETED, capture status COMPLETED, order 4LY60806B3765842M, capture 22K43434RM1882219.
+
+- `POST /v2/checkout/orders` -> **201**, debug ID `f3935969bd3f6`
+  <details><summary>sent</summary>
+
+```json
+{
+  "intent": "CAPTURE",
+  "purchase_units": [
+    {
+      "reference_id": "S2-1794351345074",
+      "invoice_id": "TS-S2-1794351345074-1",
+      "description": "Net 30 repayment, Ridgeline order SPIKE",
+      "amount": {
+        "currency_code": "USD",
+        "value": "20.00"
+      }
+    }
+  ],
+  "payment_source": {
+    "paypal": {
+      "vault_id": "7x1984862c1507812"
+    }
+  }
+}
+```
+</details>
