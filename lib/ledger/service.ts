@@ -25,7 +25,7 @@ export async function bootstrap() {
   for (const b of BUYERS) {
     const id = `buyer_${b.key}`;
     await sql(`INSERT INTO buyer (id, key, display_name, business_type, stated_founded_year, paypal_email, has_sales_app, seeded)
-      VALUES ($1,$2,$3,$4,$5,$6,$7,true) ON CONFLICT (key) DO NOTHING`, [id, b.key, b.name, b.type, b.founded, b.emailVar ? process.env[b.emailVar] || null : null, b.salesApp]);
+      VALUES ($1,$2,$3,$4,$5,$6,$7,true) ON CONFLICT (key) DO UPDATE SET paypal_email=COALESCE(EXCLUDED.paypal_email, buyer.paypal_email), has_sales_app=EXCLUDED.has_sales_app`, [id, b.key, b.name, b.type, b.founded, b.emailVar ? process.env[b.emailVar] || null : null, b.salesApp]);
     await sql(`INSERT INTO credit_line (id, buyer_id) VALUES ($1,$2) ON CONFLICT (buyer_id) DO NOTHING`, [`line_${b.key}`, id]);
   }
 }
