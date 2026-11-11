@@ -1,5 +1,5 @@
 # Secrets and local test state. Never commit these.
 .env
 .env.*
-scripts/spikes/.state.json
 node_modules/
+scripts/spikes/.state.json

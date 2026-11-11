@@ -600,3 +600,20 @@ Mock header on a CAPTURE order create gives INSTRUMENT_DECLINED. No order create
 ## Note
 
 **Business payer proven, 11 Nov 12.45 Sydney.** The personal Larkspur account was deleted and `larkspur.termsheet@example.com` was recreated as a **Business** account. On it, S1 no purchase save PASS (payment token debug `f434131f90084`), S2 buyer absent CAPTURE PASS (order `7LL66346VM5734515`, capture `9TG326348T078043C`, debug `f201904e51969`), and S3 method C with CAPTURE PASS (422 INSTRUMENT_DECLINED, debug `f156045203d2d`). Earlier vault IDs belonged to the deleted personal account and are dead.
+
+## S6. Agent Toolkit reads on the supplier app. PASS
+Run at 2026-11-11T01:46:31.184Z
+
+@paypal/agent-toolkit 1.11.0, openai export, handleToolCall with sandbox context. list_transactions returned 2 rows for the last 30 days (the S4 payout to Ridgeline is the only expected row so far). list_invoices was also called; no invoices exist yet. The toolkit does not expose PayPal debug IDs.
+
+- `TOOL list_transactions` -> **200**, debug ID `n/a (toolkit hides headers)`
+- `TOOL list_invoices` -> **200**, debug ID `n/a (toolkit hides headers)`
+
+## S7. Larkspur reads its own sales with its own app. PASS
+Run at 2026-11-11T01:46:32.825Z
+
+Call works: true. Reporting scope on the Larkspur token: true. Rows 1, net 5000.00 USD. **Partial.** No walk in sales are seeded yet, so "totals match seeded sales" cannot be checked until seeding (PRD 11) runs and Transaction Search catches up (3 hours or more).
+
+- `GET /v1/reporting/transactions?<last 30 days>` -> **200**, debug ID `f193197508b78`
+
+Note on S6 and S7. S6 rows were the sandbox opening balance (event T1900) and similar setup rows, not seeded sales yet, but the toolkit read path is proven. S7 is marked PASS above only because the call and the reporting scope work. Treat S7 as **PARTIAL** until seeded walk in sales exist and the totals are compared.

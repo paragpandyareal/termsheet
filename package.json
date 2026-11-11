@@ -1,0 +1,27 @@
+{
+  "name": "termsheet",
+  "version": "1.0.0",
+  "description": "This repo holds the research and the build briefs for two entries to the PayPal AI Hackathon on Devpost. **No app code exists yet.** This file tells a new developer or AI model exactly where things stand and what to do next.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/paragpandyareal/termsheet.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/paragpandyareal/termsheet/issues"
+  },
+  "homepage": "https://github.com/paragpandyareal/termsheet#readme",
+  "dependencies": {
+    "@paypal/agent-toolkit": "^1.11.0"
+  }
+}
