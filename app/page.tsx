@@ -54,6 +54,7 @@ export default function Hub() {
             <span className="chip chip-onnavy">PayPal AI Hackathon · concept</span>
             <h1 className="t-h1 mt-4" style={{ color: '#fff' }}>Net 30 for small business, right inside PayPal checkout.</h1>
             <p className="mt-4 text-[17px] max-w-xl" style={{ color: 'rgba(255,255,255,.85)' }}>Cafés want 30 days to pay. Small roasters can&apos;t carry that. TermSheet pays the roaster today, and an AI credit analyst decides who gets terms, citing every PayPal record it used.</p>
+            <p className="mt-4 small max-w-xl rounded-lg px-4 py-3" style={{ background: 'rgba(255,255,255,.1)', color: 'rgba(255,255,255,.9)' }}><b style={{ color: '#fff' }}>Why PayPal.</b> Other net terms providers only see the invoice. PayPal also sees the buyer&apos;s real sales and payment history, and already lends to sellers based on their PayPal sales. TermSheet points that same data at business checkout, so wholesale orders that are paid by bank transfer today have a reason to use PayPal.</p>
             <div className="flex flex-wrap gap-3 mt-8">
               <Link href="/shop" className="btn btn-white btn-lg">Start the demo →</Link>
               <a href="#stories" className="btn btn-lg" style={{ background: 'rgba(255,255,255,.12)' }}>Three stories</a>
