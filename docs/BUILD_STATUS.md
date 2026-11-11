@@ -94,7 +94,8 @@ Last updated Wednesday 11 Nov 2026, 17.30 Sydney (06.30 UTC).
 
 ## 6. What is left, in order
 Done on 11 Nov afternoon: outside-review fixes (spend cap, shared-demo notes, keep-awake, impact line, phone nav, validator tests, Next 15.5.29, research moved out), Opus 5.5 upgrade, subtler Northgate letter, backtest, live eval, `docs/DEVPOST.md`, `docs/VIDEO_SCRIPT.md`.
-1. **Final independent review** of the whole app and repo, then fix what it finds.
+1. **Top up the funder sandbox balance** (it was $180.12 at 17.30 Sydney on 11 Nov; each Payout is $1,940 and each Reset sends one). Check with `node --env-file=.env scripts/spikes/funder-balance.mjs`.
+   Final independent review done 11 Nov 17.10; fixes applied. Open item from it: cleaning git history before going public needs the entrant's yes.
 2. **The entrant tests the hosted Larkspur PayPal login once**, then records the video from `docs/VIDEO_SCRIPT.md` and uploads it to YouTube.
 3. **Paste `docs/DEVPOST.md` into Devpost** and add the YouTube link (two TODOs). Add screenshots.
 4. **Make the repo public, only when the entrant says so.** Run a secret scan first (`.env`, `.seed-state.json` and `.state.json` are git ignored and have never been committed).

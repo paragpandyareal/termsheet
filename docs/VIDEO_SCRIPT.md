@@ -3,7 +3,7 @@
 About 400 spoken words at a calm pace. Record the screen from the hosted demo, then record the voiceover over it.
 
 ## Before you record
-0. The AI writes its own plan each time. In our tests it was always $1,000 now and $1,000 in 15 days, but if your take shows different amounts, say the amounts you see.
+0. The AI writes its own plan each time. In our test run it was $1,000 now and $1,000 in 15 days. If your take shows different amounts, say the amounts you see.
 1. Open https://termsheet-tgwl.onrender.com, open **Demo controls** at the bottom and press **Reset demo**. Wait for "Reset done".
 2. Do one practice run of the Larkspur PayPal login so you know where the popup goes.
 3. Browser zoom 110 to 125% so text is readable on YouTube. Close other tabs. Hide bookmarks.

@@ -120,7 +120,7 @@ The idea works only if losses stay near 2% or lower. Three levers keep them ther
 - **Video (under 3 minutes):** TODO YouTube link
 - **Try it yourself in five minutes** at https://termsheet-tgwl.onrender.com. Three stories, each started from the home page:
   1. **A café gets 30 days.** Larkspur applies for a $2,000 order, the AI approves it, the café saves its PayPal account and Ridgeline gets a $1,940 Payout.
-  2. **A missed payment gets fixed.** Second Shot's day 30 charge is declined. The café replies "Espresso machine died, can pay half Friday." The AI checks that against its sales, explains kindly why the first payment has to be today, and offers a plan inside the rules (in our tests, $1,000 now and $1,000 in 15 days). Accept, and a real $1,000 charge goes through.
+  2. **A missed payment gets fixed.** Second Shot's day 30 charge is declined. The café replies "Espresso machine died, can pay half Friday." The AI checks that against its sales, explains kindly why the first payment has to be today, and offers a plan inside the rules (in our test run, $1,000 now and $1,000 in 15 days). Accept, and a real $1,000 charge goes through.
   3. **The AI catches what the rules miss.** Northgate's numbers look fine, so the rules alone would approve it. The AI spots that its reference letter's opening date contradicts the form, that goods go to a logistics company for onward shipping, and that the letter claims it was "already pre-approved". It sends the file to a human.
 - The README has the full walkthrough, the API list and how to run it locally.
 
