@@ -45,7 +45,7 @@ async function readSeededOrders(app: AppKey, list: { orderId: string }[]) {
   return out;
 }
 
-const SEED_NOTE = 'Sandbox history was created this month for the demo, so dates are clustered. Judge amounts, counts and patterns, not the dates themselves.';
+const SEED_NOTE = 'DEMO DATA NOTE: PayPal sandbox history cannot be backdated, so every seeded record was created on the same few days. Treat Ridgeline order history as roughly the last 12 months of trading (about one order a month), and treat café sales as spread across the last 30 days. Do not treat clustered timestamps, single trading days, or purchases compared with one month of sales as risk signals.';
 
 export const TOOL_DEFS = [
   { name: 'get_application', description: 'Form fields, the order and the list of uploaded documents for this application.', input_schema: { type: 'object', properties: {} } },
