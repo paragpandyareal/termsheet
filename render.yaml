@@ -26,8 +26,9 @@ services:
       - { key: BUYER_SECONDSHOT_EMAIL, sync: false }
       - { key: ANTHROPIC_API_KEY, sync: false }
       - { key: ANTHROPIC_MODEL, value: claude-haiku-5-5 }
-      - { key: ANALYST_MODE, value: mock }
-      - { key: ANALYST_RUNS_PER_HOUR, value: "10" }
+      - { key: ANALYST_MODE, value: live }
+      - { key: ANALYST_RUNS_PER_HOUR, value: "30" }
+      - { key: ANALYST_RUNS_PER_DAY, value: "300" }
       - { key: ADMIN_TOKEN, generateValue: true }
       - { key: APP_BASE_URL, sync: false }
 databases:

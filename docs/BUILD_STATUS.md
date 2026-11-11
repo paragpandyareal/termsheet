@@ -23,7 +23,7 @@ Last updated Wednesday 11 Nov 2026, 15.30 Sydney (04.30 UTC). Deadline Thursday 
   - A story check card on the café phone.
 - **First live AI run** (hosted, Northgate, claude-haiku-5-5). It declined with both contradictions and ignored the injection. It used about 30k input and 2.8k output tokens. The first submit failed validation because the model sent arrays as strings; the run retried and passed. The model output is now normalised.
 - **Design.** PayPal-aligned tokens (navy #001C64, blue #0070E0, no logo), a 4/8/12/16/32 spacing scale, a type scale, and one hero per page. See `app/globals.css`.
-- **Open decision.** Whether the hosted judge demo runs `ANALYST_MODE=live` with the caps (recommended by both reviewers) or `mock`. `render.yaml` currently says `mock`.
+- **Decided 15.31.** The hosted judge demo runs `ANALYST_MODE=live` (claude-haiku-5-5), capped at 30 runs an hour and 300 a day, with the labelled fallback.
 
 ## 1. Deviations from the PRD (all deliberate)
 
