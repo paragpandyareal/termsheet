@@ -9,7 +9,7 @@ export default function Funder() {
   if (!s) return <><Nav /><main className="max-w-6xl mx-auto px-4 py-6 space-y-4"><Skeleton rows={3} /><Skeleton rows={5} /></main></>;
   const name = (id: string) => s.buyers.find((b: any) => b.id === id)?.display_name || id;
   const T = ({ head, rows }: { head: string[]; rows: React.ReactNode[][] }) => (
-    <div className="overflow-x-auto"><table className="w-full text-sm"><thead><tr className="text-left muted">{head.map((h) => <th key={h} className="pr-3 py-1 font-semibold">{h}</th>)}</tr></thead>
+    <div className="overflow-x-auto" role="region" aria-label={head.join(', ')} tabIndex={0}><table className="w-full text-sm"><thead><tr className="text-left muted">{head.map((h) => <th key={h} className="pr-3 py-1 font-semibold">{h}</th>)}</tr></thead>
       <tbody>{rows.map((r, i) => <tr key={i} className="align-top border-t" style={{ borderColor: 'var(--line)' }}>{r.map((c, j) => <td key={j} className="pr-3 py-1.5">{c}</td>)}</tr>)}</tbody></table>
       {!rows.length && <p className="text-sm muted py-2">Nothing yet.</p>}</div>
   );

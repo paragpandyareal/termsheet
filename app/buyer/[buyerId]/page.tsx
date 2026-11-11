@@ -89,11 +89,11 @@ export default function Buyer({ params }: { params: Promise<{ buyerId: string }>
             </div>
             <div className="p-3 @3xl:p-6 @3xl:border-l space-y-2">
               <div className="t-label hidden @3xl:block">Messages</div>
-              <div ref={threadRef} className="space-y-2 max-h-[360px] @3xl:max-h-[440px] overflow-y-auto" aria-live="polite">
+              <div ref={threadRef} className="space-y-2 max-h-[360px] @3xl:max-h-[440px] overflow-y-auto" aria-live="polite" role="region" aria-label="Messages" tabIndex={0}>
                 {!v.messages.length && <p className="small muted">No messages yet.</p>}
                 {v.messages.map((m: any) => (
                   <div key={m.id} className={`text-sm px-3 py-2 rounded-2xl max-w-[85%] ${m.sender === 'BUYER' ? 'ml-auto' : ''}`} style={{ background: m.sender === 'BUYER' ? 'var(--accent)' : 'var(--card)', color: m.sender === 'BUYER' ? 'white' : 'var(--ink)', border: m.sender === 'BUYER' ? 'none' : '1px solid var(--line)' }}>
-                    <span className="block text-[11px] opacity-80">{m.sender === 'SYSTEM' ? 'Automatic · ' : ''}{/* Time only: the app clock moves the date, so a real calendar date here would contradict it. */}{new Date(m.created_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}</span>{m.body}
+                    <span className={`block text-[11px] ${m.sender === 'BUYER' ? '' : 'muted'}`}>{m.sender === 'SYSTEM' ? 'Automatic · ' : ''}{/* Time only: the app clock moves the date, so a real calendar date here would contradict it. */}{new Date(m.created_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}</span>{m.body}
                   </div>
                 ))}
               </div>
@@ -125,7 +125,7 @@ export default function Buyer({ params }: { params: Promise<{ buyerId: string }>
             <section className="card-flat p-4 sm:p-6 min-w-0">
               <h2 className="t-h3 mb-2">Charges on this account</h2>
               {!attempts.length && <p className="text-sm muted">No charges yet. Use <b>Jump to next due date</b> in the demo controls above to run the collection job.</p>}
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto" role="region" aria-label="Charges on this account" tabIndex={0}>
                 <table className="w-full text-sm">
                   {attempts.length > 0 && <thead><tr className="text-left muted"><th className="pr-2 py-1 font-semibold">Result</th><th className="pr-2 py-1 font-semibold">What happened</th><th className="pr-2 py-1 font-semibold">Capture ID</th><th className="py-1 font-semibold">Debug ID</th></tr></thead>}
                   <tbody>

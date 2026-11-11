@@ -150,7 +150,7 @@ export function Nav() {
   return (
     <header className="border-b relative" style={{ background: 'var(--subtle)' }}>
       <nav className="max-w-6xl mx-auto px-3 sm:px-4 h-14 flex items-center gap-1 lg:gap-6 whitespace-nowrap" aria-label="Main">
-        <Link href="/" className="font-extrabold text-lg mr-1 sm:mr-3" style={{ color: 'var(--navy)' }}>Term<span style={{ color: 'var(--blue)' }}>Sheet</span></Link>
+        <Link href="/" className="font-extrabold text-lg mr-1 sm:mr-3" style={{ color: 'var(--navy)' }}>Term<span style={{ color: 'var(--blue-hover)' }}>Sheet</span></Link>
         {links.map(([h, t, short]) => {
           const active = h === '/' ? path === '/' : path.startsWith(h.split('/').slice(0, 2).join('/'));
           return <Link key={h} href={h} aria-current={active ? 'page' : undefined} className={`text-[15px] font-semibold h-11 px-2 sm:px-3 rounded-full items-center ${short ? 'inline-flex' : 'hidden sm:inline-flex'}`} style={{ color: active ? 'var(--navy)' : 'var(--muted)', background: active ? 'var(--nav-active)' : 'transparent' }}><span className="sm:hidden">{short}</span><span className="hidden sm:inline">{t}</span></Link>;

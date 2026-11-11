@@ -53,7 +53,7 @@ h1, h2, h3 { color: var(--navy); letter-spacing: -0.02em; line-height: 1.15; }
 .btn-white:hover { background: var(--blue-soft); }
 .btn-sm { height: 44px; padding: 0 16px; font-size: 14px; }
 .btn-lg { height: 52px; padding: 0 32px; font-size: 17px; }
-.btn:focus-visible, .chip-btn:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+[tabindex="0"]:focus-visible, button:focus-visible, .btn:focus-visible, .chip-btn:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
 
 .chip { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: var(--chip); color: var(--chip-ink); white-space: nowrap; }
 .chip-sim { background: var(--bad-soft); color: var(--bad); }
@@ -66,7 +66,7 @@ h1, h2, h3 { color: var(--navy); letter-spacing: -0.02em; line-height: 1.15; }
 .chip-demo { outline: 1px dashed currentColor; outline-offset: -1px; }
 .chip-onnavy { background: rgba(255, 255, 255, .14); color: #fff; }
 .chip-btn { display: inline-flex; align-items: center; justify-content: center; min-width: 24px; height: 24px; padding: 0 8px; margin: 0 2px; border-radius: 999px;
-  font-size: 12px; font-weight: 800; background: var(--blue-soft); color: var(--blue); vertical-align: 1px; transition: background .15s, color .15s; position: relative; }
+  font-size: 12px; font-weight: 800; background: var(--blue-soft); color: var(--blue-hover); vertical-align: 1px; transition: background .15s, color .15s; position: relative; }
 .chip-btn::after { content: ''; position: absolute; inset: -10px -4px; } /* 44px touch target */
 .chip-btn:hover { background: var(--blue); color: #fff; }
 
