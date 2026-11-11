@@ -3,7 +3,7 @@
 Last updated Wednesday 11 Nov 2026, 14.15 Sydney (03.15 UTC). Deadline Thursday 12 Nov 2026, 20.00 UTC.
 
 ## 0. Where things stand
-- **Phases 1 to 4 of PRD 13 are built and pushed to `main`** of the private repo github.com/paragpandyareal/termsheet. Phase 5 (README, judge mode) is in progress. `npm run build` passes. Not deployed yet, and no Render account exists yet.
+- **Phases 1 to 4 of PRD 13 are built and pushed to `main`** of the private repo github.com/paragpandyareal/termsheet. Phase 5 (README, judge mode) is in progress. `npm run build` passes. **Deployed at 14.20 Sydney to https://termsheet-tgwl.onrender.com** (Render free web service plus free Postgres, from `render.yaml`). The keys were copied to Render by `scripts/seed/render-env.mjs`, which prints names only. PayPal webhooks are made by `scripts/seed/webhooks.mjs` (funder `8F925359EA092550F`, supplier `1AC71676XW3261817`). Hosted check at 14.25: reset armed Second Shot (real Payout), and Larkspur was approved $5,000 with 23 evidence rows. The hosted analyst runs in practice mode (`ANALYST_MODE=mock` in render.yaml) to protect the Anthropic credit.
 - **The entrant tested the local app at 14.07 and says it works.** Visual polish is deferred until the features are complete.
 - **Tested against the sandbox.**
   - Larkspur applies and the analyst approves $5,000 with 23 cited evidence rows. The account is saved and Ridgeline gets a $1,940 Payout.
@@ -28,8 +28,7 @@ Script `scripts/seed/seed.mjs`. Log in `scripts/seed/SEED_LOG.md`. Public order 
 - **Accounts.** Walk in is `walkinbuyer.termsheet@example.com` (Personal). Second Shot is `secondshot.termsheet@example.com` (Business), with REST app "Second Shot Cafe".
 
 ## 3. Not done yet
-- Deploy to Render. Set the env vars there, plus `SEED_VAULT_FUNDER_SECONDSHOT`, which the hosted app needs to re-arm Second Shot on reset.
-- Webhooks on the hosted URL (`FUNDER_WEBHOOK_ID`, `SUPPLIER_WEBHOOK_ID`).
+- Check that a real webhook event arrives and verifies on the hosted app (Funder ledger, webhook log).
 - Larkspur invoices with reminders (factor PB). They currently score "none on file".
 - P1 and P2 items, Devpost text, video script, statistics checks, three rehearsals.
 - Visual polish.

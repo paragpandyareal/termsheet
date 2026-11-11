@@ -8,7 +8,7 @@ Built for the PayPal AI Hackathon. MIT licence.
 
 ## 1. Try it in five minutes
 
-**Hosted demo.** Link coming soon. Free hosting sleeps, so the first load can take up to a minute.
+**Hosted demo.** https://termsheet-tgwl.onrender.com Free hosting sleeps, so the first load can take up to a minute.
 
 1. **Approve a café.** Open the judge hub, then *Approve a café*. Larkspur Café has $2,000 of beans in the cart. Click *Apply for Net 30*, then *Submit application*. Watch the analyst call its tools live, then read the memo. Click any citation number to jump to its evidence row. Click *Save my PayPal account with TermSheet Funding* and log in with the Larkspur sandbox login below. You come back with $0 charged, and Ridgeline is paid $1,940 by PayPal Payout.
 2. **Watch a payment fail and recover.** Open *Café phone*. Second Shot Café already owes $2,000. Click *Jump to next due date*. The real charge runs with the café absent and comes back INSTRUMENT_DECLINED (a sandbox simulated decline, labelled on screen). The limit drops and the line freezes. Reply as the café ("Espresso machine died, can pay half Friday."). The analyst checks the story and proposes a plan inside fixed policy limits. Tap *Accept* and a real $1,000 charge goes through.
