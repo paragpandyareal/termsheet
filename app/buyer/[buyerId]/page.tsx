@@ -15,6 +15,7 @@ export default function Buyer({ params }: { params: Promise<{ buyerId: string }>
   useEffect(() => { load(); const t = setInterval(load, 3000); return () => clearInterval(t); }, [buyerId]);
 
   const send = async () => { setBusy('send'); await fetch(`/api/buyer/${buyerId}/message`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ body: text }) }); setText(''); setBusy(''); load(); };
+  const retry = async () => { setBusy('send'); await fetch(`/api/buyer/${buyerId}/message`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ retry: true }) }); setBusy(''); load(); };
   const accept = async (id: string) => { setBusy('accept'); await fetch(`/api/plan/${id}/accept`, { method: 'POST' }); setBusy(''); load(); };
 
   if (!v) return <><Nav /><main className="p-6 muted">Loading…</main></>;
@@ -41,7 +42,7 @@ export default function Buyer({ params }: { params: Promise<{ buyerId: string }>
               <div className="mt-3"><div className="small" style={{ color: 'rgba(255,255,255,.7)' }}>You owe</div><div className="text-[36px] font-extrabold num leading-none">{usd(open)}</div></div>
             </div>
             <div className="p-3 space-y-2">
-              {ins.filter((i: any) => i.status !== 'PAID').map((i: any) => (
+              {ins.filter((i: any) => i.status === 'SCHEDULED').map((i: any) => (
                 <div key={i.id} className="card px-3 py-2 text-sm flex justify-between"><span>Due {i.due}</span><span className="font-semibold">{usd(i.amount_cents)}</span></div>
               ))}
               <div ref={threadRef} className="space-y-2 max-h-[360px] overflow-y-auto">
@@ -65,7 +66,7 @@ export default function Buyer({ params }: { params: Promise<{ buyerId: string }>
                   <button className="btn" disabled={!!busy || !text.trim()} onClick={send}>{busy === 'send' ? '…' : 'Send'}</button>
                 </div>
               )}
-              {busy === 'send' || (pastDue && v.messages.at(-1)?.sender === 'BUYER') ? <p className="small muted">TermSheet's analyst is checking your message against your recent PayPal sales…</p> : null}
+              {busy === 'send' || (pastDue && v.messages.at(-1)?.sender === 'BUYER') ? (<div className="small muted">TermSheet&apos;s analyst is checking your message against your recent PayPal sales…{Date.now() - Date.parse(v.messages.at(-1)?.created_at || 0) > 60000 && <button className="btn btn-ghost btn-sm mt-2" disabled={!!busy} onClick={retry}>Taking too long? Try again</button>}</div>) : null}
             </div>
           </div>
         </div>

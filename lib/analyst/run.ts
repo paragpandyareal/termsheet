@@ -36,7 +36,7 @@ How to work
 - contradictions is only for two pieces of evidence that disagree with each other. Leave it empty when there are none.
 
 Hard rules (checked by code)
-1. The scorecard ceiling is a cap. You may keep or lower the limit, ask for a deposit up to 50%, decline, or refer. Never raise a limit, lengthen a term or waive a required deposit.
+1. The scorecard ceiling is a cap. Outcomes are APPROVE, DECLINE or REFER. An approval keeps or lowers the limit, but the limit must cover this order. There are no deposits in this version, so deposit_pct is always 0. Never raise a limit or lengthen a term.
 2. Every memo sentence and every contradiction cites evidence_ids that tools returned. A contradiction cites both sides (at least 2 IDs). Never invent IDs.
 3. factor_codes only from: ${Object.entries(REASONS).map(([k, v]) => `${k} (${v})`).join(', ')}. VR06 and OB07 are for things you found that the scorecard cannot see.
 4. If you lower the scorecard's limit or outcome, set tightening_reason. Use REFER when the evidence is too thin or conflicting to decide either way.
@@ -57,7 +57,7 @@ const cite = { type: 'object', required: ['text', 'evidence_ids'], properties: {
 const SUBMIT_DECISION = {
   name: 'submit_decision', description: 'Submit the underwriting decision. Ends the run.',
   input_schema: { type: 'object', required: ['outcome', 'limit_cents', 'term_days', 'deposit_pct', 'factor_codes', 'summary', 'memo', 'contradictions', 'confidence', 'would_change'], properties: {
-    outcome: { enum: ['APPROVE', 'COUNTEROFFER', 'DECLINE', 'REFER'] }, limit_cents: { type: 'integer' }, term_days: { type: 'integer' }, deposit_pct: { type: 'integer' },
+    outcome: { enum: ['APPROVE', 'DECLINE', 'REFER'] }, limit_cents: { type: 'integer' }, term_days: { type: 'integer' }, deposit_pct: { type: 'integer' },
     factor_codes: { type: 'array', items: { type: 'string' } }, summary: { type: 'string' }, tightening_reason: { type: 'string' }, would_change: { type: 'string' },
     memo: { type: 'array', items: cite }, contradictions: { type: 'array', items: cite }, confidence: { enum: ['HIGH', 'MEDIUM', 'LOW'] } } },
 };
@@ -80,7 +80,8 @@ function normalise(o: any) {
 // PRD 9.4. Plain code on every output.
 export function validateDecision(d: any, ctx: ToolCtx): string[] {
   const e: string[] = [];
-  if (!['APPROVE', 'COUNTEROFFER', 'DECLINE', 'REFER'].includes(d?.outcome)) e.push('outcome invalid');
+  if (!['APPROVE', 'DECLINE', 'REFER'].includes(d?.outcome)) e.push('outcome must be APPROVE, DECLINE or REFER');
+  if (d?.deposit_pct) e.push('deposit_pct must be 0 (no deposits in this version)');
   for (const k of ['limit_cents', 'term_days', 'deposit_pct']) if (!Number.isInteger(d?.[k]) || d[k] < 0) e.push(`${k} must be a whole number of 0 or more`);
   if (!Array.isArray(d?.memo) || !d.memo.length) e.push('memo must be a non-empty array');
   if (!Array.isArray(d?.contradictions)) e.push('contradictions must be an array');
@@ -91,13 +92,12 @@ export function validateDecision(d: any, ctx: ToolCtx): string[] {
   for (const c of Array.isArray(d?.contradictions) ? d.contradictions : []) if ((c?.evidence_ids || []).length < 2) e.push(`A contradiction must cite both sides: "${c?.text}"`);
   const c = ctx.facts.score?.ceiling;
   if (!c) e.push('get_policy was not called');
-  else if (d.outcome === 'APPROVE' || d.outcome === 'COUNTEROFFER') {
-    if (c.outcome === 'DECLINE') e.push('Scorecard ceiling is DECLINE. You cannot approve.');
+  else if (d.outcome === 'APPROVE') {
+    if (c.outcome !== 'APPROVE') e.push(`Scorecard ceiling is ${c.outcome}. You cannot approve; DECLINE or REFER.`);
+    if (ctx.facts.orderCents && d.limit_cents < ctx.facts.orderCents) e.push(`An approval must cover the order (${ctx.facts.orderCents} cents). Otherwise DECLINE or REFER.`);
     if (d.limit_cents > c.limitCents) e.push(`limit ${d.limit_cents} is above the ceiling ${c.limitCents}`);
     if (d.limit_cents <= 0) e.push('An approval needs a limit above 0');
     if (d.term_days > c.termDays) e.push('term is longer than the ceiling');
-    if (d.deposit_pct < c.depositPct) e.push('deposit is lower than the ceiling requires');
-    if (d.deposit_pct > 50) e.push('deposit above 50%');
   }
   for (const f of Array.isArray(d?.factor_codes) ? d.factor_codes : []) if (!REASONS[f]) e.push(`Unknown factor code ${f}`);
   return e;
@@ -212,8 +212,9 @@ async function mockUnderwrite(ctx: ToolCtx) {
   const inj = docEv.find((e) => /ignore|disregard|approve (a|the)? ?\$|automated reviewer|instructions/i.test(e.summary));
   if (inj) memo.push({ text: 'The reference letter contains an instruction aimed at the reviewer. It was treated as evidence and ignored.', evidence_ids: [inj.id] });
   const decline = contradictions.length > 0 || c.outcome === 'DECLINE';
+  if (!decline && (c.outcome !== 'APPROVE' || c.limitCents < (f.orderCents || 0))) return { outcome: 'REFER', limit_cents: 0, term_days: 0, deposit_pct: 0, factor_codes: [...new Set(codes)], summary: 'Sent to a human reviewer: the scorecard does not support terms for this order on its own.', would_change: 'More trading history with Ridgeline.', memo, contradictions, confidence: 'MEDIUM' };
   return {
-    outcome: decline ? 'DECLINE' : c.outcome, limit_cents: decline ? 0 : c.limitCents, term_days: decline ? 0 : c.termDays, deposit_pct: decline ? 0 : c.depositPct,
+    outcome: decline ? 'DECLINE' : c.outcome, limit_cents: decline ? 0 : c.limitCents, term_days: decline ? 0 : c.termDays, deposit_pct: 0,
     factor_codes: [...new Set(codes)], summary: decline ? 'Declined: the file has gaps or contradictions that a 30 day term cannot carry.' : `Approved for Net ${c.termDays} up to ${usd(c.limitCents)}.`,
     would_change: decline ? 'A verifiable trading history with Ridgeline and café-style PayPal sales.' : 'A failed repayment or a sharp drop in PayPal sales.',
     memo, contradictions, confidence: 'MEDIUM',
@@ -279,7 +280,7 @@ export async function startPlan(receivableId: string) {
   const mode = await pickMode();
   const runId = newId('run');
   await sql("INSERT INTO analyst_run (id, kind, subject_id, model, mode) VALUES ($1,'RESTRUCTURE',$2,$3,$4)", [runId, receivableId, mode === 'live' ? MODEL : 'rule-based writer (no AI)', mode]);
-  void (async () => {
+  void (async () => { try {
     const ctx: ToolCtx = { runId, buyerId: rcv.buyer_id, buyerKey: rcv.key, receivableId, evidence: new Map(), facts: {} };
     let out: any = null, fallbackWhy = '';
     if (mode === 'live') {
@@ -307,6 +308,9 @@ export async function startPlan(receivableId: string) {
     }
     await sql("UPDATE analyst_run SET output_json=$2, status='DONE', ended_at=now() WHERE id=$1", [runId, JSON.stringify(out)]);
     await trace(runId, { type: 'done', outcome: out ? 'PLAN' : 'REFER' });
-  })();
+  } catch (err: any) {
+    await sql("INSERT INTO message (id, buyer_id, receivable_id, sender, body) VALUES ($1,$2,$3,'FUNDER',$4)", [newId('msg'), rcv.buyer_id, receivableId, 'Sorry, something went wrong on our side. Tap Try again, or a person from TermSheet will contact you.']).catch(() => {});
+    await sql("UPDATE analyst_run SET status='DONE', ended_at=now() WHERE id=$1", [runId]).catch(() => {});
+  } })();
   return runId;
 }

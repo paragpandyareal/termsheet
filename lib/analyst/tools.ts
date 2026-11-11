@@ -132,11 +132,14 @@ export async function runTool(ctx: ToolCtx, name: string, input: any): Promise<{
       }
       const now = Date.now();
       const sum = (days: number) => rows.filter((x) => now - Date.parse(x.date) <= days * 864e5).reduce((a, b) => a + b.cents, 0);
-      const s7 = sum(7), s30 = sum(30);
+      const s30 = sum(30);
+      // Seeded sales share one creation date, so a true 7 day figure is not meaningful. Use the 30 day average and say so.
+      const clustered = new Set(rows.map((x) => String(x.date).slice(0, 10))).size <= 2;
+      const s7 = clustered ? Math.round((s30 * 7) / 30) : sum(7);
       ctx.facts.sales30 = s30; ctx.facts.sales7 = s7;
       const asOf = new Date().toISOString();
       await addEv(ctx, { id: `sales:${ctx.buyerKey}:30d`, source: via, summary: `${usd(s30)} PayPal sales in 30 days, ${rows.length} sales, average ${usd(rows.length ? Math.round(s30 / rows.length) : 0)}. As of ${asOf.slice(0, 16)}Z` });
-      await addEv(ctx, { id: `sales:${ctx.buyerKey}:7d`, source: via, summary: `${usd(s7)} PayPal sales in 7 days` });
+      await addEv(ctx, { id: `sales:${ctx.buyerKey}:7d`, source: via, summary: clustered ? `About ${usd(s7)} PayPal sales in a typical 7 days (30 day average, seeded dates)` : `${usd(s7)} PayPal sales in 7 days` });
       // Seeded sales share timestamps, so the daily figure is the 30 day total spread over 30 days.
       ctx.facts.avgDailySales = Math.round(s30 / 30);
       return { summary: `30 days ${usd(s30)}, 7 days ${usd(s7)}`, result: { via, note: SEED_NOTE, sales_30d_cents: s30, sales_7d_cents: s7, count: rows.length, average_ticket_cents: rows.length ? Math.round(s30 / rows.length) : 0, average_daily_sales_cents: ctx.facts.avgDailySales, as_of: asOf, evidence_ids: [`sales:${ctx.buyerKey}:30d`, `sales:${ctx.buyerKey}:7d`] } };

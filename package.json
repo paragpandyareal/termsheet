@@ -1,7 +1,7 @@
 {
   "name": "termsheet",
   "version": "1.0.0",
-  "description": "This repo holds the research and the build briefs for two entries to the PayPal AI Hackathon on Devpost. **No app code exists yet.** This file tells a new developer or AI model exactly where things stand and what to do next.",
+  "description": "TermSheet. Net 30 for Business (concept) inside PayPal checkout, with an AI credit analyst. PayPal AI Hackathon entry.",
   "directories": {
     "doc": "docs"
   },
@@ -16,9 +16,7 @@
     "type": "git",
     "url": "git+https://github.com/paragpandyareal/termsheet.git"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/paragpandyareal/termsheet/issues"
   },

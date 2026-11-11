@@ -80,10 +80,10 @@ export function ClockChip({ s, onChange }: { s: any; onChange: () => void }) {
 
 export function Nav() {
   const path = usePathname();
-  const links = [['/', 'Judge hub'], ['/shop', 'Checkout'], ['/buyer/buyer_secondshot', 'Café phone'], ['/funder', 'Funder ledger']];
+  const links = [['/', 'Hub'], ['/shop', 'Checkout'], ['/buyer/buyer_secondshot', 'Café phone'], ['/funder', 'Ledger']];
   return (
     <header className="bg-white border-b" style={{ borderColor: 'var(--line)' }}>
-      <nav className="max-w-6xl mx-auto px-4 h-14 flex items-center gap-8 overflow-x-auto whitespace-nowrap">
+      <nav className="max-w-6xl mx-auto px-4 h-14 flex items-center gap-4 sm:gap-8 overflow-x-auto whitespace-nowrap">
         <Link href="/" className="font-extrabold text-lg" style={{ color: 'var(--navy)' }}>Term<span style={{ color: 'var(--blue)' }}>Sheet</span></Link>
         {links.map(([h, t]) => {
           const active = h === '/' ? path === '/' : path.startsWith(h.split('/').slice(0, 2).join('/'));

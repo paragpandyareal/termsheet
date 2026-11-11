@@ -109,7 +109,7 @@ export default function Apply({ params }: { params: Promise<{ orderId: string }>
               </div>
               {approved && <div><div className="t-label">Credit limit</div><div className="t-hero mt-1" style={{ color: 'var(--navy)' }}>{usd(out.limit_cents)}</div></div>}
               {approved && <div><div className="t-label">Terms</div><div className="text-xl font-bold" style={{ color: 'var(--navy)' }}>Net {out.term_days}{out.deposit_pct ? ` · ${out.deposit_pct}% deposit` : ''}</div></div>}
-              {sc && <div><div className="t-label">Scorecard · plain code</div><div className="text-xl font-bold" style={{ color: 'var(--navy)' }}>{sc.total}/100 · tier {sc.ceiling.tier}</div><div className="small muted">Ceiling {sc.ceiling.outcome === 'DECLINE' ? 'decline' : usd(sc.ceiling.limitCents)}. The AI can only go lower.</div></div>}
+              {sc && <div><div className="t-label">Scorecard · plain code</div><div className="text-xl font-bold" style={{ color: 'var(--navy)' }}>{sc.total}/100 · tier {sc.ceiling.tier}</div><div className="small muted">{sc.ceiling.outcome === 'DECLINE' ? 'Rules alone would decline.' : sc.ceiling.outcome === 'APPROVE' ? `Rules alone would allow up to ${usd(sc.ceiling.limitCents)}. The AI can only go lower.` : 'Rules alone would not approve this order outright.'}</div></div>}
               {out.tightened_from_scorecard && <span className="chip chip-warn">Analyst went below the scorecard</span>}
             </div>
             {out.summary && <p className="mt-4 text-[17px]">{out.summary}</p>}
