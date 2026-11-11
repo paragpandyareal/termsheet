@@ -29,7 +29,7 @@ Last updated Tuesday 10 Nov 2026, 22.00 UTC.
 | S2 buyer absent charge, business payer | **PASS with a Business payer** (see above). Earlier pass was a personal payer | PRD 6.4 as written |
 | S3 test decline | **PASS with method C,** with both intent AUTHORIZE and intent CAPTURE. A returned 403, B did not apply | Mock header on order create. Label SIMULATED DECLINE |
 | S4 payout to supplier | **PASS.** Batch and item SUCCESS by polling | PRD 6.5. Webhook not yet tested (no public address) |
-| S5 two SDK copies on one page | **INCONCLUSIVE.** Both copies load and render without clashing, but every PayPal button shows blank on this PC, even a single button with PayPal's generic test ID | Use the proven redirect approval link for saving the account, until the blank buttons are solved |
+| S5 two SDK copies on one page | **INCONCLUSIVE.** Both copies load and render without clashing, but every PayPal button shows blank on this PC, even a single button with PayPal's generic test ID | Use the proven redirect approval link for saving the account, until the blank buttons are solved. **Update.** Likely cause is PayPal's sandbox returning HTTP 500 for the button iframe in bursts, not the PC (see "S5 follow up" in RESULTS.md). The S5 page now redraws a blank button. Rerun S5 |
 | S6 Agent Toolkit reads, supplier app | **PASS.** `list_transactions` returned rows | `@paypal/agent-toolkit` 1.11.0, `openai` export, `handleToolCall` |
 | S7 café reads own sales | **PARTIAL.** Call and reporting scope work; no seeded sales yet to compare | Recheck after seeding (PRD 11) |
 
