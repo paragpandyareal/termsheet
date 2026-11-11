@@ -43,6 +43,7 @@ Hard rules (checked by code)
 3. factor_codes only from: ${Object.entries(REASONS).map(([k, v]) => `${k} (${v})`).join(', ')}. VR06 and OB07 are for things you found that the scorecard cannot see.
 4. If you lower the scorecard's limit or outcome, set tightening_reason. Use REFER when the evidence is too thin or conflicting to decide either way.
 5. summary is one plain sentence a café owner would understand. would_change says what new evidence would change your decision.
+5b. beyond_rules is one sentence, with citations, saying what you checked that the scorecard cannot see (documents against the form, shipping against the stated business, order mix) and what you found. Fill it even when you found nothing; then say so plainly.
 6. Plain, short sentences. 3 to 6 memo sentences. Submit arrays as real JSON arrays, not strings.`;
 
 const SYSTEM_PLAN = `You are the collections analyst for TermSheet, a concept demo in the PayPal sandbox. A café's day 30 charge failed and the café replied in its own words.
@@ -61,7 +62,8 @@ const SUBMIT_DECISION = {
   input_schema: { type: 'object', required: ['outcome', 'limit_cents', 'term_days', 'deposit_pct', 'factor_codes', 'summary', 'memo', 'contradictions', 'confidence', 'would_change'], properties: {
     outcome: { enum: ['APPROVE', 'DECLINE', 'REFER'] }, limit_cents: { type: 'integer' }, term_days: { type: 'integer' }, deposit_pct: { type: 'integer' },
     factor_codes: { type: 'array', items: { type: 'string' } }, summary: { type: 'string' }, tightening_reason: { type: 'string' }, would_change: { type: 'string' },
-    memo: { type: 'array', items: cite }, contradictions: { type: 'array', items: cite }, confidence: { enum: ['HIGH', 'MEDIUM', 'LOW'] } } },
+    memo: { type: 'array', items: cite }, contradictions: { type: 'array', items: cite }, confidence: { enum: ['HIGH', 'MEDIUM', 'LOW'] },
+    beyond_rules: { ...cite, description: 'What you checked that the scorecard cannot see, and what you found, with citations' } } },
 };
 const SUBMIT_PLAN = {
   name: 'submit_plan', description: 'Submit the payment plan. Ends the run.',
@@ -87,7 +89,8 @@ export function validateDecision(d: any, ctx: ToolCtx): string[] {
   for (const k of ['limit_cents', 'term_days', 'deposit_pct']) if (!Number.isInteger(d?.[k]) || d[k] < 0) e.push(`${k} must be a whole number of 0 or more`);
   if (!Array.isArray(d?.memo) || !d.memo.length) e.push('memo must be a non-empty array');
   if (!Array.isArray(d?.contradictions)) e.push('contradictions must be an array');
-  for (const s of [...(Array.isArray(d?.memo) ? d.memo : []), ...(Array.isArray(d?.contradictions) ? d.contradictions : [])]) {
+  // beyond_rules is optional (the rule-based writer leaves it out), but when present it follows the same citation rule.
+  for (const s of [...(Array.isArray(d?.memo) ? d.memo : []), ...(Array.isArray(d?.contradictions) ? d.contradictions : []), ...(d?.beyond_rules ? [d.beyond_rules] : [])]) {
     if (typeof s?.text !== 'string' || !Array.isArray(s?.evidence_ids) || !s.evidence_ids.length) { e.push(`Each sentence needs text and evidence_ids: ${JSON.stringify(s).slice(0, 80)}`); continue; }
     for (const id of s.evidence_ids) if (!ctx.evidence.has(id)) e.push(`Unknown evidence ID ${id}`);
   }

@@ -130,3 +130,14 @@ describe('fallbackOutcome: no AI', () => {
     expect(validateDecision(o, ctx())).toEqual([]);
   });
 });
+
+describe('validateDecision: beyond_rules', () => {
+  it('accepts a cited check of what the rules cannot see', () => {
+    const d = { ...good(), beyond_rules: { text: 'The letter matches the form; shipping goes to the café. Nothing found.', evidence_ids: ['doc:letter', 'app:foundedYear'] } };
+    expect(validateDecision(d, ctx())).toEqual([]);
+  });
+  it('rejects it when it cites evidence no tool returned', () => {
+    const d = { ...good(), beyond_rules: { text: 'Checked everything.', evidence_ids: ['doc:made-up'] } };
+    expect(validateDecision(d, ctx()).join()).toMatch(/Unknown evidence ID doc:made-up/);
+  });
+});

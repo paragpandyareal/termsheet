@@ -219,6 +219,9 @@ export default function Apply({ params }: { params: Promise<{ orderId: string }>
                     <div className="mt-3 space-y-3">
                       {out.memo?.map((m: any, i: number) => <p key={i} className="rise" style={{ animationDelay: `${i * 60}ms` }}>{m.text} <Cites ids={m.evidence_ids} /></p>)}
                       {out.contradictions?.map((m: any, i: number) => <p key={'c' + i} className="callout-bad"><b>Contradiction.</b> {m.text} <Cites ids={m.evidence_ids} /></p>)}
+                      {out.beyond_rules?.text
+                        ? <p className="callout-blue small"><b>What the AI checked that the rules cannot see.</b> {out.beyond_rules.text} <Cites ids={out.beyond_rules.evidence_ids} /></p>
+                        : mode && mode !== 'live' ? <p className="small muted"><b>Beyond the rules:</b> nothing checked. The rule-based writer only restates the scorecard and sends any documents to a person.</p> : null}
                       {out.would_change && <p className="small muted"><b>What would change this decision:</b> {out.would_change}</p>}
                     </div>
                   )}
