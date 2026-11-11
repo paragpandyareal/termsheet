@@ -156,7 +156,9 @@ async function mockUnderwrite(ctx: ToolCtx) {
   else memo.push({ text: 'No paid orders with Ridgeline on file.', evidence_ids: ['policy:scorecard'] });
   if (f.sales30) memo.push({ text: `Own PayPal sales were ${usd(f.sales30)} in the last 30 days, so this ${usd(f.orderCents)} order is ${Math.round((f.orderCents / f.sales30) * 100)}% of a month's sales.`, evidence_ids: [`sales:${ctx.buyerKey}:30d`] });
   else memo.push({ text: 'No PayPal sales data is available for this buyer.', evidence_ids: [has(`sales:${ctx.buyerKey}:none`) ? `sales:${ctx.buyerKey}:none` : 'policy:scorecard'] });
-  memo.push({ text: `${f.disputes || 0} disputes and ${f.invoicesTotal || 0} invoices on file with Ridgeline.`, evidence_ids: [`dsp:${ctx.buyerKey}`, `inv:none:${ctx.buyerKey}`].filter(has) });
+  const invIds = [...ctx.evidence.keys()].filter((k) => k.startsWith('inv:') && !k.startsWith('inv:none:'));
+  if (f.invoicesLate) memo.push({ text: `${f.invoicesLate} of ${f.invoicesTotal} Ridgeline invoices were paid late, after the second reminder, so payment habits are good but not perfect.`, evidence_ids: invIds.length ? invIds : [`inv:none:${ctx.buyerKey}`] });
+  memo.push({ text: `${f.disputes || 0} PayPal disputes involve this buyer.`, evidence_ids: [`dsp:${ctx.buyerKey}`].filter(has) });
   const contradictions: any[] = [];
   const codes = [...s.reasonCodes];
   const docEv = [...ctx.evidence.values()].filter((e) => e.id.startsWith('doc:'));

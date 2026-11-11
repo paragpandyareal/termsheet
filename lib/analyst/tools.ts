@@ -96,7 +96,7 @@ export async function runTool(ctx: ToolCtx, name: string, input: any): Promise<{
     case 'search_invoices': {
       const r = hasApp('supplier') ? await kitCall('supplier', 'list_invoices', { page: 1, page_size: 50 }).catch(() => null) : null;
       const items = (r?.items || []).filter((i: any) => JSON.stringify(i).includes(buyer.paypal_email || '~none~'));
-      for (const i of items) await addEv(ctx, { id: `inv:${i.detail?.invoice_number || i.id}`, source: 'Agent Toolkit list_invoices', summary: `Invoice ${i.detail?.invoice_number} status ${i.status}` });
+      for (const i of items) await addEv(ctx, { id: `inv:${i.detail?.invoice_number || i.id}`, source: 'Agent Toolkit list_invoices', summary: `Invoice ${i.detail?.invoice_number} for $${i.amount?.value ?? '?'} status ${i.status}${/reminder|late/i.test(JSON.stringify(i)) ? '. Reminders sent, paid late' : ''}` });
       ctx.facts.invoicesTotal = items.length;
       ctx.facts.invoicesLate = items.filter((i: any) => /reminder|late/i.test(JSON.stringify(i))).length;
       await addEv(ctx, { id: `inv:none:${ctx.buyerKey}`, source: 'Agent Toolkit list_invoices', summary: `${items.length} invoices to this buyer on file` });
@@ -165,7 +165,8 @@ export async function runTool(ctx: ToolCtx, name: string, input: any): Promise<{
     }
     case 'get_policy': {
       const input: ScoreInput = {
-        paidOrdersWithSupplier: ctx.facts.paidOrders ?? 0, invoicesTotal: ctx.facts.invoicesTotal ?? 0, invoicesLateOrReminded: ctx.facts.invoicesLate ?? 0,
+        // Every paid order was billed, so the late share is late invoices over all billed orders plus invoices.
+        paidOrdersWithSupplier: ctx.facts.paidOrders ?? 0, invoicesTotal: (ctx.facts.paidOrders ?? 0) + (ctx.facts.invoicesTotal ?? 0), invoicesLateOrReminded: ctx.facts.invoicesLate ?? 0,
         disputes: ctx.facts.disputes ?? 0, orderCents: ctx.facts.orderCents ?? 0, buyerSales30dCents: ctx.facts.sales30 ?? null,
         buyerAvgOrderCents: ctx.facts.avgOrderCents ?? null, supplierMedianOrderCents: 115000, repayment: ctx.facts.repayment ?? 'NONE',
       };

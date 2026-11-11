@@ -24,12 +24,12 @@ Last updated Wednesday 11 Nov 2026, 14.15 Sydney (03.15 UTC). Deadline Thursday 
 Script `scripts/seed/seed.mjs`. Log in `scripts/seed/SEED_LOG.md`. Public order and capture IDs are in `scripts/seed/seeded-orders.json`, which is committed. The saved account IDs are in `scripts/seed/.seed-state.json`, which is git ignored.
 - **Larkspur.** 14 Ridgeline orders ($16,100) and 40 café sales ($18,400). Done.
 - **Second Shot.** 9 Ridgeline orders ($10,350). Done. Its funder saved account is done, and it is used for the Flow C open order.
-- **Second Shot café sales: not seeded yet.** The Second Shot app still returns 403 on setup tokens (stale token permissions, the same as S1 this morning). Retry with `node --env-file=.env scripts/seed/seed.mjs link secondshot walkin`, approve as the walk in account, then run `finish secondshot walkin` and `sales secondshot`.
+- **Second Shot café sales.** 30 sales ($11,000). Done at 14.52, after the Second Shot app permissions caught up.
+- **Invoices** (`scripts/seed/invoices.mjs`). 2 for Larkspur ($840, $1,265) and 1 for Second Shot ($970). Each was sent, reminded twice, then recorded as paid late (PRD fallback, so nobody pays by hand). The PB factor counts late invoices over all billed orders plus invoices, so Larkspur is 2 of 16 and scores 80, tier A.
 - **Accounts.** Walk in is `walkinbuyer.termsheet@example.com` (Personal). Second Shot is `secondshot.termsheet@example.com` (Business), with REST app "Second Shot Cafe".
 
 ## 3. Not done yet
 - Check that a real webhook event arrives and verifies on the hosted app (Funder ledger, webhook log).
-- Larkspur invoices with reminders (factor PB). They currently score "none on file".
 - P1 and P2 items, Devpost text, video script, statistics checks, three rehearsals.
 - Visual polish.
 
