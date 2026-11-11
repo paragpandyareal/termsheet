@@ -108,7 +108,7 @@ export async function chargeInstalment(insId: string) {
     await sql("UPDATE instalment SET status='PAID', updated_at=now() WHERE id=$1", [insId]);
     await money('funder', 'in', ins.amount_cents, `Repayment ${order.order_no}`, r.captureId, r.debugId);
     await money('buyer', 'out', ins.amount_cents, `Charged for ${order.order_no}`, r.captureId, r.debugId);
-    const left = await one("SELECT count(*)::int AS n FROM instalment WHERE receivable_id=$1 AND status<>'PAID'", [rcv.id]);
+    const left = await one("SELECT count(*)::int AS n FROM instalment WHERE receivable_id=$1 AND status='SCHEDULED'", [rcv.id]);
     if (!left?.n) {
       const wasClean = rcv.status === 'OPEN';
       await sql("UPDATE receivable SET status='PAID', updated_at=now() WHERE id=$1", [rcv.id]);
@@ -158,7 +158,8 @@ export async function acceptPlan(restructureId: string) {
   if (!rs || rs.status !== 'PROPOSED') throw new Error('No open plan.');
   const rcv = await one('SELECT * FROM receivable WHERE id=$1', [rs.receivable_id]);
   const orig = typeof rcv.due_date === 'string' ? rcv.due_date : rcv.due_date.toISOString().slice(0, 10);
-  await sql("DELETE FROM instalment WHERE receivable_id=$1 AND status IN ('FAILED','SCHEDULED')", [rcv.id]);
+  // Keep FAILED instalments as history (their charge attempts show the decline). Replace only what is still scheduled.
+  await sql("DELETE FROM instalment WHERE receivable_id=$1 AND status='SCHEDULED'", [rcv.id]);
   const ids: string[] = [];
   const plan = rs.proposal_json.instalments as { amount_cents: number; due_in_days_from_original: number }[];
   const t = await today();
