@@ -204,29 +204,19 @@ async function mockUnderwrite(ctx: ToolCtx) {
   const invIds = [...ctx.evidence.keys()].filter((k) => k.startsWith('inv:') && !k.startsWith('inv:summary:'));
   if (f.invoicesLate) memo.push({ text: `${f.invoicesLate} of ${(f.paidOrders || 0) + (f.invoicesTotal || 0)} Ridgeline bills were paid late, after the second reminder, so payment habits are good but not perfect.`, evidence_ids: invIds.length ? invIds : [`inv:summary:${ctx.buyerKey}`] });
   memo.push({ text: `${f.disputes || 0} PayPal disputes involve this buyer.`, evidence_ids: [`dsp:${ctx.buyerKey}`].filter(has) });
-  const contradictions: any[] = [];
-  const codes = [...s.reasonCodes];
-  const docEv = [...ctx.evidence.values()].filter((e) => e.id.startsWith('doc:'));
-  const yr = docEv.find((e) => /(founded|established|since|started)[^.]*?(\d{4})/i.test(e.summary));
-  const form = await one('SELECT a.form_json, b.stated_founded_year FROM application a JOIN buyer b ON b.id=a.buyer_id WHERE a.order_id=$1 ORDER BY a.created_at DESC LIMIT 1', [ctx.orderId]);
-  const stated = Number(form?.form_json?.foundedYear || form?.stated_founded_year);
-  const yrVal = yr && Number(yr.summary.match(/(founded|established|since|started)[^.]*?(\d{4})/i)![2]);
-  if (yr && stated && yrVal !== stated) { contradictions.push({ text: `Reference letter says ${yrVal}, the form says founded ${stated}.`, evidence_ids: [yr.id, 'app:foundedYear'] }); codes.push('VR06'); }
-  const order = ctx.orderId ? await one('SELECT ship_to FROM orders WHERE id=$1', [ctx.orderId]) : null;
-  const orderEv = [...ctx.evidence.keys()].find((k) => k.startsWith('order:'));
-  if (/freight|forward|warehouse|logistics/i.test(order?.ship_to || '') && orderEv) { contradictions.push({ text: 'Goods ship to a logistics company for onward shipping, which does not fit a single café.', evidence_ids: [orderEv, 'app:businessType'] }); codes.push('OB07'); }
-  const inj = docEv.find((e) => /ignore|disregard|approve (a|the)? ?\$|automated reviewer|instructions|pre-approved|no further review/i.test(e.summary));
-  if (inj) memo.push({ text: 'The reference letter tries to steer the review (it claims the account is already approved). That claim cannot be checked, so it was treated as evidence and ignored.', evidence_ids: [inj.id] });
-  // Contradictions go to a person, the same as the live AI does. Only a scorecard DECLINE is an outright decline.
-  if (contradictions.length) return { outcome: 'REFER', limit_cents: 0, term_days: 0, deposit_pct: 0, factor_codes: [...new Set(codes)], summary: 'Sent to a human reviewer: the documents and the form do not agree, so terms cannot be offered yet.', tightening_reason: 'Contradictions the scorecard cannot see.', would_change: 'Documents that match the form and a delivery address at the café.', memo, contradictions, confidence: 'MEDIUM' };
-  const decline = c.outcome === 'DECLINE';
-  if (!decline && (c.outcome !== 'APPROVE' || c.limitCents < (f.orderCents || 0))) return { outcome: 'REFER', limit_cents: 0, term_days: 0, deposit_pct: 0, factor_codes: [...new Set(codes)], summary: 'Sent to a human reviewer: the scorecard does not support terms for this order on its own.', would_change: 'More trading history with Ridgeline.', memo, contradictions, confidence: 'MEDIUM' };
-  return {
-    outcome: decline ? 'DECLINE' : c.outcome, limit_cents: decline ? 0 : c.limitCents, term_days: decline ? 0 : c.termDays, deposit_pct: 0,
-    factor_codes: [...new Set(codes)], summary: decline ? 'Declined: the file has gaps or contradictions that a 30 day term cannot carry.' : `Approved for Net ${c.termDays} up to ${usd(c.limitCents)}.`,
-    would_change: decline ? 'A verifiable trading history with Ridgeline and café-style PayPal sales.' : 'A failed repayment or a sharp drop in PayPal sales.',
-    memo, contradictions, confidence: 'MEDIUM',
-  };
+  const docIds = [...ctx.evidence.keys()].filter((k) => k.startsWith('doc:'));
+  if (docIds.length) memo.push({ text: 'This file includes an uploaded document. The rule-based writer does not judge documents, so a person must read it.', evidence_ids: docIds.slice(0, 4) });
+  return { ...fallbackOutcome(c, f.orderCents || 0, docIds.length), factor_codes: [...new Set(s.reasonCodes as string[])], memo, contradictions: [], confidence: 'MEDIUM' };
+}
+
+// The rule-based writer's outcome. Deliberately simple and general: it never looks for specific red flags.
+// Free text (letters, documents) is the AI's job, so without the AI any file with documents goes to a person.
+export function fallbackOutcome(c: { outcome: string; limitCents: number; termDays: number }, orderCents: number, documents: number) {
+  const refer = (summary: string, would_change: string, tightening_reason?: string) => ({ outcome: 'REFER', limit_cents: 0, term_days: 0, deposit_pct: 0, summary, would_change, ...(tightening_reason ? { tightening_reason } : {}) });
+  if (c.outcome === 'DECLINE') return { outcome: 'DECLINE', limit_cents: 0, term_days: 0, deposit_pct: 0, summary: 'Declined: the PayPal records do not support a 30 day term yet.', would_change: 'A longer trading history with Ridgeline and steady PayPal sales.' };
+  if (documents > 0) return refer('Sent to a human reviewer: this file includes documents, and only the AI analyst or a person reads documents.', 'A person reading the documents, or the AI analyst being available again.', 'Documents need reading, and the AI analyst was not available.');
+  if (c.outcome !== 'APPROVE' || c.limitCents < orderCents) return refer('Sent to a human reviewer: the scorecard does not support terms for this order on its own.', 'More trading history with Ridgeline.');
+  return { outcome: 'APPROVE', limit_cents: c.limitCents, term_days: c.termDays, deposit_pct: 0, summary: `Approved for Net ${c.termDays} up to ${usd(c.limitCents)}.`, would_change: 'A failed repayment or a sharp drop in PayPal sales.' };
 }
 async function mockPlan(ctx: ToolCtx, balance: number) {
   for (const t of ['get_thread', 'get_buyer_sales_summary', 'get_repayment_record', 'get_policy']) await callTool(ctx, t, {});

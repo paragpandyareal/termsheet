@@ -1,7 +1,7 @@
 // The core safety claim: code, not the AI, decides what is allowed.
 // These tests feed hand-made AI outputs to the same validators the live loop uses.
 import { describe, it, expect } from 'vitest';
-import { validateDecision, validatePlan } from './run';
+import { validateDecision, validatePlan, fallbackOutcome } from './run';
 import type { ToolCtx } from './tools';
 
 const ev = (ids: string[]) => new Map(ids.map((id) => [id, { id, source: 'test', summary: id } as any]));
@@ -105,5 +105,28 @@ describe('validatePlan', () => {
   it('the final payment cannot be later than 15 days after the due date', () => {
     const p = { ...plan(), instalments: [{ amount_cents: 50000, due_in_days_from_original: 0 }, { amount_cents: 50000, due_in_days_from_original: 30 }] };
     expect(validatePlan(p, ctx(), 100000).length).toBeGreaterThan(0);
+  });
+});
+
+// Without the AI, the rule-based writer must not pretend to read documents. It sends any file with documents to a person.
+describe('fallbackOutcome: no AI', () => {
+  const A = { outcome: 'APPROVE', limitCents: 250000, termDays: 30 };
+  it('refers any file with an uploaded document to a person, whatever the document says', () => {
+    expect(fallbackOutcome(A, 238750, 1).outcome).toBe('REFER');
+  });
+  it('approves a clean file with no documents up to the scorecard ceiling', () => {
+    const o = fallbackOutcome(A, 200000, 0);
+    expect(o.outcome).toBe('APPROVE');
+    expect(o.limit_cents).toBe(250000);
+  });
+  it('refers when the ceiling does not cover the order', () => {
+    expect(fallbackOutcome(A, 300000, 0).outcome).toBe('REFER');
+  });
+  it('declines when the scorecard declines, documents or not', () => {
+    expect(fallbackOutcome({ outcome: 'DECLINE', limitCents: 0, termDays: 0 }, 200000, 1).outcome).toBe('DECLINE');
+  });
+  it('its output passes the same validator as the AI', () => {
+    const o = { ...fallbackOutcome(A, 200000, 0), factor_codes: [], confidence: 'MEDIUM', contradictions: [], memo: [{ text: '14 orders paid in full.', evidence_ids: ['txn:1'] }] };
+    expect(validateDecision(o, ctx())).toEqual([]);
   });
 });
