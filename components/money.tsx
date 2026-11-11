@@ -130,15 +130,15 @@ export function Nav() {
   const path = usePathname();
   const links = [['/', 'Home'], ['/shop', 'Checkout'], ['/buyer/buyer_secondshot', 'Café phone'], ['/funder', 'Funder ledger']];
   return (
-    <header className="bg-white border-b relative">
+    <header className="border-b relative" style={{ background: 'var(--subtle)' }}>
       <nav className="max-w-6xl mx-auto px-4 h-14 flex items-center gap-4 sm:gap-8 overflow-x-auto whitespace-nowrap" aria-label="Main">
         <Link href="/" className="font-extrabold text-lg" style={{ color: 'var(--navy)' }}>Term<span style={{ color: 'var(--blue)' }}>Sheet</span></Link>
         {links.map(([h, t]) => {
           const active = h === '/' ? path === '/' : path.startsWith(h.split('/').slice(0, 2).join('/'));
-          return <Link key={h} href={h} className="text-[15px] font-semibold h-14 inline-flex items-center border-b-2" style={{ color: active ? 'var(--blue)' : 'var(--muted)', borderColor: active ? 'var(--blue)' : 'transparent' }}>{t}</Link>;
+          return <Link key={h} href={h} className="text-[15px] font-semibold h-11 px-3 rounded-full inline-flex items-center" style={{ color: active ? 'var(--navy)' : 'var(--muted)', background: active ? 'var(--nav-active)' : 'transparent' }}>{t}</Link>;
         })}
       </nav>
-      <div className="pointer-events-none absolute right-0 top-0 h-14 w-8 sm:hidden" style={{ background: 'linear-gradient(90deg, rgba(255,255,255,0), #fff)' }} aria-hidden />
+      <div className="pointer-events-none absolute right-0 top-0 h-14 w-8 sm:hidden" style={{ background: 'linear-gradient(90deg, rgba(245,247,250,0), #F5F7FA)' }} aria-hidden />
     </header>
   );
 }

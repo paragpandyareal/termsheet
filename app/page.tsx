@@ -11,15 +11,15 @@ const FLOW = [
 ];
 
 const STORIES = [
-  { n: 1, t: 'A café gets 30 days', d: 'Larkspur orders $2,000 of beans, the AI approves it in seconds, and the roaster is paid today.', h: '/shop', time: '2 min', start: true },
-  { n: 2, t: 'A missed payment gets fixed', d: 'The day 30 charge is declined, the café explains, and the AI checks the story against real sales.', h: '/buyer/buyer_secondshot', time: '2 min' },
-  { n: 3, t: 'AI catches what rules miss', d: 'The rules alone would approve Northgate. The AI spots a letter that contradicts the form and stops it for a human check.', h: '/shop?buyer=northgate', time: '1 min' },
+  { n: 1, accent: 'blue', t: 'A café gets 30 days', d: 'Larkspur orders $2,000 of beans, the AI approves it in seconds, and the roaster is paid today.', h: '/shop', time: '2 min', start: true },
+  { n: 2, accent: 'orange', t: 'A missed payment gets fixed', d: 'The day 30 charge is declined, the café explains, and the AI checks the story against real sales.', h: '/buyer/buyer_secondshot', time: '2 min' },
+  { n: 3, accent: 'purple', t: 'AI catches what rules miss', d: 'The rules alone would approve Northgate. The AI spots a letter that contradicts the form and stops it for a human check.', h: '/shop?buyer=northgate', time: '1 min' },
 ];
 
 const TRUST = [
-  { t: 'Real PayPal sandbox money', d: 'Every dollar on screen is a real sandbox Payout, saved account or charge, with its PayPal ID.' },
-  { t: 'Every AI sentence has a receipt', d: 'Each line of the credit memo links to the PayPal record it came from. Code rejects anything uncited.' },
-  { t: 'The AI can only tighten', d: 'A plain scorecard sets the ceiling. The AI may lower a limit or decline, never raise it.' },
+  { mark: 'var(--good-mark)', t: 'Real PayPal sandbox money', d: 'Every dollar on screen is a real sandbox Payout, saved account or charge, with its PayPal ID.' },
+  { mark: 'var(--info-mark)', t: 'Every AI sentence is sourced', d: 'Each line of the credit memo links to the PayPal record it came from. Code rejects anything uncited.' },
+  { mark: 'var(--purple-mark)', t: 'The AI can only tighten', d: 'A plain scorecard sets the ceiling. The AI may lower a limit or decline, never raise it.' },
 ];
 
 export default function Home() {
@@ -65,9 +65,9 @@ export default function Home() {
           <ol className="grid md:grid-cols-3 gap-4 mt-3">
             {STORIES.map((x) => (
               <li key={x.n}>
-                <Link href={x.h} className="card lift p-4 sm:p-8 flex flex-col h-full" style={x.start ? { borderColor: 'var(--blue)', borderWidth: 2 } : undefined}>
+                <Link href={x.h} className={`card lift p-4 sm:p-8 flex flex-col h-full accent-${x.accent}`}>
                   <div className="flex items-center gap-3">
-                    <span className="step">{x.n}</span>
+                    <span className={`step step-${x.accent}`}>{x.n}</span>
                     {x.start ? <span className="chip chip-blue">Start here</span> : null}
                     <span className="small muted ml-auto">{x.time}</span>
                   </div>
@@ -85,8 +85,8 @@ export default function Home() {
           <div className="t-label" id="trust">Why trust it</div>
           <div className="grid md:grid-cols-3 gap-4 mt-3">
             {TRUST.map((x) => (
-              <div key={x.t} className="card-flat p-4 sm:p-8">
-                <div className="t-h3">{x.t}</div>
+              <div key={x.t} className="p-4 sm:p-8 rounded-2xl" style={{ background: 'var(--subtle)' }}>
+                <div className="flex items-center gap-3"><span className="mark" style={{ background: x.mark }} /><div className="t-h3">{x.t}</div></div>
                 <p className="small muted mt-2">{x.d}</p>
               </div>
             ))}

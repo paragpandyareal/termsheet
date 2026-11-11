@@ -3,17 +3,23 @@
 /* TermSheet design tokens. PayPal aligned palette (no logo, no yellow outside the real PayPal button). Light only.
    Spacing scale is strictly 4, 8, 12, 16, 32 px (Tailwind 1, 2, 3, 4, 8). */
 :root {
-  --bg: #F5F7FA; --card: #FFFFFF; --line: #DDE3EA; --line-2: #EEF2F6;
+  /* PayPal colour guide supplied by the entrant (11 Nov). White, navy and blue carry the interface; accents only on feature cards. */
+  --paypal-navy: #001C64; --paypal-blue: #0070E0;
+  --paypal-orange: #FF9100; --paypal-yellow: #FFC43A; --paypal-green: #6FC400; --paypal-sky: #5BBBFC; --paypal-purple: #B976FF; --paypal-deep-orange: #E85E00;
+  --bg: #FFFFFF; --subtle: #F5F7FA; --surface: #FAF8F3; --surface-warm: #F1EDE8;
+  --card: #FFFFFF; --line: #E6E8EC; --line-2: #F1F2F4;
   --navy: #001C64; --navy-2: #003087;
-  --blue: #0070E0; --blue-hover: #005EA6; --blue-soft: #E6F0FD;
-  --ink: #1A1F24; --muted: #5B6670;
-  --good: #0A7D2C; --good-soft: #E7F6EC;
-  --bad: #D20000; --bad-soft: #FDECEC;
-  --warn: #B45309; --warn-soft: #FFF4E5;
-  --chip: #F1F3F5; --chip-ink: #3D4752;
+  --blue: #0070E0; --blue-hover: #0655B4; --blue-soft: #EAF3FD; --nav-active: #B7D4F8;
+  --ink: #001C64; --muted: #6B7280;
+  /* Status: brand colours for marks and fills, darker shades for any text (4.5:1 on white). */
+  --good: #2E7D0F; --good-mark: #6FC400; --good-soft: #EEF8E3;
+  --bad: #B54400; --bad-mark: #E85E00; --bad-soft: #FDEEE5;
+  --warn: #A65C00; --warn-mark: #FF9100; --warn-soft: #FFF3E3;
+  --info-mark: #5BBBFC; --purple-mark: #B976FF; --purple-soft: #F4EBFF;
+  --chip: #F5F7FA; --chip-ink: #3D4752;
   --accent: var(--blue); --accent-soft: var(--blue-soft);
-  --shadow: 0 1px 2px rgba(0, 28, 100, .05), 0 8px 24px rgba(0, 28, 100, .06);
-  --shadow-hero: 0 2px 4px rgba(0, 28, 100, .06), 0 16px 32px rgba(0, 28, 100, .12);
+  --shadow: 0 1px 2px rgba(0, 28, 100, .04), 0 4px 12px rgba(0, 28, 100, .05);
+  --shadow-hero: 0 2px 4px rgba(0, 28, 100, .05), 0 12px 28px rgba(0, 28, 100, .10);
   --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px; --s8: 32px;
   color-scheme: light;
 }
@@ -41,8 +47,8 @@ h1, h2, h3 { color: var(--navy); letter-spacing: -0.02em; line-height: 1.15; }
 .btn:hover { background: var(--blue-hover); }
 .btn:active { transform: scale(.98); }
 .btn:disabled { opacity: .55; cursor: default; transform: none; }
-.btn-ghost { background: #fff; color: var(--blue); border: 1.5px solid var(--blue); }
-.btn-ghost:hover { background: var(--blue-soft); }
+.btn-ghost { background: #fff; color: var(--navy); border: 1.5px solid var(--navy); }
+.btn-ghost:hover { background: var(--subtle); }
 .btn-white { background: #fff; color: var(--navy); }
 .btn-white:hover { background: var(--blue-soft); }
 .btn-sm { height: 44px; padding: 0 16px; font-size: 14px; }
@@ -62,8 +68,8 @@ h1, h2, h3 { color: var(--navy); letter-spacing: -0.02em; line-height: 1.15; }
 
 .field { width: 100%; height: 44px; padding: 0 12px; margin-top: 4px; border: 1px solid var(--line); border-radius: 8px; background: #fff; font-size: 16px; }
 textarea.field { height: auto; padding: 12px; }
-.callout-bad { background: var(--bad-soft); border-left: 4px solid var(--bad); padding: 12px 16px; border-radius: 8px; }
-.callout-good { background: var(--good-soft); border-left: 4px solid var(--good); padding: 12px 16px; border-radius: 8px; }
+.callout-bad { background: var(--bad-soft); border-left: 4px solid var(--bad-mark); padding: 12px 16px; border-radius: 8px; }
+.callout-good { background: var(--good-soft); border-left: 4px solid var(--good-mark); padding: 12px 16px; border-radius: 8px; }
 .callout-blue { background: var(--blue-soft); border-left: 4px solid var(--blue); padding: 12px 16px; border-radius: 8px; color: var(--navy); }
 .mono { font-family: var(--font-mono), ui-monospace, Consolas, monospace; font-size: 12px; }
 .step { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 999px; background: var(--blue); color: #fff; font-weight: 800; font-size: 14px; flex-shrink: 0; }
@@ -85,3 +91,8 @@ textarea.field { height: auto; padding: 12px; }
 @keyframes step-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 .step-in { animation: step-in .4s ease-out both; }
 @media (prefers-reduced-motion: reduce) { .step-in { animation: none; } }
+
+/* Feature accents (cards only). */
+.accent-blue { border-top: 4px solid var(--paypal-blue); } .accent-orange { border-top: 4px solid var(--paypal-orange); } .accent-purple { border-top: 4px solid var(--paypal-purple); }
+.step-blue { background: var(--paypal-blue); } .step-orange { background: var(--paypal-orange); color: #001C64; } .step-purple { background: var(--paypal-purple); color: #001C64; }
+.mark { display: inline-block; width: 12px; height: 12px; border-radius: 4px; flex-shrink: 0; }
