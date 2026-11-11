@@ -23,7 +23,7 @@ Three parties: the **supplier** (Ridgeline Roasters), the **buyer** (the café) 
 
 ## How we built it
 
-**Real money movement in the PayPal sandbox.** Every dollar on screen is a real sandbox call, with its PayPal ID in the funder ledger.
+**Real money movement in the PayPal sandbox.** Every dollar on screen is a real sandbox call, with its PayPal ID in the credit team console.
 
 | Step | PayPal API |
 |---|---|
@@ -48,7 +48,7 @@ Three parties: the **supplier** (Ridgeline Roasters), the **buyer** (the café) 
 **Proof it works:**
 - **22 live AI runs** on the hosted demo: the healthy café was approved 10 out of 10. The suspicious buyer was stopped 12 out of 12, even though the rules alone would approve it. In every one of those 12 runs the AI named all three warning signs.
 - **A scorecard backtest** on 100 synthetic buyers shows the plain rules approve all 25 whose only warning sign is in a document or the shipping address. That is the gap the AI covers.
-- **28 unit tests**, 20 of which feed bad AI outputs (invented evidence, a raised limit, a plan that does not add up) to the validators and confirm each is rejected.
+- **35 unit tests**, 20 of which feed bad AI outputs (invented evidence, a raised limit, a plan that does not add up) to the validators and confirm each is rejected.
 
 Stack: Next.js, TypeScript, Postgres, Render.
 
@@ -56,11 +56,15 @@ Stack: Next.js, TypeScript, Postgres, Render.
 
 - **Checkout:** a Net 30 card under the PayPal buttons. The café applies, watches the analyst's tool calls stream in live, then reads a short memo. Clicking a citation jumps to the exact evidence row.
 - **Café phone:** what the café sees. What it owes and when, the failed-charge message, a free-text reply box, and the plan to accept.
-- **Funder ledger:** every PayPal order ID, capture ID, Payout batch and debug ID, with a money strip showing all three parties.
+- **Roaster view:** paid today by PayPal Payout, $0 waiting on cafés, the 3% fee and the Payout status.
+- **Credit team console:** every PayPal order ID, capture ID, Payout batch and debug ID, with the fee earned and the funder's position.
+- **Three labelled zones on every page:** what the customer sees, what PayPal's credit team sees, and demo controls for judges only.
 - **Recovery is a designed path, not an error screen.** A declined charge freezes the line, cuts the limit, opens a conversation and ends in a real recovery charge.
 - **Honesty labels everywhere:** seeded history, the app clock, the simulated decline and any AI fallback are labelled on screen.
 
 ## Potential impact
+
+**What PayPal earns.** A 3% fee on every Net 30 order, about 1.05% contribution after funding, collection, servicing and expected losses: roughly $30M in fees and $10.5M in contribution per $1B of wholesale volume (all rates are assumptions). The 3% replaces PayPal's normal processing fee on that order rather than adding to it. It is also a flywheel: the analyst reads the café's own PayPal sales, so cafés that sell through PayPal score higher and get bigger limits, which gives every café that wants terms a reason to become a PayPal merchant. Each AI decision costs 8 to 11 cents at list price, under 0.2% of the fee.
 
 **For PayPal, the prize is wholesale volume.** Orders between small businesses, like a café buying beans, are usually paid by bank transfer or cheque against an invoice, outside PayPal. Net 30 at checkout gives those orders a reason to move onto PayPal, and PayPal already holds the sales data that makes lending here safer.
 
@@ -79,7 +83,11 @@ Per-order economics for a $2,000 order (all rates are assumptions):
 
 Break-even is at about a 2% loss rate. Three levers keep losses below that: small limits that grow with on-time payment, an AI that can only tighten the rules, and collection from the same PayPal account the café's sales land in.
 
+**Is 1% realistic?** PayPal's own merchant loan book is a sense check. Its Q2 2026 10-Q shows a $1.9B pool with $84M of gross charge-offs and $9M of recoveries in the first half of 2026, about 8% a year net. Spread over 30 days, that is about 0.65% to 0.73% per order, below the 1% we assume. That book is unsecured working capital to sellers, not 30-day credit for stock, so it is a sense check, not a forecast.
+
 ## What makes it new
+
+**"Doesn't this exist already?"** The closest thing is a wholesale marketplace such as Faire, which offers approved retailers net 60 and pays the brand up front. That works inside the marketplace: both sides join it and order through it. TermSheet needs no marketplace. It sits under the PayPal buttons on the supplier's own checkout, the café applies with the PayPal login it already has, and the decision uses data only PayPal holds. PayPal's existing credit products serve shoppers (Pay in 4, Pay Monthly, PayPal Credit) and sellers (PayPal Working Capital, PayPal Business Loan). None serves the business that is buying.
 
 - **Credit for the business buyer, at checkout.** PayPal Pay in 4 lends to shoppers and PayPal Working Capital lends to sellers. TermSheet is credit for the business that is buying, offered at the supplier's checkout and repaid from the buyer's own PayPal account.
 - **Underwriting from both sides of the PayPal network:** the supplier's trade history with the café, plus the café's own sales.

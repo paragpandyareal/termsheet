@@ -36,7 +36,7 @@ There are three parties: the **supplier** (Ridgeline), the **buyer** (the café)
 
 ## Technological Implementation
 
-**Real money movement in the PayPal sandbox.** Nothing on screen is a mockup. Every dollar is a real sandbox call with its PayPal ID shown in the funder ledger.
+**Real money movement in the PayPal sandbox.** Nothing on screen is a mockup. Every dollar is a real sandbox call with its PayPal ID shown in the credit team console.
 
 | Step | PayPal API |
 |---|---|
@@ -65,7 +65,7 @@ Six sandbox accounts (funder, supplier, three cafés and a walk-in shopper), wit
 - **22 live AI runs** on the hosted demo (`docs/AI_EVAL.md`, with every memo in `docs/ai-eval-runs.json`). Larkspur approved 10 times out of 10. Northgate stopped 12 times out of 12, even though the rules alone would approve it. Median 18 seconds per decision.
 - **What the AI costs against what it earns.** About 14k tokens in and 1.3k out per decision: 8 to 11 cents at Claude Opus 5.5 list price, under 0.2% of the $60 fee. It guards the expected-loss line (1% of each order), so one stopped bad $2,000 approval pays for about 18,000 AI decisions.
 - **Scorecard backtest** on 100 synthetic buyers (`docs/BACKTEST.md`, free to rerun). The plain scorecard approves all 25 buyers whose only warning sign is in a document or the shipping address. That is the gap the AI covers.
-- **33 unit tests.** 20 of them feed hand-made bad AI outputs to the validators (invented evidence, uncited sentences, a raised limit, a plan that does not add up) and confirm each is rejected. 5 more check that without the AI, any file with documents goes to a person.
+- **35 unit tests.** 20 of them feed hand-made bad AI outputs to the validators (invented evidence, uncited sentences, a raised limit, a plan that does not add up) and confirm each is rejected. The rest check the scorecard, the rule-based fallback (without the AI, any file with documents goes to a person) and the AI's cited note of what it checked beyond the rules.
 
 Stack: Next.js, TypeScript, Postgres, hosted on Render.
 
@@ -73,15 +73,21 @@ Stack: Next.js, TypeScript, Postgres, hosted on Render.
 
 TermSheet is a complete product with three sides, not a single API call.
 
-- **Checkout (the supplier's shop).** A Net 30 card sits under the PayPal buttons. The café applies, watches the analyst's tool calls stream in live, then reads a short memo. Clicking a citation number jumps to the exact evidence row.
-- **Café phone.** A phone-sized view of what the café sees: what it owes, when, the failed-charge message, a free-text reply box and the plan to accept.
-- **Funder ledger.** Every PayPal order ID, capture ID, Payout batch and debug ID, with the money strip showing who was paid what.
+- **Product and scaffolding never mix.** Every page has three labelled zones: **A, what the customer sees**, inside a device frame with a desktop and phone toggle; **B, what PayPal's credit team sees**: the AI's tool trace, the cited credit memo, the evidence, the scorecard and every PayPal ID; and **C, demo controls for judges only** (app clock, reset, story bar, sandbox login), drawn with a dashed border so it never reads as product.
+- **Checkout (the supplier's shop).** A Net 30 card sits under the PayPal buttons. The café applies and gets a decision in plain words. Clicking a citation number in the credit team's memo jumps to the exact evidence row.
+- **Café view.** What the café sees on its phone: what it owes and when, the failed-charge message, a free-text reply box and the plan to accept.
+- **Roaster view.** What Marisol sees: paid today by PayPal Payout, $0 waiting on cafés, the 3% fee, and the Payout status.
+- **Credit team console.** Every PayPal order ID, capture ID, Payout batch and debug ID, with a money strip showing the fee earned and the funder's position: cash out, cash in, still owed.
+- **A home page that gets judges to the demo fast.** The problem, the solution and what PayPal earns in one screen, the three live stories next, and the detail behind each answer one click away.
+- **Accessible.** Every page passes automated WCAG 2.2 AA checks (axe-core) at desktop and phone width, and works by keyboard.
 - **The recovery path is designed, not an error screen.** A declined charge freezes the line, cuts the limit, opens a conversation and ends in a real recovery charge.
 - **Honesty labels everywhere.** Seeded history, the app clock, the simulated decline and the AI fallback are each labelled on screen.
 - **A story bar** on every page shows where the judge is in the three stories, and one money format and one date format are used throughout.
 - Built to PayPal's colour guide, checked at desktop and phone widths.
 
 ## Potential Impact
+
+**What PayPal earns.** A 3% fee on every Net 30 order, about 1.05% contribution after funding, collection, servicing and expected losses: roughly $30M in fees and $10.5M in contribution per $1B of wholesale volume (all rates are assumptions). The 3% replaces PayPal's normal processing fee on that order rather than adding to it. And it is a flywheel: the analyst reads the café's own PayPal sales, so cafés that sell through PayPal score higher and get bigger limits, which gives every café that wants terms a reason to become a PayPal merchant.
 
 **For PayPal, the prize is wholesale volume.** Orders between small businesses, like a café buying beans, are usually paid by bank transfer or cheque against an invoice, outside PayPal. Net 30 at checkout gives those orders a reason to move onto PayPal. PayPal is also in an unusual position to lend safely here, because it sees both sides: the supplier's trade history with the buyer, and the buyer's own sales landing in its PayPal account.
 
@@ -105,9 +111,13 @@ TermSheet is a complete product with three sides, not a single API call.
 | 2.05% | 0 (break even) |
 | 3.0% | -0.95% |
 
+**Is 1% a realistic loss rate?** PayPal's own merchant loan book is a useful sense check. Its Q2 2026 10-Q shows a $1.9B pool with $84M of gross charge-offs and $9M of recoveries in the first half of 2026: about 8% a year net. Spread over 30 days, that is about 0.65% to 0.73% per order, below the 1% per order we assume. That book is unsecured working capital to sellers, not 30-day credit for stock, so it is a sense check, not a forecast.
+
 The idea works only if losses stay near 2% or lower. Three levers keep them there: small limits that grow with on-time payment, an AI that can only tighten the scorecard, and collection from the same PayPal account the café's sales land in. A pilot would stop or reprice if losses passed 2% for two cycles.
 
 ## Innovation/Idea
+
+**"Doesn't this exist already?"** The closest thing is a wholesale marketplace such as Faire, which offers approved retailers net 60 and pays the brand up front. That works inside the marketplace: both sides join it and order through it. TermSheet needs no marketplace. It sits under the PayPal buttons on the supplier's own checkout, the café applies with the PayPal login it already has, and the decision uses data only PayPal holds: the supplier's trade history with the café and the café's own sales. PayPal's existing credit products serve shoppers (Pay in 4, Pay Monthly, PayPal Credit) and sellers (PayPal Working Capital, PayPal Business Loan). None serves the business that is buying.
 
 - **A saved PayPal account used as a repayment method.** The café saves its account once with no purchase, and the funder collects on day 30 with the café not present.
 - **Underwriting from both sides of the PayPal network.** The supplier's trade history with the café, read through the PayPal Agent Toolkit, plus the café's own PayPal sales, read with its own app.

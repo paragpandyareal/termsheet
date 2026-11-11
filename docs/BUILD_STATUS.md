@@ -1,6 +1,17 @@
 # Build status. Read this first
 
-Last updated Wednesday 11 Nov 2026, 17.30 Sydney (06.30 UTC).
+Last updated Thursday 12 Nov 2026, 10.15 Sydney.
+
+## 0. Review changes on 12 Nov (all pushed to main)
+- Every page split into three labelled zones: A what the customer sees (device frame, desktop/phone toggle), B what PayPal's credit team sees, C demo controls. Components in `components/zones.tsx`.
+- New `/supplier` page (Ridgeline's view) and `/api/supplier`. "Funder ledger" renamed "Credit team".
+- Money strip shows the fee earned and the funder's position (cash out, cash in, still owed), computed over every Net 30 order in `lib/ledger/state.ts`.
+- Home page: hero with three answers, then "See it work" marked live in the PayPal sandbox, then the detail in collapsed sections.
+- Second Shot is a true Net 30: ordered yesterday (app date), due in 29 days; "Jump to next due date" moves about a month and never charges a Larkspur order approved today.
+- Fixes: one analyst stream per run (no duplicate tool rows), "Payout sent, PayPal processing", "No PayPal sales to read", checkout headline "Net 30. Ridgeline is paid today."
+- Rule-based fallback sends any file with documents to a person (no Northgate-specific regexes). The AI adds a cited `beyond_rules` note.
+- Every page passes axe-core WCAG 2.2 AA at 1440 and 390 px. 35 unit tests.
+- Still to do: new video (Stage 6), then the YouTube link in `docs/DEVPOST.md`.
 **Deadline: Thursday 12 Nov 2026, 12:00pm Pacific (20.00 UTC). That is Friday 13 Nov, 7.00am Sydney and Melbourne.**
 
 ## 1. Where things stand
