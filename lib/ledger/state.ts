@@ -15,11 +15,20 @@ export async function getState() {
     sql('SELECT * FROM money_event ORDER BY created_at DESC'),
     sql('SELECT * FROM limit_change ORDER BY created_at DESC'),
   ]);
-  const totals = { supplier: 0, funder: 0, buyer: 0 } as Record<string, number>;
   const lastId: Record<string, string | null> = {};
-  for (const m of [...moneyEvents].reverse()) { totals[m.party] += m.direction === 'in' ? m.amount_cents : -m.amount_cents; lastId[m.party] = m.paypal_id; }
+  for (const m of [...moneyEvents].reverse()) lastId[m.party] = m.paypal_id;
+  // The funder's position over every Net 30 order in the demo, including Second Shot's order funded 30 days earlier,
+  // so every tile agrees: cash out (Payouts), cash in (charges), still owed by cafés, and the fee earned.
+  const sent = payouts.filter((p: any) => p.batch_id && !['FAILED', 'DENIED'].includes(p.status));
+  const paidOut = sent.reduce((a: number, p: any) => a + (p.amount_cents || 0), 0);
+  const fees = sent.reduce((a: number, p: any) => a + (p.fee_cents || 0), 0);
+  const collected = instalments.filter((i: any) => i.status === 'PAID').reduce((a: number, i: any) => a + i.amount_cents, 0);
+  const owed = receivables.filter((r: any) => r.status !== 'PAID').reduce((a: number, r: any) => a + r.principal_cents - instalments.filter((i: any) => i.receivable_id === r.id && i.status === 'PAID').reduce((x: number, i: any) => x + i.amount_cents, 0), 0);
+  const funder = { paidOut, collected, owed, fees, position: collected + owed - paidOut };
+  const totals = { supplier: paidOut, funder: collected - paidOut, buyer: -collected } as Record<string, number>;
+  if (sent[0]) lastId.supplier ||= sent[0].batch_id;
   const webhooks = await sql('SELECT id, app, type, verified, created_at FROM webhook_event ORDER BY created_at DESC LIMIT 20');
-  return { today: await today(), buyers, lines, receivables, instalments, attempts, payouts, moneyEvents, limitChanges, totals, lastId, webhooks };
+  return { today: await today(), buyers, lines, receivables, instalments, attempts, payouts, moneyEvents, limitChanges, totals, funder, lastId, webhooks };
 }
 export async function getBuyerView(buyerId: string) {
   const s = await getState();

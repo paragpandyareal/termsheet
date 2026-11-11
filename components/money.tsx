@@ -54,31 +54,45 @@ export function Skeleton({ rows = 3 }: { rows?: number }) {
   );
 }
 
-function Tile({ label, cents, last, note }: { label: string; cents: number; last?: string | null; note: string }) {
+function Tile({ label, cents, last, note, sign = true, children }: { label: string; cents: number; last?: string | null; note: string; sign?: boolean; children?: React.ReactNode }) {
   const prev = useRef(cents);
   const [flash, setFlash] = useState(false);
   useEffect(() => { if (prev.current !== cents) { setFlash(true); prev.current = cents; const t = setTimeout(() => setFlash(false), 1400); return () => clearTimeout(t); } }, [cents]);
   const color = cents > 0 ? 'var(--good)' : cents < 0 ? 'var(--navy)' : 'var(--muted)';
   return (
-    <div className="p-4 sm:p-8 min-w-0 transition-colors" style={{ background: flash ? 'var(--blue-soft)' : undefined }}>
+    <div className="p-4 sm:p-6 min-w-0 transition-colors" style={{ background: flash ? 'var(--blue-soft)' : undefined }}>
       <div className="t-label">{label}</div>
-      <div className="text-[28px] font-extrabold num mt-2" style={{ color }}>{cents > 0 ? '+' : ''}{usd(cents)}</div>
+      <div className="text-[28px] font-extrabold num mt-2" style={{ color }}>{sign && cents > 0 ? '+' : ''}{usd(cents)}</div>
       <div className="small muted mt-1">{note}</div>
+      {children}
       <div className="mono muted truncate mt-2" title={last || ''}>{last ? `PayPal ID ${last}` : 'No PayPal movement yet'}</div>
     </div>
   );
 }
 
+// One line of the funder's breakdown.
+const Line = ({ k, v, strong }: { k: string; v: string; strong?: boolean }) => (
+  <div className={`flex justify-between gap-3 small ${strong ? 'font-bold border-t pt-1 mt-1' : ''}`} style={{ color: strong ? 'var(--navy)' : undefined }}><span className={strong ? '' : 'muted'}>{k}</span><span className="num">{v}</span></div>
+);
+
 export function MoneyStrip({ s }: { s: any }) {
   if (!s) return <Skeleton rows={2} />;
+  const f = s.funder || { paidOut: 0, collected: 0, owed: 0, fees: 0, position: 0 };
   return (
     <div>
-      <div className="card grid sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x overflow-hidden">
-        <Tile label="Ridgeline · supplier" cents={s.totals.supplier} last={s.lastId.supplier} note="Paid by PayPal Payout" />
-        <Tile label="TermSheet · funder" cents={s.totals.funder} last={s.lastId.funder} note="Payouts sent, repayments collected" />
-        <Tile label="Café · buyer" cents={s.totals.buyer} last={s.lastId.buyer} note="Charged to saved PayPal" />
+      <div className="card grid md:grid-cols-[1fr_1.3fr_1fr] divide-y md:divide-y-0 md:divide-x overflow-hidden">
+        <Tile label="Ridgeline · supplier" cents={s.totals.supplier} last={s.lastId.supplier} note="Paid by PayPal Payout the day each order ships. Waiting on cafés: $0." />
+        <Tile label="TermSheet Funding · PayPal" cents={f.fees} last={s.lastId.funder} note="Fee earned, 3% of each order" sign={false}>
+          <div className="mt-3 rounded-lg p-3" style={{ background: 'var(--subtle)' }}>
+            <Line k="Cash out (Payouts to Ridgeline)" v={usd(-f.paidOut)} />
+            <Line k="Cash in (charged to cafés)" v={usd(f.collected)} />
+            <Line k="Still owed by cafés" v={usd(f.owed)} />
+            <Line k="Position, before any loss" v={(f.position > 0 ? '+' : '') + usd(f.position)} strong />
+          </div>
+        </Tile>
+        <Tile label="Café · buyer" cents={s.totals.buyer} last={s.lastId.buyer} note="Charged to its saved PayPal account" />
       </div>
-      <p className="small muted mt-2">Gross amounts of real PayPal sandbox movements in this demo session. When a repayment lands, the café and the funder show the same capture ID, because one capture moves money between them.</p>
+      <p className="small muted mt-2">Real PayPal sandbox movements on every Net 30 order in this demo, including Second Shot’s order funded 30 days earlier. The funder pays out today and collects later, so its position is the fee once every café has paid. <Chip kind="assume">3% fee is an assumption</Chip></p>
     </div>
   );
 }
@@ -112,7 +126,7 @@ export function DemoControls({ open = false, strip = true }: { open?: boolean; s
   return (
     <details className="card-flat group" open={open}>
       <summary className="cursor-pointer list-none px-4 sm:px-8 min-h-[56px] flex items-center justify-between gap-3">
-        <span><span className="font-bold" style={{ color: 'var(--navy)' }}>Demo controls</span> <span className="small muted">· live sandbox ledger, app clock, reset</span></span>
+        <span><span className="font-bold" style={{ color: 'var(--navy)' }}>{strip ? 'Live money, app clock and reset' : 'App clock and reset'}</span></span>
         <span className="small font-bold" style={{ color: 'var(--blue)' }}><span className="group-open:hidden">Show</span><span className="hidden group-open:inline">Hide</span></span>
       </summary>
       <div className="px-4 sm:px-8 pb-8 space-y-4">
