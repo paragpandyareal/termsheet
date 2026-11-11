@@ -137,9 +137,9 @@ export async function runTool(ctx: ToolCtx, name: string, input: any): Promise<{
       const asOf = new Date().toISOString();
       await addEv(ctx, { id: `sales:${ctx.buyerKey}:30d`, source: via, summary: `${usd(s30)} PayPal sales in 30 days, ${rows.length} sales, average ${usd(rows.length ? Math.round(s30 / rows.length) : 0)}. As of ${asOf.slice(0, 16)}Z` });
       await addEv(ctx, { id: `sales:${ctx.buyerKey}:7d`, source: via, summary: `${usd(s7)} PayPal sales in 7 days` });
-      const days = Math.max(1, new Set(rows.map((x) => String(x.date).slice(0, 10))).size);
-      ctx.facts.avgDailySales = Math.round(s30 / Math.max(days, 1));
-      return { summary: `30 days ${usd(s30)}, 7 days ${usd(s7)}`, result: { via, note: SEED_NOTE, sales_30d_cents: s30, sales_7d_cents: s7, count: rows.length, average_ticket_cents: rows.length ? Math.round(s30 / rows.length) : 0, trading_days_with_sales: days, average_daily_sales_cents: ctx.facts.avgDailySales, as_of: asOf, evidence_ids: [`sales:${ctx.buyerKey}:30d`, `sales:${ctx.buyerKey}:7d`] } };
+      // Seeded sales share timestamps, so the daily figure is the 30 day total spread over 30 days.
+      ctx.facts.avgDailySales = Math.round(s30 / 30);
+      return { summary: `30 days ${usd(s30)}, 7 days ${usd(s7)}`, result: { via, note: SEED_NOTE, sales_30d_cents: s30, sales_7d_cents: s7, count: rows.length, average_ticket_cents: rows.length ? Math.round(s30 / rows.length) : 0, average_daily_sales_cents: ctx.facts.avgDailySales, as_of: asOf, evidence_ids: [`sales:${ctx.buyerKey}:30d`, `sales:${ctx.buyerKey}:7d`] } };
     }
     case 'get_repayment_record': {
       const rcvs = await sql('SELECT * FROM receivable WHERE buyer_id=$1', [ctx.buyerId]);
