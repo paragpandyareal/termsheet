@@ -5,6 +5,10 @@ import { sql, one, newId } from '@/lib/db';
 import { chargeVault, sendPayout, getPayout } from '@/lib/paypal/money';
 import { addDays, appDate, limitAfterFailure, limitAfterOnTime, payoutFor } from './rules';
 
+// One money and date format for messages: $2,000 and 12 Nov 2026.
+const m$ = (c: number) => '$' + (c / 100).toLocaleString('en-US', { minimumFractionDigits: c % 100 ? 2 : 0, maximumFractionDigits: 2 });
+const d$ = (d: any) => new Date((typeof d === 'string' ? d.slice(0, 10) : new Date(d).toISOString().slice(0, 10)) + 'T00:00:00Z').toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
+
 export const BUYERS = [
   { key: 'larkspur', name: 'Larkspur Café', type: 'Café', founded: 2019, emailVar: 'BUYER_LARKSPUR_EMAIL', salesApp: true },
   { key: 'secondshot', name: 'Second Shot Café', type: 'Café', founded: 2021, emailVar: 'BUYER_SECONDSHOT_EMAIL', salesApp: true },
@@ -122,7 +126,7 @@ export async function chargeInstalment(insId: string) {
     await sql("UPDATE receivable SET status='PAST_DUE', updated_at=now() WHERE id=$1", [rcv.id]);
     await sql("UPDATE credit_line SET status='FROZEN', updated_at=now() WHERE id=$1", [line.id]);
     await setLimit(rcv.buyer_id, limitAfterFailure(line.limit_cents), 'RP08');
-    await postMessage(rcv.buyer_id, 'FUNDER', `Your $${(ins.amount_cents / 100).toLocaleString('en-US', { minimumFractionDigits: 2 })} payment for ${order.order_no} did not go through. Reply here and we will work it out.`, rcv.id);
+    await postMessage(rcv.buyer_id, 'FUNDER', `Your ${m$(ins.amount_cents)} payment for order ${order.order_no} did not go through. Reply here and we will work it out.`, rcv.id);
   }
   return r;
 }
@@ -144,7 +148,7 @@ export async function runCollections() {
   for (const i of await sql("SELECT i.* FROM instalment i JOIN receivable r ON r.id=i.receivable_id WHERE i.status='SCHEDULED' AND NOT i.reminded AND i.due_date <= ($1::date + 3)", [t])) {
     await sql('UPDATE instalment SET reminded=true WHERE id=$1', [i.id]);
     const r = await one('SELECT buyer_id FROM receivable WHERE id=$1', [i.receivable_id]);
-    await postMessage(r.buyer_id, 'SYSTEM', `Reminder. ${(i.amount_cents / 100).toLocaleString('en-US', { minimumFractionDigits: 2 })} will be charged to your saved PayPal account on ${i.due_date.toISOString?.().slice(0, 10) || i.due_date}.`, i.receivable_id);
+    await postMessage(r.buyer_id, 'SYSTEM', `Reminder. ${m$(i.amount_cents)} will be charged to your saved PayPal account on ${d$(i.due_date)}.`, i.receivable_id);
   }
   const due = await sql("SELECT id FROM instalment WHERE status='SCHEDULED' AND due_date <= $1::date ORDER BY due_date, seq", [t]);
   let charged = 0;

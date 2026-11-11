@@ -2,7 +2,7 @@
 // Ridgeline wholesale checkout (PRD 4, route /shop). Hero: the Net 30 card. PayPal buttons from the supplier app sit beside it.
 import { useEffect, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Nav, Chip, usd } from '@/components/money';
+import { Nav, Chip, usd, StoryBar } from '@/components/money';
 
 const CATALOG: Record<string, { sku: string; name: string; detail: string; qty: number; unit: number }[]> = {
   larkspur: [
@@ -58,6 +58,7 @@ export default function Shop({ supplierClientId }: { supplierClientId: string })
   return (
     <>
       <Nav />
+      <StoryBar step={buyer === 'northgate' ? 3 : 1} />
       <main className="max-w-6xl mx-auto px-4 py-8">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
@@ -100,9 +101,9 @@ export default function Shop({ supplierClientId }: { supplierClientId: string })
 
           <section className="card-hero overflow-hidden" style={{ borderColor: 'var(--blue)' }}>
             <div className="hero-band rounded-none p-4 sm:p-8">
-              <div className="flex flex-wrap items-center gap-2"><span className="chip chip-onnavy">New · concept</span><span className="chip chip-onnavy">Decision in under a minute</span></div>
-              <h2 className="t-h1 mt-4" style={{ color: '#fff' }}>Pay in 30 days.<br />Ridgeline is paid today.</h2>
-              <p className="mt-3" style={{ color: 'rgba(255,255,255,.85)' }}>Net 30 for Business. Take the beans now and pay {usd(total)} on day 30 from your saved PayPal account.</p>
+              <div className="flex flex-wrap items-center gap-2"><span className="chip chip-onnavy">New</span><span className="chip chip-onnavy">Decision in under a minute</span></div>
+              <h2 className="t-h1 mt-4 on-navy">Pay in 30 days.<br />Ridgeline is paid today.</h2>
+              <p className="mt-3 on-navy-muted">Net 30 for Business. Take the beans now and pay {usd(total)} on day 30 from your saved PayPal account.</p>
             </div>
             <div className="p-4 sm:p-8">
               <ul className="space-y-3">
@@ -111,7 +112,7 @@ export default function Shop({ supplierClientId }: { supplierClientId: string })
                   ['AI credit check, with receipts', 'Every sentence of the decision links to the PayPal record behind it.'],
                   ['Nothing charged today', 'You save your PayPal account. The charge runs on the due date, with a reminder 3 days before.'],
                 ].map(([a, b]) => (
-                  <li key={a} className="flex gap-3"><span className="font-extrabold" style={{ color: 'var(--good)' }}>✓</span><div><div className="font-bold" style={{ color: 'var(--navy)' }}>{a}</div><div className="small muted">{b}</div></div></li>
+                  <li key={a} className="flex gap-3"><span className="chip chip-good shrink-0 self-start mt-1">Yes</span><div><div className="font-bold" style={{ color: 'var(--navy)' }}>{a}</div><div className="small muted">{b}</div></div></li>
                 ))}
               </ul>
               <button className="btn btn-lg w-full mt-8" disabled={busy} onClick={net30}>{busy ? 'Starting…' : `Apply for Net 30 on ${usd(total)}`}</button>

@@ -1,10 +1,20 @@
 'use client';
-// Shared money screen parts (PRD 4.1). Money strip, clock chip, honesty chips, nav, status pills.
+// Shared parts (PRD 4.1). Money and date formats, nav, story step bar, money strip, clock, demo controls, pills, skeletons.
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-export const usd = (c: number) => '$' + (c / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+// One money format: $2,000 for whole dollars, $1,150.25 otherwise.
+export const usd = (c: number) => {
+  const whole = Math.round(c) % 100 === 0;
+  return (c < 0 ? '−$' : '$') + (Math.abs(c) / 100).toLocaleString('en-US', { minimumFractionDigits: whole ? 0 : 2, maximumFractionDigits: whole ? 0 : 2 });
+};
+// One date format: 12 Nov 2026.
+export const fmtDate = (d: string | Date | null | undefined) => {
+  if (!d) return '';
+  const x = typeof d === 'string' ? new Date(d.length === 10 ? d + 'T00:00:00Z' : d) : d;
+  return x.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
+};
 
 export function useAppState(ms = 4000) {
   const [s, setS] = useState<any>(null);
@@ -22,17 +32,28 @@ export function Chip({ kind, children, title }: { kind: keyof typeof CHIP; child
 }
 
 const STATUS: Record<string, [string, string]> = {
-  ACTIVE: ['chip chip-good', 'Active'], PAID: ['chip chip-good', 'Paid'], COMPLETED: ['chip chip-good', 'Completed'], SUCCESS: ['chip chip-good', 'Paid out'],
+  ACTIVE: ['chip chip-good', 'Active'], PAID: ['chip chip-good', 'Paid'], COMPLETED: ['chip chip-good', 'Charged'], SUCCESS: ['chip chip-good', 'Paid out'], OK: ['chip chip-good', 'Passed'],
   OPEN: ['chip chip-blue', 'Open'], RESTRUCTURED: ['chip chip-warn', 'On a plan'], PENDING: ['chip chip-warn', 'Pending'], PROCESSING: ['chip chip-warn', 'Processing'],
-  FROZEN: ['chip chip-sim', 'Frozen'], PAST_DUE: ['chip chip-sim', 'Past due'], FAILED: ['chip chip-sim', 'Failed'], NONE: ['chip', 'No line'],
+  FROZEN: ['chip chip-sim', 'Frozen'], PAST_DUE: ['chip chip-sim', 'Past due'], FAILED: ['chip chip-sim', 'Declined'], NONE: ['chip', 'No line'],
 };
-export function Status({ s }: { s: string }) {
-  const [cls, label] = STATUS[s] || ['chip', s];
-  return <span className={cls}>{label}</span>;
+export function Status({ s, label }: { s: string; label?: string }) {
+  const [cls, l] = STATUS[s] || ['chip', s];
+  return <span className={cls}>{label ?? l}</span>;
 }
 export const REASON_TEXT: Record<string, string> = { RP08: 'Missed payment, limit reduced', ON_TIME: 'Paid on time, limit raised' };
+export const Code = ({ children }: { children: React.ReactNode }) => <span className="mono muted ml-1">{children}</span>;
 
-function Tile({ label, cents, last, note, big }: { label: string; cents: number; last?: string | null; note: string; big?: boolean }) {
+export function Skeleton({ rows = 3 }: { rows?: number }) {
+  return (
+    <div className="card-flat p-4 sm:p-8 animate-pulse" aria-busy="true" aria-label="Loading">
+      <div className="h-4 w-32 rounded" style={{ background: 'var(--line-2)' }} />
+      <div className="h-8 w-2/3 rounded mt-3" style={{ background: 'var(--line-2)' }} />
+      {Array.from({ length: rows }).map((_, i) => <div key={i} className="h-4 rounded mt-3" style={{ background: 'var(--line-2)', width: `${90 - i * 12}%` }} />)}
+    </div>
+  );
+}
+
+function Tile({ label, cents, last, note }: { label: string; cents: number; last?: string | null; note: string }) {
   const prev = useRef(cents);
   const [flash, setFlash] = useState(false);
   useEffect(() => { if (prev.current !== cents) { setFlash(true); prev.current = cents; const t = setTimeout(() => setFlash(false), 1400); return () => clearTimeout(t); } }, [cents]);
@@ -40,7 +61,7 @@ function Tile({ label, cents, last, note, big }: { label: string; cents: number;
   return (
     <div className="p-4 sm:p-8 min-w-0 transition-colors" style={{ background: flash ? 'var(--blue-soft)' : undefined }}>
       <div className="t-label">{label}</div>
-      <div className={(big ? 't-hero' : 'text-[32px] font-extrabold num') + ' mt-2'} style={{ color }}>{cents > 0 ? '+' : cents < 0 ? '−' : ''}{usd(Math.abs(cents))}</div>
+      <div className="text-[28px] font-extrabold num mt-2" style={{ color }}>{cents > 0 ? '+' : ''}{usd(cents)}</div>
       <div className="small muted mt-1">{note}</div>
       <div className="mono muted truncate mt-2" title={last || ''}>{last ? `PayPal ID ${last}` : 'No PayPal movement yet'}</div>
     </div>
@@ -48,15 +69,15 @@ function Tile({ label, cents, last, note, big }: { label: string; cents: number;
 }
 
 export function MoneyStrip({ s }: { s: any }) {
-  if (!s) return null;
+  if (!s) return <Skeleton rows={2} />;
   return (
     <div>
-      <div className="card grid sm:grid-cols-[1.3fr_1fr_1fr] divide-y sm:divide-y-0 sm:divide-x overflow-hidden" style={{ borderColor: 'var(--line)' }}>
-        <Tile big label="Ridgeline · supplier" cents={s.totals.supplier} last={s.lastId.supplier} note="Paid today by PayPal Payout" />
+      <div className="card grid sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x overflow-hidden">
+        <Tile label="Ridgeline · supplier" cents={s.totals.supplier} last={s.lastId.supplier} note="Paid by PayPal Payout" />
         <Tile label="TermSheet · funder" cents={s.totals.funder} last={s.lastId.funder} note="Repayments collected" />
         <Tile label="Café · buyer" cents={s.totals.buyer} last={s.lastId.buyer} note="Charged to saved PayPal" />
       </div>
-      <p className="small muted mt-2">Gross amounts. When a repayment lands, the café and the funder show the same capture ID, because one capture moves money between them.</p>
+      <p className="small muted mt-2">Gross amounts of real PayPal sandbox movements in this demo session. When a repayment lands, the café and the funder show the same capture ID, because one capture moves money between them.</p>
     </div>
   );
 }
@@ -67,7 +88,7 @@ export function ClockChip({ s, onChange }: { s: any; onChange: () => void }) {
   return (
     <div className="card-flat px-4 py-3 flex flex-wrap items-center gap-3">
       <div className="min-w-0">
-        <div className="font-semibold" style={{ color: 'var(--navy)' }}>App date {s?.today || '…'} <Chip kind="clock" /></div>
+        <div className="font-bold flex flex-wrap items-center gap-2" style={{ color: 'var(--navy)' }}>App date {fmtDate(s?.today)} <Chip kind="clock" /></div>
         <div className="small muted">Only the app date moves. Every charge is a real PayPal sandbox call.</div>
       </div>
       <div className="flex gap-2 ml-auto">
@@ -78,18 +99,77 @@ export function ClockChip({ s, onChange }: { s: any; onChange: () => void }) {
   );
 }
 
+export function DemoControls({ open = false }: { open?: boolean }) {
+  const [s, load] = useAppState(5000);
+  const [msg, setMsg] = useState('');
+  const reset = async () => {
+    setMsg('Resetting. This sends Ridgeline a fresh real payout for Second Shot, so it takes a few seconds…');
+    const r = await fetch('/api/demo/reset', { method: 'POST' }).then((r) => r.json());
+    setMsg(r.ok ? `Reset done. Second Shot order ${r.orderNo} is funded and due tomorrow.` : r.reason || 'Reset failed.');
+    load();
+  };
+  return (
+    <details className="card-flat group" open={open}>
+      <summary className="cursor-pointer list-none px-4 sm:px-8 min-h-[56px] flex items-center justify-between gap-3">
+        <span><span className="font-bold" style={{ color: 'var(--navy)' }}>Demo controls</span> <span className="small muted">· live sandbox ledger, app clock, reset</span></span>
+        <span className="small font-bold" style={{ color: 'var(--blue)' }}><span className="group-open:hidden">Show</span><span className="hidden group-open:inline">Hide</span></span>
+      </summary>
+      <div className="px-4 sm:px-8 pb-8 space-y-4">
+        <MoneyStrip s={s} />
+        <ClockChip s={s} onChange={load} />
+        <div className="flex flex-wrap items-center gap-3">
+          <button className="btn btn-ghost btn-sm" onClick={reset}>Reset demo</button>
+          <span className="small muted">{msg || 'Restores app state only. PayPal history is never deleted. Once a minute.'}</span>
+        </div>
+      </div>
+    </details>
+  );
+}
+
 export function Nav() {
   const path = usePathname();
-  const links = [['/', 'Hub'], ['/shop', 'Checkout'], ['/buyer/buyer_secondshot', 'Café phone'], ['/funder', 'Ledger']];
+  const links = [['/', 'Home'], ['/shop', 'Checkout'], ['/buyer/buyer_secondshot', 'Café phone'], ['/funder', 'Funder ledger']];
   return (
-    <header className="bg-white border-b" style={{ borderColor: 'var(--line)' }}>
-      <nav className="max-w-6xl mx-auto px-4 h-14 flex items-center gap-4 sm:gap-8 overflow-x-auto whitespace-nowrap">
+    <header className="bg-white border-b relative">
+      <nav className="max-w-6xl mx-auto px-4 h-14 flex items-center gap-4 sm:gap-8 overflow-x-auto whitespace-nowrap" aria-label="Main">
         <Link href="/" className="font-extrabold text-lg" style={{ color: 'var(--navy)' }}>Term<span style={{ color: 'var(--blue)' }}>Sheet</span></Link>
         {links.map(([h, t]) => {
           const active = h === '/' ? path === '/' : path.startsWith(h.split('/').slice(0, 2).join('/'));
           return <Link key={h} href={h} className="text-[15px] font-semibold h-14 inline-flex items-center border-b-2" style={{ color: active ? 'var(--blue)' : 'var(--muted)', borderColor: active ? 'var(--blue)' : 'transparent' }}>{t}</Link>;
         })}
       </nav>
+      <div className="pointer-events-none absolute right-0 top-0 h-14 w-8 sm:hidden" style={{ background: 'linear-gradient(90deg, rgba(255,255,255,0), #fff)' }} aria-hidden />
     </header>
+  );
+}
+
+// Slim step bar under the nav: where the judge is in the three stories.
+const STEPS = [
+  { n: 1, t: 'Approve a café', h: '/shop' },
+  { n: 2, t: 'Recover a payment', h: '/buyer/buyer_secondshot' },
+  { n: 3, t: 'Catch a bad application', h: '/shop?buyer=northgate' },
+];
+export function StoryBar({ step, done }: { step: 1 | 2 | 3; done?: boolean }) {
+  const next = STEPS[step];
+  return (
+    <div className="border-b" style={{ background: '#fff' }}>
+      <div className="max-w-6xl mx-auto px-4 min-h-[48px] py-1 flex flex-wrap items-center gap-x-4 gap-y-2">
+        <ol className="flex items-center gap-2 sm:gap-4 overflow-x-auto whitespace-nowrap" aria-label="Demo stories">
+          {STEPS.map((x) => {
+            const state = x.n < step ? 'past' : x.n === step ? 'now' : 'next';
+            return (
+              <li key={x.n}>
+                <Link href={x.h} className="inline-flex items-center gap-2 small font-bold min-h-[44px]" aria-current={state === 'now' ? 'step' : undefined}
+                  style={{ color: state === 'now' ? 'var(--navy)' : 'var(--muted)' }}>
+                  <span className="inline-flex items-center justify-center w-6 h-6 rounded-full text-[12px]" style={{ background: state === 'now' ? 'var(--blue)' : state === 'past' ? 'var(--good-soft)' : 'var(--chip)', color: state === 'now' ? '#fff' : state === 'past' ? 'var(--good)' : 'var(--chip-ink)' }}>{x.n}</span>
+                  <span className={state === 'now' ? '' : 'hidden sm:inline'}>{x.t}</span>
+                </Link>
+              </li>
+            );
+          })}
+        </ol>
+        {done && (next ? <Link href={next.h} className="btn btn-sm ml-auto">Next story: {next.t} →</Link> : <Link href="/" className="btn btn-sm ml-auto">All three done · Home</Link>)}
+      </div>
+    </div>
   );
 }

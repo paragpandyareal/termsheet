@@ -1,7 +1,7 @@
 'use client';
 // Buyer phone view (PRD 4). Limit, open orders, due dates, message thread, plan offer with Accept.
 import { use, useEffect, useRef, useState } from 'react';
-import { Nav, ClockChip, Chip, usd } from '@/components/money';
+import { Nav, ClockChip, Chip, usd, fmtDate, StoryBar, Skeleton, Status } from '@/components/money';
 
 export default function Buyer({ params }: { params: Promise<{ buyerId: string }> }) {
   const { buyerId } = use(params);
@@ -18,7 +18,7 @@ export default function Buyer({ params }: { params: Promise<{ buyerId: string }>
   const retry = async () => { setBusy('send'); await fetch(`/api/buyer/${buyerId}/message`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ retry: true }) }); setBusy(''); load(); };
   const accept = async (id: string) => { setBusy('accept'); await fetch(`/api/plan/${id}/accept`, { method: 'POST' }); setBusy(''); load(); };
 
-  if (!v) return <><Nav /><main className="p-6 muted">Loading…</main></>;
+  if (!v) return <><Nav /><StoryBar step={2} /><main className="max-w-6xl mx-auto px-4 py-8 grid lg:grid-cols-[380px_1fr] gap-8"><Skeleton rows={8} /><Skeleton rows={4} /></main></>;
   const rcvs = v.receivables.filter((r: any) => r.buyer_id === buyerId);
   const ins = v.instalments.filter((i: any) => rcvs.some((r: any) => r.id === i.receivable_id));
   const open = rcvs.filter((r: any) => r.status !== 'PAID').reduce((a: number, r: any) => a + r.principal_cents - ins.filter((i: any) => i.receivable_id === r.id && i.status === 'PAID').reduce((x: number, i: any) => x + i.amount_cents, 0), 0);
@@ -29,6 +29,7 @@ export default function Buyer({ params }: { params: Promise<{ buyerId: string }>
   return (
     <>
       <Nav />
+      <StoryBar step={2} done={rcvs.some((r: any) => r.status === 'RESTRUCTURED' || r.status === 'PAID') && attempts.some((a: any) => a.status === 'COMPLETED')} />
       <main className="max-w-6xl mx-auto px-4 py-8 grid lg:grid-cols-[380px_1fr] gap-8 items-start">
         <div className="mx-auto w-full max-w-[380px] rounded-[40px] p-3" style={{ background: '#0B1020', boxShadow: '0 24px 48px rgba(0,28,100,.25)' }}>
           <div className="rounded-[32px] overflow-hidden" style={{ background: 'var(--bg)' }}>
@@ -43,7 +44,7 @@ export default function Buyer({ params }: { params: Promise<{ buyerId: string }>
             </div>
             <div className="p-3 space-y-2">
               {ins.filter((i: any) => i.status === 'SCHEDULED').map((i: any) => (
-                <div key={i.id} className="card px-3 py-2 text-sm flex justify-between"><span>Due {i.due}</span><span className="font-semibold">{usd(i.amount_cents)}</span></div>
+                <div key={i.id} className="card px-3 py-2 text-sm flex justify-between"><span>Due {fmtDate(i.due)}</span><span className="font-semibold">{usd(i.amount_cents)}</span></div>
               ))}
               <div ref={threadRef} className="space-y-2 max-h-[360px] overflow-y-auto">
                 {v.messages.map((m: any) => (
@@ -81,7 +82,7 @@ export default function Buyer({ params }: { params: Promise<{ buyerId: string }>
               {sc.claim && <p className="small mt-2"><b>What the café said it can do:</b> {sc.claim}</p>}
               <p className={'mt-2 ' + (sc.consistent ? 'callout-good' : 'callout-bad')}><b>{sc.consistent ? 'Story checks out.' : 'Story does not fully check out.'}</b> {sc.text}</p>
               {(pj.memo || []).map((m: any, i: number) => <p key={i} className="small mt-2">{m.text}</p>)}
-              <p className="small muted mt-2">Plan checked by plain code against the policy: at most 2 parts, first part at least 25% today, done within 15 days, no fees. {p.policy_check_json?.ok ? '✓ Passed' : '✗ Failed'}</p>
+              <p className="small muted mt-2">Plan checked by plain code against the policy: at most 2 parts, first part at least 25% today, done within 15 days, no fees. {p.policy_check_json?.ok ? <Status s="OK" /> : <Status s="FAILED" label="Failed" />}</p>
             </div>); })()}
           <div className="card-flat p-4 sm:p-8 min-w-0">
             <div className="font-bold mb-2">Charges on this account</div>
@@ -91,8 +92,8 @@ export default function Buyer({ params }: { params: Promise<{ buyerId: string }>
                 <tbody>
                   {attempts.map((a: any) => (
                     <tr key={a.id} className="align-top">
-                      <td className="pr-2 py-1">{a.status === 'COMPLETED' ? '✅' : '❌'}</td>
-                      <td className="pr-2 py-1">{a.status === 'COMPLETED' ? 'Charged' : a.error_name}{a.mode.startsWith('MOCK') && <> <Chip kind="sim">Simulated decline (sandbox negative testing)</Chip></>}</td>
+                      <td className="pr-2 py-1"><Status s={a.status === 'COMPLETED' ? 'COMPLETED' : 'FAILED'} /></td>
+                      <td className="pr-2 py-1">{a.status === 'COMPLETED' ? 'Charged with the café absent' : <>Card or account declined<span className="mono muted ml-1">{a.error_name}</span></>}{a.mode.startsWith('MOCK') && <> <Chip kind="sim">Simulated decline (sandbox negative testing)</Chip></>}</td>
                       <td className="pr-2 py-1 mono break-all">{a.capture_id || ''}</td>
                       <td className="py-1 mono">debug {a.debug_id}</td>
                     </tr>

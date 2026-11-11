@@ -2,7 +2,7 @@
 // Application and Analyst panel (PRD 4.2). Decision first, then the analyst's live trace and cited memo, then the evidence.
 import { use, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Nav, Chip, MoneyStrip, useAppState, usd } from '@/components/money';
+import { Nav, Chip, MoneyStrip, useAppState, usd, StoryBar, Skeleton, Status } from '@/components/money';
 import { REASONS } from '@/lib/scorecard/scorecard';
 
 type Row = { at?: number; type: string; name?: string; args?: any; summary?: string; ms?: number; status?: string; errors?: string[]; outcome?: string };
@@ -76,13 +76,15 @@ export default function Apply({ params }: { params: Promise<{ orderId: string }>
   return (
     <>
       <Nav />
+      <StoryBar step={order?.key === 'northgate' ? 3 : 1} done={order?.key === 'northgate' ? !!out : !!saved} />
       <main className="max-w-6xl mx-auto px-4 py-8 space-y-8">
         <div>
           <div className="t-label" style={{ color: 'var(--blue)' }}>Net 30 for Business · application</div>
-          <h1 className="t-h2 mt-1">{order ? `${order.display_name} · ${usd(order.amount_cents)}` : 'Loading…'}</h1>
+          <h1 className="t-h2 mt-1">{order ? `${order.display_name} · ${usd(order.amount_cents)}` : ' '}</h1>
           {order && <div className="small muted">Ridgeline order {order.order_no} · ships to {order.ship_to}</div>}
         </div>
 
+        {!data && <Skeleton rows={4} />}
         {!started && order && (
           <section className="card p-4 sm:p-8">
             <h2 className="t-h3">Tell us about your business</h2>
@@ -118,7 +120,7 @@ export default function Apply({ params }: { params: Promise<{ orderId: string }>
               <div className="mt-4">
                 <div className="font-semibold">Main reasons</div>
                 <ul className="list-disc pl-5 mt-1">{out.factor_codes.filter((c: string) => REASONS[c]).sort((a: string, b: string) => (['OB07', 'VR06'].includes(b) ? 1 : 0) - (['OB07', 'VR06'].includes(a) ? 1 : 0)).slice(0, 3).map((c: string) => <li key={c}>{REASONS[c]}</li>)}</ul>
-                <p className="small mt-2">The café can still pay now at checkout. <span className="muted">Illustrative notice for a concept demo. Not legal advice.</span></p>
+                <p className="small mt-2">The café can still pay now at checkout. <span className="muted">Illustrative notice for a demo. Not legal advice.</span></p>
               </div>
             )}
             {approved && !saved && (
@@ -162,7 +164,7 @@ export default function Apply({ params }: { params: Promise<{ orderId: string }>
                     <span className="mono muted shrink-0">{((t.ms || 0) / 1000).toFixed(1)}s</span>
                   </li>
                 ))}
-                {validate && <li className={validate.errors?.length ? 'callout-bad small' : 'callout-good small'}>{validate.errors?.length ? `Checks failed: ${validate.errors.join('; ')}` : '✓ Every sentence cites real evidence · within the scorecard ceiling · policy rules pass'}</li>}
+                {validate && <li className={validate.errors?.length ? 'callout-bad small' : 'callout-good small'}>{validate.errors?.length ? `Checks failed: ${validate.errors.join('; ')}` : <><Status s="OK" label="Checks passed" /> Every sentence cites real evidence, the decision is within the scorecard ceiling, and the policy rules pass.</>}</li>}
                 {!out && <li className="small muted animate-pulse">Reading PayPal…</li>}
               </ol>
             </div>
