@@ -6,7 +6,7 @@ Last updated Wednesday 11 Nov 2026, 17.30 Sydney (06.30 UTC).
 ## 1. Where things stand
 - **The app is built, deployed and working.**
   - Live: https://termsheet-tgwl.onrender.com (Render free web service plus free Postgres, from `render.yaml`, auto-deploys on push to `main`).
-  - Repo: github.com/paragpandyareal/termsheet, branch `main`. It is still **PRIVATE** until the entrant says to make it public (the rules need it public before submitting). Private research, mock judge scores and the PRDs for other ideas were moved out of the repo to `../TermSheet-private` (they remain in git history, which we do not rewrite).
+  - Repo: github.com/paragpandyareal/termsheet, branch `main`. It is still **PRIVATE** until the entrant says to make it public (the rules need it public before submitting). Private research, mock judge scores and the PRDs for other ideas were moved out of the repo to `../TermSheet-private` (on 11 Nov at 17.35 Sydney, with the entrant's yes, git history was rewritten to remove them and to replace the entrant's personal email with their GitHub noreply address; the old branch claude/dazzling-noether-ntf8rf was deleted; a full backup mirror is in `../TermSheet-private/termsheet-backup-2026-11-11.git`).
   - Local copy: `C:\Users\rocks\OneDrive\Desktop\Claude Code\TermSheet`.
 - **Live AI is ON for the hosted demo.**
   - `ANALYST_MODE=live`, model `claude-opus-5-5` (effort medium, prompt caching), capped at 20 runs an hour and 100 a day. The cap is counted in the `ai_spend` table, which Reset demo does not touch. About 8 US cents a run.
@@ -95,7 +95,7 @@ Last updated Wednesday 11 Nov 2026, 17.30 Sydney (06.30 UTC).
 ## 6. What is left, in order
 Done on 11 Nov afternoon: outside-review fixes (spend cap, shared-demo notes, keep-awake, impact line, phone nav, validator tests, Next 15.5.29, research moved out), Opus 5.5 upgrade, subtler Northgate letter, backtest, live eval, `docs/DEVPOST.md`, `docs/VIDEO_SCRIPT.md`.
 1. Funder sandbox balance is fine (about $82,500 on the dashboard, 11 Nov). The balances API lags by hours, so `scripts/spikes/funder-balance.mjs` can show an old figure; trust the dashboard.
-   Final independent review done 11 Nov 17.10; fixes applied. Open item from it: cleaning git history before going public needs the entrant's yes.
+   Final independent review done 11 Nov 17.10; fixes applied. Git history cleaned on 11 Nov (see section 1).
 2. **The entrant tests the hosted Larkspur PayPal login once**, then records the video from `docs/VIDEO_SCRIPT.md` and uploads it to YouTube.
 3. **Paste `docs/DEVPOST.md` into Devpost** and add the YouTube link (two TODOs). Add screenshots.
 4. **Make the repo public, only when the entrant says so.** Run a secret scan first (`.env`, `.seed-state.json` and `.state.json` are git ignored and have never been committed).
@@ -105,7 +105,7 @@ Done on 11 Nov afternoon: outside-review fixes (spend cap, shared-demo notes, ke
 - The entrant is non-technical. Use simple language, no em dashes, step-by-step click instructions, and explain what you need and why.
 - Never ask for secrets in chat. They live in `.env`, and the entrant edits it in Notepad: Desktop, then Claude Code, then TermSheet, then `.env`.
 - A Claude Code hook (`~/.claude/hooks/guard-env.js`) blocks reading `.env`. Only `node --env-file=.env scripts/(spikes|seed)/<name>.mjs` with up to 3 word arguments is allowed.
-- Commit and push after every working step. Do not rewrite git history.
+- Commit and push after every working step. Do not rewrite git history again unless the entrant asks. Local git email is set to the GitHub noreply address.
 - Check layouts by screenshot with headless Edge (`--headless=new --screenshot`, wrapped in `timeout 60`).
 - Any statistic must be checked at its source and recorded in `docs/STATS_VERIFIED.md`.
 - Pitfall: in this Bash tool, `\\` collapses to `\` and heredocs can break. Write code files with the Write or Edit tools. Avoid JS `String.replace` with replacement text containing `$'` or `$&`; use the Edit tool.
