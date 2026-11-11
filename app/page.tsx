@@ -1,6 +1,9 @@
 'use client';
-// Home. Answers three questions in order: what is the problem, how does TermSheet solve it, what does PayPal earn.
-// Then the three stories, the honesty box and, in Zone C, the demo controls.
+// Home. Short by design, so judges reach the demo fast:
+//  1. The pitch with three one-line answers (problem, solution, what PayPal earns) and the main button.
+//  2. "See it work", marked live in the PayPal sandbox.
+//  3. The detail behind each answer, collapsed until asked for.
+//  4. Zone C: honesty box, judge login, demo controls.
 import Link from 'next/link';
 import { Nav, Chip, DemoControls } from '@/components/money';
 import { Zone } from '@/components/zones';
@@ -9,6 +12,12 @@ const ANSWERS = [
   { k: 'The problem', big: '56%', d: 'of US small businesses are owed money on unpaid invoices. Suppliers like Marisol can’t wait 30 days, so they ask for cash up front and lose cafés.' },
   { k: 'How TermSheet solves it', big: '$1,940', d: 'paid to the roaster today by PayPal Payout. The café gets 30 days. An AI credit analyst decides who qualifies and cites a PayPal record for every sentence.' },
   { k: 'What PayPal earns', big: '$60', d: 'fee on a $2,000 order, about $21 after costs and expected losses. And wholesale orders now paid by bank transfer move onto PayPal.' },
+];
+
+const STORIES = [
+  { n: 1, accent: 'blue', t: 'A café gets 30 days', d: 'Larkspur orders $2,000 of beans, the AI approves it in seconds, and the roaster is paid today by a real Payout.', h: '/shop', time: '2 min', start: true },
+  { n: 2, accent: 'orange', t: 'A missed payment gets fixed', d: 'The day 30 charge is declined, the café explains, the AI checks the story against real sales, and a real charge recovers the money.', h: '/buyer/buyer_secondshot', time: '2 min' },
+  { n: 3, accent: 'purple', t: 'AI catches what rules miss', d: 'The rules alone would approve Northgate. The AI spots a letter that contradicts the form and stops it for a human check.', h: '/shop?buyer=northgate', time: '1 min' },
 ];
 
 const FLOW = [
@@ -38,18 +47,28 @@ const ECON: [string, string, string][] = [
   ['Expected loss', '1.0%', '−$20'],
 ];
 
-const SectionHead = ({ n, id, t, sub }: { n: number; id: string; t: string; sub?: string }) => (
-  <div className="flex items-start gap-3">
-    <span className="step">{n}</span>
-    <div><h2 className="t-h2" id={id}>{t}</h2>{sub && <p className="muted mt-1 max-w-2xl">{sub}</p>}</div>
-  </div>
-);
+// A section whose heading and one-line summary always show; the detail opens on request.
+function More({ n, id, t, sub, children }: { n: number; id: string; t: string; sub: string; children: React.ReactNode }) {
+  return (
+    <details className="disclose card-flat" id={id}>
+      <summary className="p-4 sm:p-6">
+        <span className="step">{n}</span>
+        <span className="min-w-0 flex-1">
+          <span className="t-h3 block" style={{ color: 'var(--navy)' }}>{t}</span>
+          <span className="small muted block mt-1">{sub}</span>
+        </span>
+        <span className="disclose-btn" aria-hidden><span className="disclose-plus">+</span><span className="disclose-label">Details</span></span>
+      </summary>
+      <div className="px-4 pb-4 sm:px-6 sm:pb-6 space-y-4">{children}</div>
+    </details>
+  );
+}
 
 export default function Home() {
   return (
     <>
       <Nav />
-      <main className="max-w-6xl mx-auto px-4 py-8 space-y-12">
+      <main className="max-w-6xl mx-auto px-4 py-8 space-y-8">
         {/* The pitch and the three answers, all on the first screen. */}
         <section className="hero-band p-4 sm:p-8" aria-labelledby="pitch">
           <div className="t-label on-navy-muted">Net 30 for Business · inside PayPal checkout</div>
@@ -69,95 +88,16 @@ export default function Home() {
           </div>
         </section>
 
-        {/* 1. The problem. */}
-        <section aria-labelledby="problem" className="space-y-4">
-          <SectionHead n={1} id="problem" t="The problem" />
-          <div className="grid md:grid-cols-[1.4fr_1fr] gap-4">
-            <div className="card-flat p-4 sm:p-8">
-              <p className="text-[20px] font-bold" style={{ color: 'var(--navy)' }}>Marisol runs Ridgeline Roasters, a six-person coffee roastery that sells to cafés.</p>
-              <p className="mt-3">Her café customers want 30 days to pay, because big distributors give them that. Marisol can’t wait 30 days for her money, and she has no way to tell which new café will pay. So she asks for payment up front, and she loses accounts.</p>
-              <p className="mt-3 muted">Orders like these, one small business buying from another, are mostly paid by bank transfer or cheque against an invoice, outside PayPal.</p>
-            </div>
-            <div className="card-flat p-4 sm:p-8">
-              <div className="text-[48px] font-extrabold num leading-none" style={{ color: 'var(--navy)' }}>56%</div>
-              <p className="mt-2">of US small businesses say they are owed money on unpaid invoices, <b>$17,500</b> on average among those owed.</p>
-              <p className="small muted mt-2">Intuit QuickBooks Small Business Late Payments Report 2025, survey of 2,487 businesses.</p>
-            </div>
+        {/* See it work: live, not a mockup. */}
+        <section aria-labelledby="stories" className="live-panel p-4 sm:p-6">
+          <div className="flex flex-wrap items-center gap-3">
+            <span className="live-badge"><span className="live-dot" aria-hidden />Live in the PayPal sandbox</span>
+            <h2 className="t-h2" id="stories">See it work</h2>
+            <span className="small muted ml-auto">Three stories · about 5 minutes</span>
           </div>
-        </section>
-
-        {/* 2. How TermSheet solves it. */}
-        <section aria-labelledby="solution" className="space-y-4">
-          <SectionHead n={2} id="solution" t="How TermSheet solves it" sub="A Net 30 option under the PayPal buttons on the roaster’s own checkout. A funder pays the roaster today and collects from the café on day 30." />
-          <ol className="card-flat grid md:grid-cols-3 divide-y md:divide-y-0 md:divide-x overflow-hidden">
-            {FLOW.map((s, i) => (
-              <li key={i} className="p-4 sm:p-6">
-                <div className="mono muted">{s.when}</div>
-                <div className="text-[32px] font-extrabold num mt-1" style={{ color: i === 1 ? 'var(--good)' : 'var(--navy)' }}>{s.amt}</div>
-                <div className="font-bold mt-1" style={{ color: 'var(--navy)' }}>{s.who}</div>
-                <div className="small muted mt-1">{s.note}</div>
-              </li>
-            ))}
-          </ol>
-          <div className="grid md:grid-cols-3 gap-4">
-            {SIDES.map((x) => (
-              <div key={x.who} className="p-4 sm:p-6 rounded-2xl" style={{ background: 'var(--subtle)' }}>
-                <div className="t-label">What {x.who.toLowerCase()} gets</div>
-                <p className="mt-2">{x.gets}</p>
-              </div>
-            ))}
-          </div>
-          <div className="grid md:grid-cols-3 gap-4">
-            {TRUST.map((x) => (
-              <div key={x.t} className="card-flat p-4 sm:p-6">
-                <div className="flex items-center gap-3"><span className="mark" style={{ background: x.mark }} /><h3 className="t-h3">{x.t}</h3></div>
-                <p className="small muted mt-2">{x.d}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* 3. What's in it for PayPal. */}
-        <section aria-labelledby="paypal" className="space-y-4">
-          <SectionHead n={3} id="paypal" t="What’s in it for PayPal" sub="A new revenue line PayPal does not have today: credit for the business that is buying, at the supplier’s checkout." />
-          <div className="grid lg:grid-cols-[1.1fr_1fr] gap-4 items-start">
-            <div className="card-flat p-4 sm:p-6 min-w-0">
-              <div className="flex flex-wrap items-center justify-between gap-2"><h3 className="t-h3">Per $2,000 order</h3><Chip kind="assume">All rates are assumptions</Chip></div>
-              <table className="w-full mt-3 text-[15px]">
-                <thead><tr className="text-left small muted"><th className="py-1 font-semibold">Line</th><th className="py-1 pl-3 font-semibold text-right">Rate</th><th className="py-1 pl-3 font-semibold text-right">Amount</th></tr></thead>
-                <tbody>
-                  {ECON.map(([l, r, a]) => <tr key={l} className="border-t"><td className="py-2 pr-2">{l}</td><td className="py-2 pl-3 text-right num muted">{r}</td><td className="py-2 pl-3 text-right num font-semibold" style={{ color: a.startsWith('+') ? 'var(--good)' : undefined }}>{a}</td></tr>)}
-                  <tr className="border-t-2" style={{ borderColor: 'var(--navy)' }}><td className="py-2 font-extrabold" style={{ color: 'var(--navy)' }}>Contribution</td><td className="py-2 text-right num font-extrabold" style={{ color: 'var(--navy)' }}>1.05%</td><td className="py-2 text-right num font-extrabold" style={{ color: 'var(--good)' }}>+$21</td></tr>
-                </tbody>
-              </table>
-              <p className="small mt-4 callout-blue"><b>At scale:</b> every $1B of wholesale orders on Net 30 earns about <b>$30M in fees</b> and <b>$10.5M in contribution</b> at these assumptions.</p>
-              <p className="small muted mt-3">The 3% fee replaces PayPal’s normal processing fee on that order; it is not charged on top. Collection cost assumes the café pays from its PayPal balance or bank account. Break-even is a loss rate of about 2%, so small limits that grow with on-time payment, and an AI that can only tighten, matter.</p>
-            </div>
-            <div className="space-y-4 min-w-0">
-              {[
-                ['Wholesale volume moves onto PayPal', 'Orders between small businesses are mostly paid by bank transfer or cheque. Net 30 at checkout gives them a reason to go through PayPal.'],
-                ['A flywheel of new merchants', 'The analyst reads the café’s own PayPal sales. Cafés that sell through PayPal score higher and get bigger limits, so every café that wants terms has a reason to become a PayPal merchant.'],
-                ['Lending only PayPal can do safely', 'PayPal sees both sides: the roaster’s trade history with the café, and the café’s own sales landing in PayPal. Repayment comes from that same account.'],
-                ['The AI protects the margin, for about 10 cents', 'The expected-loss and collection lines are where a bad decision costs money. The AI catches what the rules miss, such as a letter that contradicts the form, before any money goes out. Each AI decision costs 8 to 11 cents at list price, under 0.2% of the $60 fee; one stopped bad $2,000 order pays for about 18,000 of them.'],
-              ].map(([t, d]) => (
-                <div key={t} className="p-4 sm:p-6 rounded-2xl border-l-4" style={{ borderColor: 'var(--blue)', background: 'var(--subtle)' }}>
-                  <h3 className="font-bold" style={{ color: 'var(--navy)' }}>{t}</h3>
-                  <p className="small mt-1">{d}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* See it work. */}
-        <section aria-labelledby="stories" className="space-y-4">
-          <SectionHead n={4} id="stories" t="See it work" sub="Three stories, about 5 minutes. Every page shows what the customer sees, what PayPal’s credit team sees, and the demo controls, each clearly labelled." />
-          <ol className="grid md:grid-cols-3 gap-4">
-            {[
-              { n: 1, accent: 'blue', t: 'A café gets 30 days', d: 'Larkspur orders $2,000 of beans, the AI approves it in seconds, and the roaster is paid today.', h: '/shop', time: '2 min', start: true },
-              { n: 2, accent: 'orange', t: 'A missed payment gets fixed', d: 'The day 30 charge is declined, the café explains, and the AI checks the story against real sales.', h: '/buyer/buyer_secondshot', time: '2 min' },
-              { n: 3, accent: 'purple', t: 'AI catches what rules miss', d: 'The rules alone would approve Northgate. The AI spots a letter that contradicts the form and stops it for a human check.', h: '/shop?buyer=northgate', time: '1 min' },
-            ].map((x) => (
+          <p className="mt-2 max-w-3xl">Not a mockup. Every button calls the real PayPal sandbox APIs as you click: saved accounts, Payouts, charges and a live AI analyst reading PayPal data. Every dollar shows its PayPal ID. Fake money, real calls.</p>
+          <ol className="grid md:grid-cols-3 gap-4 mt-4">
+            {STORIES.map((x) => (
               <li key={x.n}>
                 <Link href={x.h} className={`card lift p-4 sm:p-6 flex flex-col h-full accent-${x.accent}`}>
                   <div className="flex items-center gap-3">
@@ -167,11 +107,88 @@ export default function Home() {
                   </div>
                   <h3 className="t-h3 mt-4">{x.t}</h3>
                   <p className="small muted mt-2 flex-1">{x.d}</p>
-                  <span className="small font-bold mt-4" style={{ color: 'var(--blue)' }}>Open story {x.n} →</span>
+                  <span className="small font-bold mt-4" style={{ color: 'var(--blue-hover)' }}>Open story {x.n} →</span>
                 </Link>
               </li>
             ))}
           </ol>
+        </section>
+
+        {/* The detail, on request. */}
+        <section aria-label="The detail" className="space-y-3">
+          <More n={1} id="problem" t="The problem" sub="Small suppliers can’t wait 30 days to be paid, so they lose café accounts. 56% of US small businesses are owed money on unpaid invoices.">
+            <div className="grid md:grid-cols-[1.4fr_1fr] gap-4">
+              <div className="rounded-2xl p-4 sm:p-6" style={{ background: 'var(--subtle)' }}>
+                <p className="text-[18px] font-bold" style={{ color: 'var(--navy)' }}>Marisol runs Ridgeline Roasters, a six-person coffee roastery that sells to cafés.</p>
+                <p className="mt-3">Her café customers want 30 days to pay, because big distributors give them that. Marisol can’t wait 30 days for her money, and she has no way to tell which new café will pay. So she asks for payment up front, and she loses accounts.</p>
+                <p className="mt-3 muted">Orders like these, one small business buying from another, are mostly paid by bank transfer or cheque against an invoice, outside PayPal.</p>
+              </div>
+              <div className="rounded-2xl p-4 sm:p-6" style={{ background: 'var(--subtle)' }}>
+                <div className="text-[44px] font-extrabold num leading-none" style={{ color: 'var(--navy)' }}>56%</div>
+                <p className="mt-2">of US small businesses say they are owed money on unpaid invoices, <b>$17,500</b> on average among those owed.</p>
+                <p className="small muted mt-2">Intuit QuickBooks Small Business Late Payments Report 2025, survey of 2,487 businesses.</p>
+              </div>
+            </div>
+          </More>
+
+          <More n={2} id="solution" t="How TermSheet solves it" sub="Net 30 under the PayPal buttons. A funder pays the roaster today and collects from the café’s saved PayPal account on day 30. An AI decides who qualifies.">
+            <ol className="grid md:grid-cols-3 divide-y md:divide-y-0 md:divide-x rounded-2xl overflow-hidden border">
+              {FLOW.map((s, i) => (
+                <li key={i} className="p-4 sm:p-6">
+                  <div className="mono muted">{s.when}</div>
+                  <div className="text-[28px] font-extrabold num mt-1" style={{ color: i === 1 ? 'var(--good)' : 'var(--navy)' }}>{s.amt}</div>
+                  <div className="font-bold mt-1" style={{ color: 'var(--navy)' }}>{s.who}</div>
+                  <div className="small muted mt-1">{s.note}</div>
+                </li>
+              ))}
+            </ol>
+            <div className="grid md:grid-cols-3 gap-4">
+              {SIDES.map((x) => (
+                <div key={x.who} className="p-4 rounded-2xl" style={{ background: 'var(--subtle)' }}>
+                  <div className="t-label">What {x.who.toLowerCase()} gets</div>
+                  <p className="small mt-2">{x.gets}</p>
+                </div>
+              ))}
+            </div>
+            <div className="grid md:grid-cols-3 gap-4">
+              {TRUST.map((x) => (
+                <div key={x.t} className="p-4 rounded-2xl border">
+                  <div className="flex items-center gap-3"><span className="mark" style={{ background: x.mark }} /><h3 className="font-bold" style={{ color: 'var(--navy)' }}>{x.t}</h3></div>
+                  <p className="small muted mt-2">{x.d}</p>
+                </div>
+              ))}
+            </div>
+          </More>
+
+          <More n={3} id="paypal" t="What PayPal earns" sub="A 3% fee per order, about 1.05% contribution after costs and losses: roughly $30M in fees and $10.5M contribution per $1B of wholesale volume. All rates are assumptions.">
+            <div className="grid lg:grid-cols-[1.1fr_1fr] gap-4 items-start">
+              <div className="rounded-2xl border p-4 sm:p-6 min-w-0">
+                <div className="flex flex-wrap items-center justify-between gap-2"><h3 className="t-h3">Per $2,000 order</h3><Chip kind="assume">All rates are assumptions</Chip></div>
+                <table className="w-full mt-3 text-[15px]">
+                  <thead><tr className="text-left small muted"><th className="py-1 font-semibold">Line</th><th className="py-1 pl-3 font-semibold text-right">Rate</th><th className="py-1 pl-3 font-semibold text-right">Amount</th></tr></thead>
+                  <tbody>
+                    {ECON.map(([l, r, a]) => <tr key={l} className="border-t"><td className="py-2 pr-2">{l}</td><td className="py-2 pl-3 text-right num muted">{r}</td><td className="py-2 pl-3 text-right num font-semibold" style={{ color: a.startsWith('+') ? 'var(--good)' : undefined }}>{a}</td></tr>)}
+                    <tr className="border-t-2" style={{ borderColor: 'var(--navy)' }}><td className="py-2 font-extrabold" style={{ color: 'var(--navy)' }}>Contribution</td><td className="py-2 pl-3 text-right num font-extrabold" style={{ color: 'var(--navy)' }}>1.05%</td><td className="py-2 pl-3 text-right num font-extrabold" style={{ color: 'var(--good)' }}>+$21</td></tr>
+                  </tbody>
+                </table>
+                <p className="small mt-4 callout-blue"><b>At scale:</b> every $1B of wholesale orders on Net 30 earns about <b>$30M in fees</b> and <b>$10.5M in contribution</b> at these assumptions.</p>
+                <p className="small muted mt-3">The 3% fee replaces PayPal’s normal processing fee on that order; it is not charged on top. Collection cost assumes the café pays from its PayPal balance or bank account. Break-even is a loss rate of about 2%, so small limits that grow with on-time payment, and an AI that can only tighten, matter.</p>
+              </div>
+              <div className="space-y-3 min-w-0">
+                {[
+                  ['Wholesale volume moves onto PayPal', 'Orders between small businesses are mostly paid by bank transfer or cheque. Net 30 at checkout gives them a reason to go through PayPal.'],
+                  ['A flywheel of new merchants', 'The analyst reads the café’s own PayPal sales. Cafés that sell through PayPal score higher and get bigger limits, so every café that wants terms has a reason to become a PayPal merchant.'],
+                  ['Lending only PayPal can do safely', 'PayPal sees both sides: the roaster’s trade history with the café, and the café’s own sales landing in PayPal. Repayment comes from that same account.'],
+                  ['The AI protects the margin, for about 10 cents', 'The expected-loss and collection lines are where a bad decision costs money. The AI catches what the rules miss, such as a letter that contradicts the form, before any money goes out. Each AI decision costs 8 to 11 cents at list price, under 0.2% of the $60 fee; one stopped bad $2,000 order pays for about 18,000 of them.'],
+                ].map(([t, d]) => (
+                  <div key={t} className="p-4 rounded-2xl border-l-4" style={{ borderColor: 'var(--blue)', background: 'var(--subtle)' }}>
+                    <h3 className="font-bold" style={{ color: 'var(--navy)' }}>{t}</h3>
+                    <p className="small mt-1">{d}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </More>
         </section>
 
         <Zone kind="C">
@@ -187,7 +204,7 @@ export default function Home() {
                 <p className="mt-2 muted">Larkspur Café · sandbox test account with fake money</p>
                 <p className="mono mt-1 text-[14px]">larkspur.termsheet@example.com</p>
                 <p className="mono text-[14px]">larkspurtermsheet</p>
-                <p className="muted mt-2">This is one shared demo. If a story looks half done, open Demo controls below and press Reset.</p>
+                <p className="muted mt-2">This is one shared demo. If a story looks half done, open the controls below and press Reset.</p>
               </div>
             </section>
             <DemoControls />

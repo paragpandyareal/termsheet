@@ -60,6 +60,25 @@ h1, h2, h3 { color: var(--navy); letter-spacing: -0.02em; line-height: 1.15; }
 .chip-good { background: var(--good-soft); color: var(--good); }
 .chip-warn { background: var(--warn-soft); color: var(--warn); }
 .chip-blue { background: var(--blue-soft); color: var(--navy-2); }
+/* Collapsible detail sections on the home page. Native <details>, so keyboard and screen readers work. */
+.disclose > summary { display: flex; align-items: center; gap: 12px; cursor: pointer; list-style: none; border-radius: 16px; }
+.disclose > summary::-webkit-details-marker { display: none; }
+.disclose > summary:hover { background: var(--subtle); }
+.disclose > summary:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+.disclose-btn { display: inline-flex; align-items: center; gap: 8px; flex-shrink: 0; height: 40px; padding: 0 14px 0 6px; border-radius: 999px; border: 1.5px solid var(--navy); color: var(--navy); font-weight: 700; font-size: 14px; background: #fff; }
+.disclose-plus { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 999px; background: var(--navy); color: #fff; font-size: 20px; line-height: 1; transition: transform .2s; }
+.disclose[open] .disclose-plus { transform: rotate(45deg); }
+.disclose[open] .disclose-label::after { content: ' · hide'; }
+@media (max-width: 639px) { .disclose-label { display: none; } .disclose-btn { padding: 0 6px; } }
+@media (prefers-reduced-motion: reduce) { .disclose-plus { transition: none; } }
+
+/* "Live in the PayPal sandbox" panel and badge. */
+.live-panel { border-radius: 20px; border: 2px solid var(--good-mark); background: linear-gradient(180deg, var(--good-soft), #fff 70%); }
+.live-badge { display: inline-flex; align-items: center; gap: 8px; height: 32px; padding: 0 14px; border-radius: 999px; background: var(--good); color: #fff; font-size: 13px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
+.live-dot { width: 10px; height: 10px; border-radius: 999px; background: #B8F27C; box-shadow: 0 0 0 0 rgba(184, 242, 124, .7); animation: live-pulse 1.6s ease-out infinite; }
+@keyframes live-pulse { 0% { box-shadow: 0 0 0 0 rgba(184, 242, 124, .7); } 100% { box-shadow: 0 0 0 10px rgba(184, 242, 124, 0); } }
+@media (prefers-reduced-motion: reduce) { .live-dot { animation: none; } }
+
 @keyframes spin { to { transform: rotate(360deg); } }
 .spinner { width: 28px; height: 28px; border-radius: 999px; border: 3px solid var(--blue-soft); border-top-color: var(--blue); animation: spin .9s linear infinite; flex-shrink: 0; }
 @media (prefers-reduced-motion: reduce) { .spinner { animation-duration: 3s; } }
