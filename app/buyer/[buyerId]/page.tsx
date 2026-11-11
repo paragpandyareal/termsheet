@@ -28,17 +28,17 @@ export default function Buyer({ params }: { params: Promise<{ buyerId: string }>
   return (
     <>
       <Nav />
-      <main className="max-w-6xl mx-auto px-4 py-6 grid lg:grid-cols-[380px_1fr] gap-6">
-        <div className="mx-auto w-full max-w-[380px] rounded-[32px] p-3" style={{ background: '#111' }}>
-          <div className="rounded-[24px] overflow-hidden" style={{ background: 'var(--bg)' }}>
-            <div className="p-4" style={{ background: 'var(--accent)', color: 'white' }}>
-              <div className="text-xs opacity-80">TermSheet Funding · Net 30 for Business (concept)</div>
-              <div className="text-lg font-bold">{v.buyer?.display_name}</div>
+      <main className="max-w-6xl mx-auto px-4 py-8 grid lg:grid-cols-[380px_1fr] gap-8 items-start">
+        <div className="mx-auto w-full max-w-[380px] rounded-[40px] p-3" style={{ background: '#0B1020', boxShadow: '0 24px 48px rgba(0,28,100,.25)' }}>
+          <div className="rounded-[32px] overflow-hidden" style={{ background: 'var(--bg)' }}>
+            <div className="hero-band rounded-none p-4 pt-8">
+              <div className="t-label" style={{ color: 'rgba(255,255,255,.7)' }}>TermSheet · Net 30</div>
+              <div className="t-h3" style={{ color: '#fff' }}>{v.buyer?.display_name}</div>
               <div className="flex justify-between mt-2 text-sm">
                 <span>Limit {usd(v.line?.limit_cents || 0)}</span>
                 <span>{v.line?.status === 'FROZEN' ? '❄ Frozen' : v.line?.status === 'ACTIVE' ? 'Active' : 'No line yet'}</span>
               </div>
-              <div className="text-sm">Owed {usd(open)}</div>
+              <div className="mt-3"><div className="small" style={{ color: 'rgba(255,255,255,.7)' }}>You owe</div><div className="text-[36px] font-extrabold num leading-none">{usd(open)}</div></div>
             </div>
             <div className="p-3 space-y-2">
               {ins.filter((i: any) => i.status !== 'PAID').map((i: any) => (
@@ -71,6 +71,7 @@ export default function Buyer({ params }: { params: Promise<{ buyerId: string }>
         </div>
 
         <div className="space-y-4 min-w-0">
+          <div><div className="t-label" style={{ color: 'var(--blue)' }}>Café phone · Second Shot Café</div><h1 className="t-h2 mt-1">When a payment fails</h1><p className="muted mt-1 max-w-xl">Jump to the due date. The real charge is declined (sandbox test), the café replies in its own words, and the AI checks the story against the café&apos;s PayPal sales before offering a plan.</p></div>
           <ClockChip s={v} onChange={load} />
           {(() => { const p = v.plans[0]; if (!p) return null; const pj = p.proposal_json || {}; const sc = pj.story_check || {}; const md = pj.mode?.mode; return (
             <div className="card p-5 min-w-0">
@@ -81,7 +82,7 @@ export default function Buyer({ params }: { params: Promise<{ buyerId: string }>
               {(pj.memo || []).map((m: any, i: number) => <p key={i} className="small mt-2">{m.text}</p>)}
               <p className="small muted mt-2">Plan checked by plain code against the policy: at most 2 parts, first part at least 25% today, done within 15 days, no fees. {p.policy_check_json?.ok ? '✓ Passed' : '✗ Failed'}</p>
             </div>); })()}
-          <div className="card p-4 min-w-0">
+          <div className="card-flat p-4 sm:p-8 min-w-0">
             <div className="font-bold mb-2">Charges on this account</div>
             {!attempts.length && <p className="text-sm muted">No charges yet. Jump to the next due date to run the collection job.</p>}
             <div className="overflow-x-auto">

@@ -76,40 +76,40 @@ export default function Apply({ params }: { params: Promise<{ orderId: string }>
   return (
     <>
       <Nav />
-      <main className="max-w-6xl mx-auto px-4 py-6 space-y-5">
+      <main className="max-w-6xl mx-auto px-4 py-8 space-y-8">
         <div>
-          <div className="small font-semibold" style={{ color: 'var(--blue)' }}>Net 30 for Business (concept) · application</div>
-          <h1 className="text-2xl sm:text-[28px] font-bold">{order ? `${order.display_name} · ${usd(order.amount_cents)}` : 'Loading…'}</h1>
+          <div className="t-label" style={{ color: 'var(--blue)' }}>Net 30 for Business · application</div>
+          <h1 className="t-h2 mt-1">{order ? `${order.display_name} · ${usd(order.amount_cents)}` : 'Loading…'}</h1>
           {order && <div className="small muted">Ridgeline order {order.order_no} · ships to {order.ship_to}</div>}
         </div>
 
         {!started && order && (
-          <section className="card p-5">
-            <h2 className="font-bold">Tell us about your business</h2>
+          <section className="card p-4 sm:p-8">
+            <h2 className="t-h3">Tell us about your business</h2>
             <p className="small muted">Takes under a minute. The AI analyst reads your PayPal history with Ridgeline and your own PayPal sales.</p>
-            <div className="grid sm:grid-cols-2 gap-4 mt-3">
+            <div className="grid sm:grid-cols-2 gap-4 mt-4">
               {([['businessName', 'Business name'], ['businessType', 'Business type'], ['foundedYear', 'Year founded'], ['shipTo', 'Shipping address']] as const).map(([k, l]) => (
                 <label key={k} className="small font-semibold">{l}<input className="field font-normal" value={(form as any)[k]} onChange={(e) => setForm({ ...form, [k]: e.target.value })} /></label>
               ))}
               <label className="small font-semibold sm:col-span-2">Reference letter (optional, paste text){order.key === 'northgate' ? ' · Northgate’s letter is already on file' : ''}
                 <textarea className="field font-normal" rows={3} value={form.letter} onChange={(e) => setForm({ ...form, letter: e.target.value.slice(0, 200000) })} /></label>
             </div>
-            <button className="btn mt-4" onClick={submit}>Submit application</button>
+            <button className="btn btn-lg mt-8" onClick={submit}>Submit application</button>
           </section>
         )}
 
         {out && (
-          <section className="card p-5 sm:p-6" style={{ borderTop: `4px solid ${approved ? 'var(--good)' : out.outcome === 'DECLINE' ? 'var(--bad)' : 'var(--warn)'}` }}>
-            <div className="flex flex-wrap items-end gap-x-8 gap-y-3">
+          <section className="card-hero p-4 sm:p-8 rise" style={{ borderTop: `4px solid ${approved ? 'var(--good)' : out.outcome === 'DECLINE' ? 'var(--bad)' : 'var(--warn)'}` }}>
+            <div className="flex flex-wrap items-end gap-x-8 gap-y-4">
               <div>
-                <div className="small muted font-semibold">Decision</div>
-                <div className="text-[28px] font-extrabold" style={{ color: approved ? 'var(--good)' : out.outcome === 'DECLINE' ? 'var(--bad)' : 'var(--warn)' }}>
+                <div className="t-label">Decision</div>
+                <div className="t-h2 mt-1" style={{ color: approved ? 'var(--good)' : out.outcome === 'DECLINE' ? 'var(--bad)' : 'var(--warn)' }}>
                   {out.outcome === 'APPROVE' ? 'Approved' : out.outcome === 'COUNTEROFFER' ? 'Counteroffer' : out.outcome === 'DECLINE' ? 'Declined' : 'Sent to human review'}
                 </div>
               </div>
-              {approved && <div><div className="small muted font-semibold">Credit limit</div><div className="text-[28px] font-extrabold" style={{ color: 'var(--navy)' }}>{usd(out.limit_cents)}</div></div>}
-              {approved && <div><div className="small muted font-semibold">Terms</div><div className="text-xl font-bold" style={{ color: 'var(--navy)' }}>Net {out.term_days}{out.deposit_pct ? ` · ${out.deposit_pct}% deposit` : ''}</div></div>}
-              {sc && <div><div className="small muted font-semibold">Scorecard (plain code)</div><div className="text-xl font-bold" style={{ color: 'var(--navy)' }}>{sc.total}/100 · tier {sc.ceiling.tier}</div><div className="small muted">Ceiling {sc.ceiling.outcome === 'DECLINE' ? 'decline' : usd(sc.ceiling.limitCents)}. The AI can only go lower.</div></div>}
+              {approved && <div><div className="t-label">Credit limit</div><div className="t-hero mt-1" style={{ color: 'var(--navy)' }}>{usd(out.limit_cents)}</div></div>}
+              {approved && <div><div className="t-label">Terms</div><div className="text-xl font-bold" style={{ color: 'var(--navy)' }}>Net {out.term_days}{out.deposit_pct ? ` · ${out.deposit_pct}% deposit` : ''}</div></div>}
+              {sc && <div><div className="t-label">Scorecard · plain code</div><div className="text-xl font-bold" style={{ color: 'var(--navy)' }}>{sc.total}/100 · tier {sc.ceiling.tier}</div><div className="small muted">Ceiling {sc.ceiling.outcome === 'DECLINE' ? 'decline' : usd(sc.ceiling.limitCents)}. The AI can only go lower.</div></div>}
               {out.tightened_from_scorecard && <span className="chip chip-warn">Analyst went below the scorecard</span>}
             </div>
             {out.summary && <p className="mt-4 text-[17px]">{out.summary}</p>}
@@ -122,15 +122,15 @@ export default function Apply({ params }: { params: Promise<{ orderId: string }>
               </div>
             )}
             {approved && !saved && (
-              <div className="mt-5 pt-5 border-t" style={{ borderColor: 'var(--line)' }}>
-                <p className="small rounded-xl p-3" style={{ background: 'var(--blue-soft)', color: 'var(--navy)' }}>You authorise TermSheet Funding to charge this PayPal account on each order&apos;s due date for amounts you owe, up to your {usd(out.limit_cents)} limit. We message you 3 days before each charge.</p>
-                <button className="btn mt-3" disabled={saving} onClick={save}>{saving ? 'Opening PayPal…' : 'Save my PayPal account with TermSheet Funding'}</button>
+              <div className="mt-8 pt-8 border-t">
+                <p className="small callout-blue">You authorise TermSheet Funding to charge this PayPal account on each order&apos;s due date for amounts you owe, up to your {usd(out.limit_cents)} limit. We message you 3 days before each charge.</p>
+                <button className="btn btn-lg mt-4" disabled={saving} onClick={save}>{saving ? 'Opening PayPal…' : 'Save my PayPal account with TermSheet Funding'}</button>
                 <p className="small muted mt-2">Opens PayPal. Nothing is charged today. Judges: log in as <span className="mono">larkspur.termsheet@example.com</span>.</p>
                 {err && <p className="small mt-1" style={{ color: 'var(--bad)' }}>{err}</p>}
               </div>
             )}
             {saved && (
-              <div className="mt-5 pt-5 border-t space-y-2" style={{ borderColor: 'var(--line)' }}>
+              <div className="mt-8 pt-8 border-t space-y-2">
                 <div className="callout-good">PayPal account saved with TermSheet Funding. Charged today: <b>$0.00</b>.</div>
                 <div className="callout-good">Ridgeline paid {usd(data.payout.amount_cents)} by PayPal Payout · batch <span className="mono">{data.payout.batch_id}</span> · {data.payout.status}</div>
                 <p className="small muted">Due in {out.term_days} days. Follow it on the café phone and the funder ledger.</p>
@@ -142,16 +142,16 @@ export default function Apply({ params }: { params: Promise<{ orderId: string }>
         {(saved || q.get('saved')) && <MoneyStrip s={s} />}
 
         {started && (
-          <section className="grid lg:grid-cols-2 gap-5">
-            <div className="card p-5 min-w-0">
+          <section className="grid lg:grid-cols-[1fr_1.2fr] gap-4">
+            <div className="card-flat p-4 sm:p-8 min-w-0">
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <h2 className="font-bold">How the AI analyst worked</h2>
+                <h2 className="t-h3">How the AI analyst worked</h2>
                 {mode === 'live'
                   ? <span className="chip chip-blue">Claude · {model} · {tools.length} tool calls{totalMs ? ` · ${(totalMs / 1000).toFixed(1)}s` : ''}</span>
                   : mode === 'fallback' ? <span className="chip chip-warn" title="The AI call failed or its budget was used up. Same live PayPal reads; plain code wrote the memo.">AI unavailable · rule-based fallback</span>
                   : mode ? <span className="chip chip-warn" title="Same live PayPal reads. Plain code wrote the memo. No AI call.">Practice mode · no AI call</span> : null}
               </div>
-              <ol className="mt-3 space-y-2">
+              <ol className="mt-4 space-y-3">
                 {tools.map((t, i) => (
                   <li key={i} className="flex gap-3 items-start">
                     <span className="chip chip-blue shrink-0">{TOOL_LABEL[t.name || ''] || t.name}</span>
@@ -167,13 +167,13 @@ export default function Apply({ params }: { params: Promise<{ orderId: string }>
               </ol>
             </div>
 
-            <div className="card p-5 min-w-0">
-              <h2 className="font-bold">Credit memo</h2>
+            <div className="card-flat p-4 sm:p-8 min-w-0">
+              <h2 className="t-h3">Credit memo</h2>
               <p className="small muted">Tap a number to see the PayPal record behind each sentence.</p>
               {!out && <p className="small muted mt-3">The memo appears when the analyst finishes.</p>}
               {out && (
                 <div className="mt-3 space-y-3">
-                  {out.memo?.map((m: any, i: number) => <p key={i}>{m.text} <Cites ids={m.evidence_ids} /></p>)}
+                  {out.memo?.map((m: any, i: number) => <p key={i} className="rise" style={{ animationDelay: `${i * 60}ms` }}>{m.text} <Cites ids={m.evidence_ids} /></p>)}
                   {out.contradictions?.map((m: any, i: number) => <p key={'c' + i} className="callout-bad"><b>Contradiction.</b> {m.text} <Cites ids={m.evidence_ids} /></p>)}
                   {out.would_change && <p className="small muted"><b>What would change this decision:</b> {out.would_change}</p>}
                 </div>
@@ -183,7 +183,7 @@ export default function Apply({ params }: { params: Promise<{ orderId: string }>
         )}
 
         {evidence.length > 0 && (
-          <section className="card p-5">
+          <section className="card p-4 sm:p-8">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <h2 className="font-bold">Evidence the analyst read ({evidence.length})</h2>
               <button className="btn btn-ghost btn-sm" onClick={() => setShowAll(!showAll)}>{showAll ? 'Hide sources' : `Show all ${evidence.length} sources`}</button>

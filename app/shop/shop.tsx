@@ -1,17 +1,17 @@
 'use client';
-// Ridgeline wholesale checkout (PRD 4, route /shop). PayPal buttons from the supplier app, plus the Net 30 card.
+// Ridgeline wholesale checkout (PRD 4, route /shop). Hero: the Net 30 card. PayPal buttons from the supplier app sit beside it.
 import { useEffect, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Nav, Chip, usd } from '@/components/money';
 
-const CATALOG: Record<string, { sku: string; name: string; qty: number; unit: number }[]> = {
+const CATALOG: Record<string, { sku: string; name: string; detail: string; qty: number; unit: number }[]> = {
   larkspur: [
-    { sku: 'RR-HOUSE-5', name: 'House espresso blend, 5 lb bag', qty: 20, unit: 6500 },
-    { sku: 'RR-SO-ETH-5', name: 'Single origin, washed, 5 lb bag', qty: 8, unit: 8750 },
+    { sku: 'RR-HOUSE-5', name: 'House espresso blend', detail: '5 lb bag · medium roast', qty: 20, unit: 6500 },
+    { sku: 'RR-SO-ETH-5', name: 'Single origin, washed', detail: '5 lb bag · light roast', qty: 8, unit: 8750 },
   ],
   northgate: [
-    { sku: 'RR-HOUSE-5', name: 'House espresso blend, 5 lb bag', qty: 120, unit: 6500 },
-    { sku: 'RR-SO-ETH-5', name: 'Single origin, washed, 5 lb bag', qty: 29, unit: 8750 },
+    { sku: 'RR-HOUSE-5', name: 'House espresso blend', detail: '5 lb bag · medium roast', qty: 120, unit: 6500 },
+    { sku: 'RR-SO-ETH-5', name: 'Single origin, washed', detail: '5 lb bag · light roast', qty: 29, unit: 8750 },
   ],
 };
 const BUYERS = [{ key: 'larkspur', label: 'Larkspur Café' }, { key: 'northgate', label: 'Northgate Resale LLC' }];
@@ -36,7 +36,7 @@ export default function Shop({ supplierClientId }: { supplierClientId: string })
       const pp = (window as any).paypalSupplier;
       if (!pp) return;
       pp.Buttons({
-        style: { layout: 'vertical', shape: 'rect', label: 'paypal' },
+        style: { layout: 'vertical', shape: 'pill', label: 'paypal', height: 44 },
         createOrder: async () => { const o = await newOrder(); const r = await fetch('/api/paynow', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'create', orderId: o.id }) }).then((r) => r.json()); return r.id; },
         onApprove: async (d: any) => { const r = await fetch('/api/paynow', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'capture', paypalOrderId: d.orderID }) }).then((r) => r.json()); setNote(`Paid now. PayPal status ${r.status}, debug ${r.debugId}.`); },
         onError: () => setNote('PayPal button error. The sandbox sometimes fails to draw buttons. Reload to try again.'),
@@ -53,55 +53,69 @@ export default function Shop({ supplierClientId }: { supplierClientId: string })
     }
   }, [supplierClientId, buyer]);
 
-  const net30 = async () => {
-    setBusy(true);
-    const o = await newOrder();
-    router.push(`/apply/${o.id}`);
-  };
+  const net30 = async () => { setBusy(true); const o = await newOrder(); router.push(`/apply/${o.id}`); };
 
   return (
     <>
       <Nav />
-      <main className="max-w-5xl mx-auto px-4 py-6">
-        <div className="flex flex-wrap items-end justify-between gap-3">
+      <main className="max-w-6xl mx-auto px-4 py-8">
+        <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <div className="small font-semibold" style={{ color: 'var(--blue)' }}>Ridgeline Roasters · wholesale coffee</div>
-            <h1 className="text-[28px] font-bold">Checkout</h1>
+            <div className="t-label" style={{ color: 'var(--blue)' }}>Ridgeline Roasters · wholesale</div>
+            <h1 className="t-h2 mt-1">Checkout</h1>
           </div>
-          <label className="text-sm">
-            <span className="muted mr-2">Judge mode, buying as</span>
-            <select className="field inline-block w-auto" value={buyer} onChange={(e) => setBuyer(e.target.value)}>
+          <label className="small font-bold flex items-center gap-2">
+            <span className="muted">Judge mode · buying as</span>
+            <select className="field w-auto mt-0" value={buyer} onChange={(e) => setBuyer(e.target.value)}>
               {BUYERS.map((b) => <option key={b.key} value={b.key}>{b.label}</option>)}
             </select>
           </label>
         </div>
 
-        <div className="grid md:grid-cols-5 gap-4 mt-4">
-          <section className="card p-4 md:col-span-3">
-            <div className="font-bold mb-2">Your order</div>
-            {items.map((i) => (
-              <div key={i.sku} className="flex justify-between gap-3 py-2 border-b" style={{ borderColor: 'var(--line)' }}>
-                <div className="min-w-0"><div className="font-medium">{i.name}</div><div className="text-xs muted">{i.qty} × {usd(i.unit)}</div></div>
-                <div className="font-semibold whitespace-nowrap">{usd(i.qty * i.unit)}</div>
-              </div>
-            ))}
-            <div className="flex justify-between pt-3 text-lg font-bold"><span>Total</span><span>{usd(total)}</span></div>
-            <p className="text-xs muted mt-2">Ships to {buyer === 'northgate' ? 'Pier 40 Freight Forwarding, Bayonne NJ' : 'the café'}.</p>
+        <div className="grid lg:grid-cols-[1fr_1.15fr] gap-8 mt-8 items-start">
+          <section className="card-flat p-4 sm:p-8">
+            <div className="t-label">Your order</div>
+            <ul className="mt-4 divide-y">
+              {items.map((i) => (
+                <li key={i.sku} className="flex justify-between gap-4 py-3">
+                  <div className="min-w-0">
+                    <div className="font-bold" style={{ color: 'var(--navy)' }}>{i.name}</div>
+                    <div className="small muted">{i.detail} · {i.qty} × {usd(i.unit)}</div>
+                  </div>
+                  <div className="font-bold num whitespace-nowrap">{usd(i.qty * i.unit)}</div>
+                </li>
+              ))}
+            </ul>
+            <div className="flex justify-between items-end pt-4 mt-2 border-t">
+              <span className="font-bold">Total</span><span className="t-h2 num">{usd(total)}</span>
+            </div>
+            <p className="small muted mt-2">Ships to {buyer === 'northgate' ? 'Pier 40 Freight Forwarding, Bayonne NJ' : 'Larkspur Café, Main St'}.</p>
+            <div className="mt-8">
+              <div className="t-label">Pay now</div>
+              <div ref={btnRef} className="mt-3" style={{ minHeight: 52 }} />
+              {!supplierClientId && <p className="small muted">Supplier PayPal app not configured.</p>}
+              {note && <p className="small mt-2">{note}</p>}
+            </div>
           </section>
 
-          <section className="md:col-span-2 space-y-3">
-            <div className="card p-4">
-              <div className="font-bold mb-2" style={{ color: 'var(--navy)' }}>Pay now</div>
-              <div ref={btnRef} style={{ minHeight: 50 }} />
-              {!supplierClientId && <p className="text-xs muted">Supplier PayPal app not configured.</p>}
-              {note && <p className="text-xs mt-2">{note}</p>}
+          <section className="card-hero overflow-hidden" style={{ borderColor: 'var(--blue)' }}>
+            <div className="hero-band rounded-none p-4 sm:p-8">
+              <div className="flex flex-wrap items-center gap-2"><span className="chip chip-onnavy">New · concept</span><span className="chip chip-onnavy">Decision in under a minute</span></div>
+              <h2 className="t-h1 mt-4" style={{ color: '#fff' }}>Pay in 30 days.<br />Ridgeline is paid today.</h2>
+              <p className="mt-3" style={{ color: 'rgba(255,255,255,.85)' }}>Net 30 for Business. Take the beans now and pay {usd(total)} on day 30 from your saved PayPal account.</p>
             </div>
-            <div className="flex items-center gap-3 small muted"><span className="flex-1 border-t" style={{ borderColor: 'var(--line)' }} />or pay later<span className="flex-1 border-t" style={{ borderColor: 'var(--line)' }} /></div>
-            <div className="card p-5" style={{ borderColor: 'var(--blue)', borderWidth: 2 }}>
-              <div className="flex flex-wrap items-center gap-2"><span className="font-bold text-lg" style={{ color: 'var(--navy)' }}>Net 30 for Business</span><span className="chip">concept</span><span className="chip chip-blue">Decision in under a minute</span></div>
-              <p className="text-sm muted mt-1">Take the beans today, pay in 30 days. Ridgeline is paid now by TermSheet Funding. Decision in under a minute.</p>
-              <button className="btn w-full justify-center mt-3" disabled={busy} onClick={net30}>{busy ? 'Starting…' : `Apply for Net 30 on ${usd(total)}`}</button>
-              <p className="small muted mt-2">No cost to the café. Ridgeline pays a 3% fee <Chip kind="assume" /></p>
+            <div className="p-4 sm:p-8">
+              <ul className="space-y-3">
+                {[
+                  ['No cost to the café', 'Ridgeline pays a 3% fee.'],
+                  ['AI credit check, with receipts', 'Every sentence of the decision links to the PayPal record behind it.'],
+                  ['Nothing charged today', 'You save your PayPal account. The charge runs on the due date, with a reminder 3 days before.'],
+                ].map(([a, b]) => (
+                  <li key={a} className="flex gap-3"><span className="font-extrabold" style={{ color: 'var(--good)' }}>✓</span><div><div className="font-bold" style={{ color: 'var(--navy)' }}>{a}</div><div className="small muted">{b}</div></div></li>
+                ))}
+              </ul>
+              <button className="btn btn-lg w-full mt-8" disabled={busy} onClick={net30}>{busy ? 'Starting…' : `Apply for Net 30 on ${usd(total)}`}</button>
+              <div className="flex flex-wrap gap-2 mt-3"><Chip kind="assume">3% fee is an assumption</Chip></div>
             </div>
           </section>
         </div>

@@ -32,17 +32,17 @@ export function Status({ s }: { s: string }) {
 }
 export const REASON_TEXT: Record<string, string> = { RP08: 'Missed payment, limit reduced', ON_TIME: 'Paid on time, limit raised' };
 
-function Tile({ label, cents, last, note }: { label: string; cents: number; last?: string | null; note: string }) {
+function Tile({ label, cents, last, note, big }: { label: string; cents: number; last?: string | null; note: string; big?: boolean }) {
   const prev = useRef(cents);
   const [flash, setFlash] = useState(false);
   useEffect(() => { if (prev.current !== cents) { setFlash(true); prev.current = cents; const t = setTimeout(() => setFlash(false), 1400); return () => clearTimeout(t); } }, [cents]);
   const color = cents > 0 ? 'var(--good)' : cents < 0 ? 'var(--navy)' : 'var(--muted)';
   return (
-    <div className="card p-4 min-w-0 transition-shadow" style={{ boxShadow: flash ? '0 0 0 3px var(--blue)' : undefined }}>
-      <div className="small font-semibold muted">{label}</div>
-      <div className="text-2xl font-bold mt-0.5" style={{ color }}>{cents > 0 ? '+' : cents < 0 ? '−' : ''}{usd(Math.abs(cents))}</div>
-      <div className="small muted">{note}</div>
-      <div className="mono muted truncate mt-1" title={last || ''}>{last ? `PayPal ID ${last}` : 'No PayPal movement yet'}</div>
+    <div className="p-4 sm:p-8 min-w-0 transition-colors" style={{ background: flash ? 'var(--blue-soft)' : undefined }}>
+      <div className="t-label">{label}</div>
+      <div className={(big ? 't-hero' : 'text-[32px] font-extrabold num') + ' mt-2'} style={{ color }}>{cents > 0 ? '+' : cents < 0 ? '−' : ''}{usd(Math.abs(cents))}</div>
+      <div className="small muted mt-1">{note}</div>
+      <div className="mono muted truncate mt-2" title={last || ''}>{last ? `PayPal ID ${last}` : 'No PayPal movement yet'}</div>
     </div>
   );
 }
@@ -51,12 +51,12 @@ export function MoneyStrip({ s }: { s: any }) {
   if (!s) return null;
   return (
     <div>
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <Tile label="Ridgeline Roasters · supplier" cents={s.totals.supplier} last={s.lastId.supplier} note="Paid by PayPal Payout" />
-        <Tile label="TermSheet Funding · funder" cents={s.totals.funder} last={s.lastId.funder} note="Repayments collected" />
+      <div className="card grid sm:grid-cols-[1.3fr_1fr_1fr] divide-y sm:divide-y-0 sm:divide-x overflow-hidden" style={{ borderColor: 'var(--line)' }}>
+        <Tile big label="Ridgeline · supplier" cents={s.totals.supplier} last={s.lastId.supplier} note="Paid today by PayPal Payout" />
+        <Tile label="TermSheet · funder" cents={s.totals.funder} last={s.lastId.funder} note="Repayments collected" />
         <Tile label="Café · buyer" cents={s.totals.buyer} last={s.lastId.buyer} note="Charged to saved PayPal" />
       </div>
-      <p className="small muted mt-2">Real PayPal sandbox movements in this demo session, gross. When a repayment lands, the café and funder show the same capture ID, because one capture moves money between them.</p>
+      <p className="small muted mt-2">Gross amounts. When a repayment lands, the café and the funder show the same capture ID, because one capture moves money between them.</p>
     </div>
   );
 }
@@ -65,7 +65,7 @@ export function ClockChip({ s, onChange }: { s: any; onChange: () => void }) {
   const [busy, setBusy] = useState(false);
   const go = async (action: string) => { setBusy(true); await fetch('/api/demo/clock', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action }) }); setBusy(false); onChange(); };
   return (
-    <div className="card px-4 py-3 flex flex-wrap items-center gap-3">
+    <div className="card-flat px-4 py-3 flex flex-wrap items-center gap-3">
       <div className="min-w-0">
         <div className="font-semibold" style={{ color: 'var(--navy)' }}>App date {s?.today || '…'} <Chip kind="clock" /></div>
         <div className="small muted">Only the app date moves. Every charge is a real PayPal sandbox call.</div>
@@ -83,7 +83,7 @@ export function Nav() {
   const links = [['/', 'Judge hub'], ['/shop', 'Checkout'], ['/buyer/buyer_secondshot', 'Café phone'], ['/funder', 'Funder ledger']];
   return (
     <header className="bg-white border-b" style={{ borderColor: 'var(--line)' }}>
-      <nav className="max-w-6xl mx-auto px-4 h-14 flex items-center gap-5 overflow-x-auto whitespace-nowrap">
+      <nav className="max-w-6xl mx-auto px-4 h-14 flex items-center gap-8 overflow-x-auto whitespace-nowrap">
         <Link href="/" className="font-extrabold text-lg" style={{ color: 'var(--navy)' }}>Term<span style={{ color: 'var(--blue)' }}>Sheet</span></Link>
         {links.map(([h, t]) => {
           const active = h === '/' ? path === '/' : path.startsWith(h.split('/').slice(0, 2).join('/'));
