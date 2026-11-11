@@ -14,7 +14,7 @@ export default function Buyer({ params }: { params: Promise<{ buyerId: string }>
   const load = () => fetch(`/api/buyer/${buyerId}`, { cache: 'no-store' }).then((r) => r.json()).then(setV);
   useEffect(() => { load(); const t = setInterval(load, 3000); return () => clearInterval(t); }, [buyerId]);
 
-  const send = async () => { setBusy('send'); await fetch(`/api/buyer/${buyerId}/message`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ body: text }) }); setText(''); setBusy(''); load(); };
+  const send = async () => { setBusy('send'); const r = await fetch(`/api/buyer/${buyerId}/message`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ body: text }) }); if (r.status === 429) alert((await r.json()).reason); else setText(''); setBusy(''); load(); };
   const retry = async () => { setBusy('send'); await fetch(`/api/buyer/${buyerId}/message`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ retry: true }) }); setBusy(''); load(); };
   const accept = async (id: string) => { setBusy('accept'); await fetch(`/api/plan/${id}/accept`, { method: 'POST' }); setBusy(''); load(); };
 
@@ -30,6 +30,11 @@ export default function Buyer({ params }: { params: Promise<{ buyerId: string }>
     <>
       <Nav />
       <StoryBar step={2} done={rcvs.some((r: any) => r.status === 'RESTRUCTURED' || r.status === 'PAID') && attempts.some((a: any) => a.status === 'COMPLETED')} />
+      {attempts.some((a: any) => a.status === 'COMPLETED') && (
+        <div className="max-w-6xl mx-auto px-4 pt-4">
+          <p className="callout-good small">This story has already been played in the shared demo. To see the decline and recovery from the start, open <b>Demo controls</b> on the home page and press <b>Reset demo</b>.</p>
+        </div>
+      )}
       <main className="max-w-6xl mx-auto px-4 py-8 grid lg:grid-cols-[380px_1fr] gap-8 items-start">
         <div className="mx-auto w-full max-w-[380px] rounded-[40px] p-3" style={{ background: '#0B1020', boxShadow: '0 24px 48px rgba(0,28,100,.25)' }}>
           <div className="rounded-[32px] overflow-hidden" style={{ background: 'var(--bg)' }}>

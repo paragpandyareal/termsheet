@@ -21,6 +21,8 @@ export default function Apply({ params }: { params: Promise<{ orderId: string }>
   const [showAll, setShowAll] = useState(false);
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [submitErr, setSubmitErr] = useState('');
   const [s, loadState] = useAppState(5000);
   const [form, setForm] = useState({ businessName: '', businessType: 'Café', foundedYear: '', shipTo: '', letter: '' });
 
@@ -41,9 +43,11 @@ export default function Apply({ params }: { params: Promise<{ orderId: string }>
     es.onerror = () => es.close();
   };
   const submit = async () => {
-    setFinal(null);
-    const r = await fetch(`/api/apply/${orderId}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(form) }).then((r) => r.json());
-    if (r.runId) stream(r.runId);
+    if (submitting) return;
+    setSubmitting(true); setSubmitErr(''); setFinal(null);
+    const r = await fetch(`/api/apply/${orderId}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(form) }).then((r) => r.json()).catch(() => ({}));
+    if (r.runId) { stream(r.runId); load(); } else setSubmitErr(r.reason || 'Could not start the analyst. Please try again.');
+    setSubmitting(false);
   };
   const save = async () => {
     setSaving(true); setErr('');
@@ -94,9 +98,10 @@ export default function Apply({ params }: { params: Promise<{ orderId: string }>
                 <label key={k} className="small font-semibold">{l}<input className="field font-normal" value={(form as any)[k]} onChange={(e) => setForm({ ...form, [k]: e.target.value })} /></label>
               ))}
               <label className="small font-semibold sm:col-span-2">Reference letter (optional, paste text){order.key === 'northgate' ? ' · Northgate’s letter is already on file' : ''}
-                <textarea className="field font-normal" rows={3} value={form.letter} onChange={(e) => setForm({ ...form, letter: e.target.value.slice(0, 200000) })} /></label>
+                <textarea className="field font-normal" rows={3} value={form.letter} onChange={(e) => setForm({ ...form, letter: e.target.value.slice(0, 5000) })} /></label>
             </div>
-            <button className="btn btn-lg mt-8" onClick={submit}>Submit application</button>
+            <button className="btn btn-lg mt-8" disabled={submitting} onClick={submit}>{submitting ? 'Starting…' : 'Submit application'}</button>
+            {submitErr && <p className="small mt-2" style={{ color: 'var(--bad)' }}>{submitErr}</p>}
           </section>
         )}
 

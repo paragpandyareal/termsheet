@@ -58,12 +58,15 @@ async function setLimit(buyerId: string, toCents: number, reason: string) {
 }
 
 // Flow A steps 7 to 9. Payout guard (PRD 7.1): approved application, vault stored, one payout per order.
-export async function fundOrder(orderId: string) {
+export async function fundOrder(orderId: string, opts: { demoSetup?: boolean } = {}) {
   const order = await one('SELECT * FROM orders WHERE id=$1', [orderId]);
   const app = await one("SELECT * FROM application WHERE order_id=$1 AND status IN ('APPROVED','COUNTEROFFER') ORDER BY created_at DESC LIMIT 1", [orderId]);
   const line = await one('SELECT * FROM credit_line WHERE buyer_id=$1', [order?.buyer_id]);
   if (!order || !app || !line?.vault_id) throw new Error('Payout guard: needs an approved application and a saved PayPal account.');
-  if (await one('SELECT id FROM payout WHERE order_id=$1', [orderId])) return; // already funded
+  // Claim the order atomically, so two loads of the return page can never send two payouts.
+  const payoutRowId = newId('po');
+  const claimed = await one("INSERT INTO payout (id, order_id, status) VALUES ($1,$2,'SENDING') ON CONFLICT (order_id) DO NOTHING RETURNING id", [payoutRowId, orderId]);
+  if (!claimed) return; // already funded
 
   const due = addDays(await today(), line.term_days || 30);
   const rcvId = newId('rcv');
@@ -76,9 +79,13 @@ export async function fundOrder(orderId: string) {
     email: process.env.SUPPLIER_EMAIL || '', cents: payoutCents, batchRef: `TS-PO-${orderId}-${Date.now()}`, itemRef: `TS-POI-${orderId}`,
     subject: `TermSheet payout for order ${order.order_no}`, note: `Order ${order.order_no}. $${(order.amount_cents / 100).toFixed(2)} less 3% fee.`,
   });
-  await sql('INSERT INTO payout (id, order_id, batch_id, amount_cents, fee_cents, status, debug_id) VALUES ($1,$2,$3,$4,$5,$6,$7)',
-    [newId('po'), orderId, p.batchId || null, payoutCents, feeCents, p.ok ? p.batchStatus || 'PENDING' : 'FAILED', p.debugId]);
-  if (p.ok) await money('supplier', 'in', payoutCents, `Payout for ${order.order_no}`, p.batchId, p.debugId);
+  await sql('UPDATE payout SET batch_id=$2, amount_cents=$3, fee_cents=$4, status=$5, debug_id=$6, updated_at=now() WHERE id=$1',
+    [payoutRowId, p.batchId || null, payoutCents, feeCents, p.ok ? p.batchStatus || 'PENDING' : 'FAILED', p.debugId]);
+  // The demo-setup payout for Second Shot's earlier order is real but kept off the money strip, so the strip shows only what the judge does.
+  if (p.ok && !opts.demoSetup) {
+    await money('supplier', 'in', payoutCents, `Payout for ${order.order_no}`, p.batchId, p.debugId);
+    await money('funder', 'out', payoutCents, `Payout for ${order.order_no}`, p.batchId, p.debugId);
+  }
   return { receivableId: rcvId, due, payout: p };
 }
 
@@ -158,8 +165,10 @@ export async function runCollections() {
 
 // Flow C step 7. Accepting a plan replaces the failed instalment. First instalment is charged at once.
 export async function acceptPlan(restructureId: string) {
+  // Claim the plan atomically, so two taps on Accept (or two judges) can never charge twice.
+  const claimed = await one("UPDATE restructure SET status='ACCEPTING', updated_at=now() WHERE id=$1 AND status='PROPOSED' RETURNING id", [restructureId]);
+  if (!claimed) throw new Error('No open plan.');
   const rs = await one('SELECT * FROM restructure WHERE id=$1', [restructureId]);
-  if (!rs || rs.status !== 'PROPOSED') throw new Error('No open plan.');
   const rcv = await one('SELECT * FROM receivable WHERE id=$1', [rs.receivable_id]);
   const orig = typeof rcv.due_date === 'string' ? rcv.due_date : rcv.due_date.toISOString().slice(0, 10);
   // Keep FAILED instalments as history (their charge attempts show the decline). Replace only what is still scheduled.
@@ -194,7 +203,7 @@ export async function armSecondShot() {
   const orderId = newId('ord');
   await sql("INSERT INTO orders (id, buyer_id, order_no, amount_cents, ship_to, items_json, status) VALUES ($1,$2,$3,200000,'Second Shot Café, 88 Harbor Ave','[]','APPLIED')", [orderId, buyerId, orderNo]);
   await sql("INSERT INTO application (id, order_id, buyer_id, status, decision_json) VALUES ($1,$2,$3,'APPROVED',$4)", [newId('app'), orderId, buyerId, JSON.stringify({ outcome: 'APPROVE', limit_cents: 500000, term_days: 30, seeded: true })]);
-  const f = await fundOrder(orderId);
+  const f = await fundOrder(orderId, { demoSetup: true });
   // Due on the next clock step: one app day away.
   const t = await today();
   await sql('UPDATE receivable SET due_date=$2, force_decline_once=true WHERE id=$1', [f!.receivableId, addDays(t, 1)]);

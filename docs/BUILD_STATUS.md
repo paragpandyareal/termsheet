@@ -6,7 +6,7 @@ Last updated Wednesday 11 Nov 2026, 17.30 Sydney (06.30 UTC).
 ## 1. Where things stand
 - **The app is built, deployed and working.**
   - Live: https://termsheet-tgwl.onrender.com (Render free web service plus free Postgres, from `render.yaml`, auto-deploys on push to `main`).
-  - Repo: github.com/paragpandyareal/termsheet, branch `main`. It is still **PRIVATE** until the entrant says to make it public (the rules need it public before submitting). Private research, mock judge scores and the PRDs for other ideas were moved out of the repo to `..TermSheet-private` (they remain in git history, which we do not rewrite).
+  - Repo: github.com/paragpandyareal/termsheet, branch `main`. It is still **PRIVATE** until the entrant says to make it public (the rules need it public before submitting). Private research, mock judge scores and the PRDs for other ideas were moved out of the repo to `../TermSheet-private` (they remain in git history, which we do not rewrite).
   - Local copy: `C:\Users\rocks\OneDrive\Desktop\Claude Code\TermSheet`.
 - **Live AI is ON for the hosted demo.**
   - `ANALYST_MODE=live`, model `claude-opus-5-5` (effort medium, prompt caching), capped at 20 runs an hour and 100 a day. The cap is counted in the `ai_spend` table, which Reset demo does not touch. About 8 US cents a run.
@@ -41,7 +41,7 @@ Last updated Wednesday 11 Nov 2026, 17.30 Sydney (06.30 UTC).
    - The café replies, the AI checks the story against sales and proposes a plan, Accept, then a real $1,000 capture.
 3. **The AI catches what the rules miss.**
    - /shop?buyer=northgate, a $2,387.50 order.
-   - The rules alone would approve it. The AI stops it: the letter's founding year 2024 contradicts the form's 2019, and goods ship to a freight forwarder. The letter's prompt injection is ignored.
+   - The rules alone would approve it. The AI stops it (12 of 12 live runs): the letter's opening date 2024 contradicts the form's 2019, goods go to a logistics company for onward shipping, and the letter's "already pre-approved" claim is flagged as an attempt to steer the review.
 
 ## 3. Key files
 - `README.md`: judge-facing README, with the sandbox login.

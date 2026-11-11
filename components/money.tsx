@@ -74,7 +74,7 @@ export function MoneyStrip({ s }: { s: any }) {
     <div>
       <div className="card grid sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x overflow-hidden">
         <Tile label="Ridgeline · supplier" cents={s.totals.supplier} last={s.lastId.supplier} note="Paid by PayPal Payout" />
-        <Tile label="TermSheet · funder" cents={s.totals.funder} last={s.lastId.funder} note="Repayments collected" />
+        <Tile label="TermSheet · funder" cents={s.totals.funder} last={s.lastId.funder} note="Payouts sent, repayments collected" />
         <Tile label="Café · buyer" cents={s.totals.buyer} last={s.lastId.buyer} note="Charged to saved PayPal" />
       </div>
       <p className="small muted mt-2">Gross amounts of real PayPal sandbox movements in this demo session. When a repayment lands, the café and the funder show the same capture ID, because one capture moves money between them.</p>

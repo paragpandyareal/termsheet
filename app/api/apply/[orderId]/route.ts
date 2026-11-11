@@ -3,14 +3,18 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { sql, one, newId } from '@/lib/db';
 import { startUnderwrite } from '@/lib/analyst/run';
+import { limit } from '@/lib/ratelimit';
 export const dynamic = 'force-dynamic';
 
 export async function POST(req: Request, ctx: { params: Promise<{ orderId: string }> }) {
   const { orderId } = await ctx.params;
   const order = await one('SELECT o.*, b.key FROM orders o JOIN buyer b ON b.id=o.buyer_id WHERE o.id=$1', [orderId]);
   if (!order) return Response.json({ error: 'no order' }, { status: 404 });
+  const limited = limit(req, 'apply', 6, 10 * 60_000);
+  if (limited) return limited;
   const form = await req.json().catch(() => ({}));
-  const letter = String(form.letter || '').slice(0, 200_000);
+  for (const k of Object.keys(form)) if (typeof form[k] === 'string' && k !== 'letter') form[k] = form[k].slice(0, 200);
+  const letter = String(form.letter || '').slice(0, 5_000);
   delete form.letter;
   await sql('DELETE FROM document WHERE buyer_id=$1', [order.buyer_id]);
   let text = letter;

@@ -185,7 +185,7 @@ export async function runTool(ctx: ToolCtx, name: string, input: any): Promise<{
       const s = score(input);
       ctx.facts.score = s;
       await addEv(ctx, { id: 'policy:scorecard', source: 'Scorecard sc-1', summary: `Score ${s.total}/100, tier ${s.ceiling.tier}, ceiling ${s.ceiling.outcome} ${usd(s.ceiling.limitCents)}` });
-      return { summary: `Score ${s.total}, tier ${s.ceiling.tier}`, result: { scorecard: s, ceiling_rule: 'You may keep or lower the ceiling, ask up to 50% deposit, decline or refer. Never raise a limit, lengthen a term or waive a deposit.', plan_policy: 'At most 2 instalments. First at least 25% of balance, charged on acceptance (day 0). Final no later than 15 days after original due date. Sum exactly to the balance. No fees or interest.', today: await today(), evidence_ids: ['policy:scorecard'] } };
+      return { summary: `Score ${s.total}, tier ${s.ceiling.tier}`, result: { scorecard: s, ceiling_rule: 'You may keep or lower the ceiling, decline or refer. An approval must cover the order. No deposits in this version. Never raise a limit or lengthen a term.', plan_policy: 'At most 2 instalments. First at least 25% of balance, charged on acceptance (day 0). Final no later than 15 days after original due date. Sum exactly to the balance. No fees or interest.', today: await today(), evidence_ids: ['policy:scorecard'] } };
     }
   }
   return { summary: 'unknown tool', result: { error: `Unknown tool ${name}` } };

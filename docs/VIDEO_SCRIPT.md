@@ -3,6 +3,7 @@
 About 400 spoken words at a calm pace. Record the screen from the hosted demo, then record the voiceover over it.
 
 ## Before you record
+0. The AI writes its own plan each time. In our tests it was always $1,000 now and $1,000 in 15 days, but if your take shows different amounts, say the amounts you see.
 1. Open https://termsheet-tgwl.onrender.com, open **Demo controls** at the bottom and press **Reset demo**. Wait for "Reset done".
 2. Do one practice run of the Larkspur PayPal login so you know where the popup goes.
 3. Browser zoom 110 to 125% so text is readable on YouTube. Close other tabs. Hide bookmarks.
@@ -29,16 +30,16 @@ About 400 spoken words at a calm pace. Record the screen from the hosted demo, t
 "TermSheet puts Net 30 inside PayPal checkout. The roaster is paid today, the café pays in thirty days, and an AI credit analyst decides who qualifies and shows its working."
 
 ## Scene 3. Larkspur gets approved (0:25 to 0:50)
-**Screen:** Larkspur, $2,000 cart. Click **Apply for Net 30**, then **Submit application**. Show the tool calls appearing (sped up). The memo appears. Click one citation number so the evidence row lights up. Click **Save my PayPal account**, log in, return. Show the money strip: Ridgeline +$1,940, café charged $0.
+**Screen:** Larkspur, $2,000 cart. Click **Apply for Net 30**, then **Submit application**. Show the tool calls appearing (sped up). The memo appears. Click one citation number so the evidence row lights up. Click **Save my PayPal account**, log in, return. Show the money strip: Ridgeline +$1,940, TermSheet -$1,940 (it paid), café $0.
 
 **Say:**
-"Larkspur Café orders two thousand dollars of beans. The AI reads its PayPal history: past orders, invoices, disputes and the café's own sales. Every sentence in the memo links to the PayPal record it came from. Approved. The café saves its PayPal account. Nothing is charged today, and Marisol gets a real PayPal Payout of nineteen hundred and forty dollars right now."
+"Larkspur Café orders two thousand dollars of beans. The AI reads its PayPal history, and every sentence in the memo links to the record behind it. Approved. The café saves its PayPal account, pays nothing today, and Marisol gets a real nineteen hundred and forty dollar Payout right now."
 
 ## Scene 4. A payment fails, and gets recovered (0:50 to 1:30)
 **Screen:** Click **Café phone** (Second Shot). Click **Jump to next due date**. Show the decline with the "Simulated decline" label and the debug ID. Limit drops, line frozen. Type "Espresso machine died, can pay half Friday." Send. Show the AI's plan (sped up). Click **Accept**. Show the real $1,000 capture ID.
 
 **Say:**
-"Now the hard part. Thirty days later, Second Shot Café's charge is declined. Most demos stop at the happy path. Here, the limit drops and the café gets a message. The owner replies in plain words: espresso machine died, can pay half Friday. The AI checks that story against the café's real sales, sees it is believable, and explains kindly why the first half has to be taken today. One thousand now, one thousand in fifteen days, no fees. Accept, and a real one thousand dollar charge goes through. Recovered, not chased."
+"Now the hard part. Thirty days later, Second Shot Café's charge is declined. Most demos stop at the happy path. Here, the limit drops and the café gets a message. The owner replies in plain words: espresso machine died, can pay half Friday. The AI checks that story against the café's real sales, sees it is believable, and explains kindly why the first half has to be taken today. Here it offers one thousand now and one thousand in fifteen days, no fees. Accept, and a real one thousand dollar charge goes through. Recovered, not chased."
 
 ## Scene 5. The AI catches what the rules miss (1:30 to 2:05)
 **Screen:** Click **Checkout**, switch the buyer to **Northgate Resale LLC**. Point at "Ships to Pier 40 Logistics". Apply and submit. Show the result: referred to a human. Highlight the two contradictions and the line about the letter.

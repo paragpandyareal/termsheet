@@ -6,8 +6,8 @@ let booted = false;
 export async function getState() {
   if (!booted) { await bootstrap(); booted = true; }
   const [buyers, lines, receivables, instalments, attempts, payouts, moneyEvents, limitChanges] = await Promise.all([
-    sql('SELECT * FROM buyer ORDER BY id'),
-    sql('SELECT * FROM credit_line'),
+    sql('SELECT id, key, display_name, business_type, stated_founded_year, has_sales_app, seeded FROM buyer ORDER BY id'),
+    sql('SELECT id, buyer_id, status, limit_cents, ceiling_cents, term_days, deposit_pct, scorecard_version, (vault_id IS NOT NULL) AS saved, updated_at FROM credit_line'),
     sql("SELECT r.*, r.due_date::text AS due, o.order_no FROM receivable r JOIN orders o ON o.id=r.order_id ORDER BY r.created_at DESC"),
     sql('SELECT *, due_date::text AS due FROM instalment ORDER BY due_date, seq'),
     sql('SELECT * FROM charge_attempt ORDER BY created_at DESC'),

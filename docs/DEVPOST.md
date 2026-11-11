@@ -58,10 +58,11 @@ Six sandbox accounts (funder, supplier, three cafés and a walk-in shopper), wit
 - **The AI can only tighten.** A plain, versioned scorecard (`sc-1`) sets the most the café can get. The AI can keep that, lower it, decline or refer to a human. It can never raise it.
 - **The AI never moves money.** Only ledger code calls the money APIs.
 - **Documents are evidence, never instructions.** A letter that tries to steer the decision is flagged and ignored.
+- **Protected for a shared public demo.** A spend cap that Reset cannot clear, a per-visitor limit on AI runs, and single-use claims so a plan is charged once and an order is paid out once.
 - **Safe failure.** If the AI is unavailable, over its spending cap or fails validation twice, a plain rule-based writer drafts the memo from the same live PayPal evidence, and the screen labels it.
 
 **Proof it works.**
-- **22 live AI runs** on the hosted demo (`docs/AI_EVAL.md`, with every memo in `docs/ai-eval-runs.json`). Larkspur approved 10 times out of 10. Northgate stopped 12 times out of 12, even though the rules alone would approve it. Median 17 seconds per decision.
+- **22 live AI runs** on the hosted demo (`docs/AI_EVAL.md`, with every memo in `docs/ai-eval-runs.json`). Larkspur approved 10 times out of 10. Northgate stopped 12 times out of 12, even though the rules alone would approve it. Median 18 seconds per decision.
 - **Scorecard backtest** on 100 synthetic buyers (`docs/BACKTEST.md`, free to rerun). The plain scorecard approves all 25 buyers whose only warning sign is in a document or the shipping address. That is the gap the AI covers.
 - **28 unit tests.** 20 of them feed hand-made bad AI outputs to the validators (invented evidence, uncited sentences, a raised limit, a plan that does not add up) and confirm each is rejected.
 
@@ -111,6 +112,7 @@ The idea works only if losses stay near 2% or lower. Three levers keep them ther
 - **Underwriting from both sides of the PayPal network.** The supplier's trade history with the café, read through the PayPal Agent Toolkit, plus the café's own PayPal sales, read with its own app.
 - **AI that shows its working.** Every sentence is tied to a PayPal record, and code rejects anything uncited.
 - **AI that can only tighten.** The AI adds judgement the rules cannot (a letter that contradicts the form, a shipping address that does not fit a café, an attempt to steer the reviewer), but it cannot loosen a decision.
+- **Credit for the business buyer, at checkout.** PayPal Pay in 4 lends to shoppers and PayPal Working Capital lends to sellers. TermSheet is credit for the business that is buying, offered at the supplier's checkout and repaid from the buyer's own PayPal account.
 - **A payment plan at the moment of failure.** Instead of a collections letter, the café explains in its own words, the AI checks the story against real sales, and a real charge recovers the money.
 
 ## Presentation
@@ -118,7 +120,7 @@ The idea works only if losses stay near 2% or lower. Three levers keep them ther
 - **Video (under 3 minutes):** TODO YouTube link
 - **Try it yourself in five minutes** at https://termsheet-tgwl.onrender.com. Three stories, each started from the home page:
   1. **A café gets 30 days.** Larkspur applies for a $2,000 order, the AI approves it, the café saves its PayPal account and Ridgeline gets a $1,940 Payout.
-  2. **A missed payment gets fixed.** Second Shot's day 30 charge is declined. The café replies "Espresso machine died, can pay half Friday." The AI checks that against its sales, explains kindly why the first payment has to be today, and offers $1,000 now and $1,000 in 15 days. Accept, and a real $1,000 charge goes through.
+  2. **A missed payment gets fixed.** Second Shot's day 30 charge is declined. The café replies "Espresso machine died, can pay half Friday." The AI checks that against its sales, explains kindly why the first payment has to be today, and offers a plan inside the rules (in our tests, $1,000 now and $1,000 in 15 days). Accept, and a real $1,000 charge goes through.
   3. **The AI catches what the rules miss.** Northgate's numbers look fine, so the rules alone would approve it. The AI spots that its reference letter's opening date contradicts the form, that goods go to a logistics company for onward shipping, and that the letter claims it was "already pre-approved". It sends the file to a human.
 - The README has the full walkthrough, the API list and how to run it locally.
 

@@ -18,7 +18,7 @@ export default function Funder() {
         <div><div className="t-label" style={{ color: 'var(--blue)' }}>Funder ledger · sandbox stand in for a PayPal credit unit</div><h1 className="t-h2 mt-1">TermSheet Funding</h1><p className="muted mt-1">Every row is a real PayPal sandbox call, with its PayPal ID and debug ID.</p></div>
         <DemoControls open />
         <section className="card-flat p-4 sm:p-8 min-w-0 overflow-hidden"><div className="t-h3 mb-4">Credit lines</div>
-          <T head={['Buyer', 'Status', 'Limit', 'Saved PayPal account']} rows={s.lines.map((l: any) => [name(l.buyer_id), <Status s={l.status} />, usd(l.limit_cents), l.vault_id ? 'Yes' : 'No'])} /></section>
+          <T head={['Buyer', 'Status', 'Limit', 'Saved PayPal account']} rows={s.lines.map((l: any) => [name(l.buyer_id), <Status s={l.status} />, usd(l.limit_cents), l.saved ? 'Yes' : 'No'])} /></section>
         <section className="card-flat p-4 sm:p-8 min-w-0 overflow-hidden"><div className="t-h3 mb-4">Receivables</div>
           <T head={['Order', 'Buyer', 'Principal', 'Due', 'Status']} rows={s.receivables.map((r: any) => [r.order_no, name(r.buyer_id), usd(r.principal_cents), fmtDate(r.due), <Status s={r.status} />])} /></section>
         <section className="card-flat p-4 sm:p-8 min-w-0 overflow-hidden"><div className="t-h3 mb-4">Charge attempts (buyer absent)</div>

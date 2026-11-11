@@ -217,7 +217,9 @@ async function mockUnderwrite(ctx: ToolCtx) {
   if (/freight|forward|warehouse|logistics/i.test(order?.ship_to || '') && orderEv) { contradictions.push({ text: 'Goods ship to a logistics company for onward shipping, which does not fit a single café.', evidence_ids: [orderEv, 'app:businessType'] }); codes.push('OB07'); }
   const inj = docEv.find((e) => /ignore|disregard|approve (a|the)? ?\$|automated reviewer|instructions|pre-approved|no further review/i.test(e.summary));
   if (inj) memo.push({ text: 'The reference letter tries to steer the review (it claims the account is already approved). That claim cannot be checked, so it was treated as evidence and ignored.', evidence_ids: [inj.id] });
-  const decline = contradictions.length > 0 || c.outcome === 'DECLINE';
+  // Contradictions go to a person, the same as the live AI does. Only a scorecard DECLINE is an outright decline.
+  if (contradictions.length) return { outcome: 'REFER', limit_cents: 0, term_days: 0, deposit_pct: 0, factor_codes: [...new Set(codes)], summary: 'Sent to a human reviewer: the documents and the form do not agree, so terms cannot be offered yet.', tightening_reason: 'Contradictions the scorecard cannot see.', would_change: 'Documents that match the form and a delivery address at the café.', memo, contradictions, confidence: 'MEDIUM' };
+  const decline = c.outcome === 'DECLINE';
   if (!decline && (c.outcome !== 'APPROVE' || c.limitCents < (f.orderCents || 0))) return { outcome: 'REFER', limit_cents: 0, term_days: 0, deposit_pct: 0, factor_codes: [...new Set(codes)], summary: 'Sent to a human reviewer: the scorecard does not support terms for this order on its own.', would_change: 'More trading history with Ridgeline.', memo, contradictions, confidence: 'MEDIUM' };
   return {
     outcome: decline ? 'DECLINE' : c.outcome, limit_cents: decline ? 0 : c.limitCents, term_days: decline ? 0 : c.termDays, deposit_pct: 0,
