@@ -30,6 +30,9 @@ CREATE TABLE IF NOT EXISTS analyst_run (
   messages_json JSONB, trace_json JSONB DEFAULT '[]', output_json JSONB, status TEXT DEFAULT 'RUNNING',
   token_usage JSONB, started_at TIMESTAMPTZ DEFAULT now(), ended_at TIMESTAMPTZ);
 
+CREATE TABLE IF NOT EXISTS ai_spend (
+  id SERIAL PRIMARY KEY, run_id TEXT, at TIMESTAMPTZ DEFAULT now());
+
 CREATE TABLE IF NOT EXISTS payout (
   id TEXT PRIMARY KEY, order_id TEXT UNIQUE NOT NULL, batch_id TEXT, item_id TEXT, amount_cents INT, fee_cents INT,
   status TEXT, debug_id TEXT, created_at TIMESTAMPTZ DEFAULT now(), updated_at TIMESTAMPTZ DEFAULT now());

@@ -119,7 +119,7 @@ export function DemoControls({ open = false }: { open?: boolean }) {
         <ClockChip s={s} onChange={load} />
         <div className="flex flex-wrap items-center gap-3">
           <button className="btn btn-ghost btn-sm" onClick={reset}>Reset demo</button>
-          <span className="small muted">{msg || 'Restores app state only. PayPal history is never deleted. Once a minute.'}</span>
+          <span className="small muted">{msg || 'This is one shared demo. If a story looks half done, someone else may be mid-run: press Reset to start clean. Restores app state only; PayPal history is never deleted.'}</span>
         </div>
       </div>
     </details>
@@ -128,17 +128,17 @@ export function DemoControls({ open = false }: { open?: boolean }) {
 
 export function Nav() {
   const path = usePathname();
-  const links = [['/', 'Home'], ['/shop', 'Checkout'], ['/buyer/buyer_secondshot', 'Café phone'], ['/funder', 'Funder ledger']];
+  // Short labels on phones so every link fits without scrolling.
+  const links = [['/', 'Home', 'Home'], ['/shop', 'Checkout', 'Shop'], ['/buyer/buyer_secondshot', 'Café phone', 'Café'], ['/funder', 'Funder ledger', 'Ledger']];
   return (
     <header className="border-b relative" style={{ background: 'var(--subtle)' }}>
-      <nav className="max-w-6xl mx-auto px-4 h-14 flex items-center gap-4 sm:gap-8 overflow-x-auto whitespace-nowrap" aria-label="Main">
-        <Link href="/" className="font-extrabold text-lg" style={{ color: 'var(--navy)' }}>Term<span style={{ color: 'var(--blue)' }}>Sheet</span></Link>
-        {links.map(([h, t]) => {
+      <nav className="max-w-6xl mx-auto px-3 sm:px-4 h-14 flex items-center gap-1 sm:gap-8 whitespace-nowrap" aria-label="Main">
+        <Link href="/" className="font-extrabold text-lg mr-1" style={{ color: 'var(--navy)' }}>Term<span style={{ color: 'var(--blue)' }}>Sheet</span></Link>
+        {links.map(([h, t, short]) => {
           const active = h === '/' ? path === '/' : path.startsWith(h.split('/').slice(0, 2).join('/'));
-          return <Link key={h} href={h} className="text-[15px] font-semibold h-11 px-3 rounded-full inline-flex items-center" style={{ color: active ? 'var(--navy)' : 'var(--muted)', background: active ? 'var(--nav-active)' : 'transparent' }}>{t}</Link>;
+          return <Link key={h} href={h} className="text-[15px] font-semibold h-11 px-2 sm:px-3 rounded-full inline-flex items-center" style={{ color: active ? 'var(--navy)' : 'var(--muted)', background: active ? 'var(--nav-active)' : 'transparent' }}><span className="sm:hidden">{short}</span><span className="hidden sm:inline">{t}</span></Link>;
         })}
       </nav>
-      <div className="pointer-events-none absolute right-0 top-0 h-14 w-8 sm:hidden" style={{ background: 'linear-gradient(90deg, rgba(245,247,250,0), #F5F7FA)' }} aria-hidden />
     </header>
   );
 }

@@ -1,5 +1,5 @@
 // The analyst loop (PRD 9). Two modes.
-//  live: Anthropic tool use, model from ANTHROPIC_MODEL (default the cheapest, Haiku). Capped per hour and per day.
+//  live: Anthropic tool use, model from ANTHROPIC_MODEL (default Claude Opus 5.5). Capped per hour and per day.
 //  mock: no AI call. Same live PayPal tools, then a plain rule based writer drafts the memo. Labelled on screen.
 // If a live run fails for any reason (credit, rate limit, timeout, two failed validations), the rule based writer
 // runs instead and the result is labelled "AI unavailable, rule based fallback".
@@ -8,18 +8,20 @@ import { sql, one, newId } from '@/lib/db';
 import { REASONS, checkPlan } from '@/lib/scorecard/scorecard';
 import { TOOL_DEFS, runTool, type ToolCtx } from './tools';
 
-const MODEL = process.env.ANTHROPIC_MODEL || 'claude-haiku-5-5';
-const MAX_TOOLS = 14, MAX_MS = 90_000;
+const MODEL = process.env.ANTHROPIC_MODEL || 'claude-opus-5-5';
+const EFFORT = process.env.ANTHROPIC_EFFORT || 'medium';
+const MAX_TOOLS = 14, MAX_MS = 180_000;
 const usd = (c: number) => '$' + (c / 100).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
 
 export function analystMode(): 'live' | 'mock' {
   return process.env.ANALYST_MODE === 'live' && process.env.ANTHROPIC_API_KEY ? 'live' : 'mock';
 }
+// Counted in ai_spend, which Reset demo never touches, so pressing reset cannot clear the cap.
 async function liveAllowed() {
-  const perHour = Number(process.env.ANALYST_RUNS_PER_HOUR || 30);
-  const perDay = Number(process.env.ANALYST_RUNS_PER_DAY || 300);
-  const h = await one("SELECT count(*)::int AS n FROM analyst_run WHERE mode='live' AND started_at > now() - interval '1 hour'");
-  const d = await one("SELECT count(*)::int AS n FROM analyst_run WHERE mode='live' AND started_at > now() - interval '1 day'");
+  const perHour = Number(process.env.ANALYST_RUNS_PER_HOUR || 20);
+  const perDay = Number(process.env.ANALYST_RUNS_PER_DAY || 100);
+  const h = await one("SELECT count(*)::int AS n FROM ai_spend WHERE at > now() - interval '1 hour'");
+  const d = await one("SELECT count(*)::int AS n FROM ai_spend WHERE at > now() - interval '1 day'");
   return (h?.n || 0) < perHour && (d?.n || 0) < perDay;
 }
 
@@ -145,7 +147,8 @@ async function callTool(ctx: ToolCtx, name: string, input: any) {
 
 async function liveLoop(ctx: ToolCtx, kind: 'UNDERWRITE' | 'PLAN', userText: string, validate: (o: any) => string[]) {
   const Anthropic = (await import('@anthropic-ai/sdk')).default;
-  const client = new Anthropic({ timeout: 45_000, maxRetries: 1 });
+  const client = new Anthropic({ timeout: 120_000, maxRetries: 1 });
+  await sql('INSERT INTO ai_spend (run_id) VALUES ($1)', [ctx.runId]);
   const system = kind === 'UNDERWRITE' ? SYSTEM_UNDERWRITE : SYSTEM_PLAN;
   const submit = kind === 'UNDERWRITE' ? SUBMIT_DECISION : SUBMIT_PLAN;
   const tools = [...TOOL_DEFS.filter((t) => kind === 'PLAN' ? ['get_thread', 'get_buyer_sales_summary', 'get_repayment_record', 'get_policy'].includes(t.name) : t.name !== 'get_thread'), submit] as any[];
@@ -155,8 +158,11 @@ async function liveLoop(ctx: ToolCtx, kind: 'UNDERWRITE' | 'PLAN', userText: str
   const t0 = Date.now();
   await sql('UPDATE analyst_run SET prompt_hash=$2 WHERE id=$1', [ctx.runId, crypto.createHash('sha256').update(system).digest('hex').slice(0, 12)]);
   while (Date.now() - t0 < MAX_MS) {
-    const res = await client.messages.create({ model: MODEL, max_tokens: 8000, system, tools, messages });
-    usage.input += res.usage.input_tokens; usage.output += res.usage.output_tokens;
+    // Opus 5.5: thinking is always on (adaptive); effort sets its depth. Top-level cache_control caches the growing history.
+    const res: any = await client.messages.create({ model: MODEL, max_tokens: 16000, system, tools, messages,
+      output_config: { effort: EFFORT }, cache_control: { type: 'ephemeral' } } as any);
+    usage.input += res.usage.input_tokens + (res.usage.cache_read_input_tokens || 0) + (res.usage.cache_creation_input_tokens || 0); usage.output += res.usage.output_tokens;
+    if (res.stop_reason === 'refusal') return { output: null, messages, usage, refer: ['The AI declined to answer'] };
     await sql('UPDATE analyst_run SET token_usage=$2 WHERE id=$1', [ctx.runId, JSON.stringify(usage)]);
     messages.push({ role: 'assistant', content: res.content });
     const uses = res.content.filter((b: any) => b.type === 'tool_use') as any[];
@@ -179,7 +185,7 @@ async function liveLoop(ctx: ToolCtx, kind: 'UNDERWRITE' | 'PLAN', userText: str
     if (calls > MAX_TOOLS) return { output: null, messages, usage, refer: [`More than ${MAX_TOOLS} tool calls`] };
     messages.push({ role: 'user', content: results });
   }
-  return { output: null, messages, usage, refer: ['Timed out after 90 seconds'] };
+  return { output: null, messages, usage, refer: ['Timed out after 3 minutes'] };
 }
 
 // Rule based writer, used in mock mode and as the labelled fallback. Same live tools and evidence. Only cites IDs that exist.

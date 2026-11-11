@@ -93,6 +93,12 @@ export default function Home() {
           </div>
         </section>
 
+        {/* 4b. What PayPal gains. */}
+        <section aria-labelledby="why-paypal" className="p-4 sm:p-8 rounded-2xl border-l-4" style={{ borderColor: 'var(--blue)', background: 'var(--subtle)' }}>
+          <div className="t-label" id="why-paypal">What PayPal gains</div>
+          <p className="mt-2 text-[17px]" style={{ color: 'var(--navy)' }}>Wholesale orders between small businesses are usually paid by bank transfer on an invoice, outside PayPal. Net 30 at checkout gives those orders a reason to move onto PayPal, and PayPal already holds the sales data that makes the credit decision safe.</p>
+        </section>
+
         {/* 5. Quiet footer: honesty box and judge login, then the demo controls drawer. */}
         <section className="grid md:grid-cols-[1.4fr_1fr] gap-4 small">
           <div className="p-4 sm:p-8 rounded-2xl border">
@@ -105,7 +111,7 @@ export default function Home() {
             <p className="mt-2 muted">Larkspur Café · sandbox test account with fake money</p>
             <p className="mono mt-1 text-[14px]">larkspur.termsheet@example.com</p>
             <p className="mono text-[14px]">larkspurtermsheet</p>
-            <p className="muted mt-2">Free hosting sleeps, so the first load can take up to a minute.</p>
+            <p className="muted mt-2">This is one shared demo. If a story looks half done, open Demo controls below and press Reset.</p>
           </div>
         </section>
 
