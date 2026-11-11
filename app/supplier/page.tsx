@@ -48,7 +48,7 @@ export default function Supplier() {
                       <li key={r.id} className="card p-4 rise">
                         <div className="flex flex-wrap items-baseline justify-between gap-2">
                           <div className="font-bold" style={{ color: 'var(--navy)' }}>{r.buyer} <span className="mono muted">{r.order_no}</span></div>
-                          <Status s={r.status === 'SENDING' ? 'PENDING' : r.status} />
+                          <Status s={r.status} />
                         </div>
                         <div className="grid grid-cols-3 gap-2 mt-3">
                           <div><div className="t-label">Order</div><div className="font-bold num">{usd(r.order_cents)}</div></div>

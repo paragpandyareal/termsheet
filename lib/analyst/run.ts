@@ -200,7 +200,7 @@ async function mockUnderwrite(ctx: ToolCtx) {
   if (txIds.length) memo.push({ text: `${f.paidOrders} Ridgeline orders paid in full, averaging ${usd(f.avgOrderCents)}.`, evidence_ids: txIds.slice(0, 4) });
   else memo.push({ text: 'No paid orders with Ridgeline on file.', evidence_ids: [`txn:none:${ctx.buyerKey}`].filter(has) });
   if (f.sales30) memo.push({ text: `Own PayPal sales were ${usd(f.sales30)} in the last 30 days, so this ${usd(f.orderCents)} order is ${Math.round((f.orderCents / f.sales30) * 100)}% of a month's sales.`, evidence_ids: [`sales:${ctx.buyerKey}:30d`] });
-  else memo.push({ text: 'No PayPal sales data is available for this buyer.', evidence_ids: [`sales:${ctx.buyerKey}:none`].filter(has) });
+  else memo.push({ text: 'This buyer has no PayPal sales to read, so its own sales could not be checked.', evidence_ids: [`sales:${ctx.buyerKey}:none`].filter(has) });
   const invIds = [...ctx.evidence.keys()].filter((k) => k.startsWith('inv:') && !k.startsWith('inv:summary:'));
   if (f.invoicesLate) memo.push({ text: `${f.invoicesLate} of ${(f.paidOrders || 0) + (f.invoicesTotal || 0)} Ridgeline bills were paid late, after the second reminder, so payment habits are good but not perfect.`, evidence_ids: invIds.length ? invIds : [`inv:summary:${ctx.buyerKey}`] });
   memo.push({ text: `${f.disputes || 0} PayPal disputes involve this buyer.`, evidence_ids: [`dsp:${ctx.buyerKey}`].filter(has) });

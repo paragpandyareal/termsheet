@@ -116,8 +116,8 @@ export async function runTool(ctx: ToolCtx, name: string, input: any): Promise<{
       const app = ctx.buyerKey as AppKey;
       if (!buyer.has_sales_app || !hasApp(app)) {
         ctx.facts.sales30 = null;
-        await addEv(ctx, { id: `sales:${ctx.buyerKey}:none`, source: 'Buyer sales', summary: 'Buyer sales data unavailable (no PayPal app connected)' });
-        return { summary: 'unavailable', result: { available: false, evidence_ids: [`sales:${ctx.buyerKey}:none`] } };
+        await addEv(ctx, { id: `sales:${ctx.buyerKey}:none`, source: 'Buyer sales', summary: 'No PayPal sales to read: this buyer does not take its sales through PayPal' });
+        return { summary: 'No PayPal sales to read for this buyer', result: { available: false, evidence_ids: [`sales:${ctx.buyerKey}:none`] } };
       }
       let rows: { cents: number; date: string }[] = [];
       let via = 'PayPal Transaction Search (buyer app)';

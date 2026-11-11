@@ -3,7 +3,7 @@
 //  A: what the café sees. The form, the decision in plain words, saving the PayPal account, the confirmation.
 //  B: what PayPal's credit team sees. Scorecard against the AI, the live tool trace, the cited memo, the evidence, PayPal IDs.
 //  C: demo controls. Story bar, the sandbox login, links to the other views.
-import { use, useEffect, useState } from 'react';
+import { use, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Nav, Chip, MoneyStrip, useAppState, usd, fmtDate, StoryBar, Skeleton, Status } from '@/components/money';
@@ -35,17 +35,24 @@ export default function Apply({ params }: { params: Promise<{ orderId: string }>
     setData(d);
     setForm((f) => f.businessName ? f : { ...f, businessName: d.order?.display_name || '', foundedYear: d.order?.key === 'secondshot' ? '2021' : '2019', shipTo: d.order?.ship_to || '' });
     if (d.run?.status === 'DONE') setTrace(d.run.trace_json || []);
-    else if (d.run && !final) stream(d.run.id);
+    else if (d.run) stream(d.run.id);
   });
   useEffect(() => { load(); }, [orderId]);
   useEffect(() => { if (q.get('saved')) { const t = setInterval(() => { load(); loadState(); }, 3000); return () => clearInterval(t); } }, [q]);
 
+  // Exactly one stream per run. The server replays the whole trace on connect, so a second stream for the same run
+  // would add every row twice (the counter showed 14, then 7 once the stored trace loaded).
+  const es = useRef<{ runId: string; src: EventSource } | null>(null);
+  useEffect(() => () => es.current?.src.close(), []);
   const stream = (runId: string) => {
+    if (es.current?.runId === runId) return;
+    es.current?.src.close();
     setTrace([]);
-    const es = new EventSource(`/api/analyst/${runId}`);
-    es.onmessage = (e) => setTrace((t) => [...t, JSON.parse(e.data)]);
-    es.addEventListener('final', (e: any) => { setFinal(JSON.parse(e.data)); es.close(); load(); });
-    es.onerror = () => es.close();
+    const src = new EventSource(`/api/analyst/${runId}`);
+    es.current = { runId, src };
+    src.onmessage = (e) => setTrace((t) => [...t, JSON.parse(e.data)]);
+    src.addEventListener('final', (e: any) => { setFinal(JSON.parse(e.data)); src.close(); load(); });
+    src.onerror = () => { src.close(); if (es.current?.src === src) es.current = null; };
   };
   const submit = async () => {
     if (submitting) return;

@@ -7,6 +7,7 @@ import { use, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { Nav, ClockChip, Chip, usd, fmtDate, StoryBar, Skeleton, Status } from '@/components/money';
 import { Zone, CustomerZone } from '@/components/zones';
+import { addDays } from '@/lib/ledger/rules';
 
 export default function Buyer({ params }: { params: Promise<{ buyerId: string }> }) {
   const { buyerId } = use(params);
@@ -61,9 +62,21 @@ export default function Buyer({ params }: { params: Promise<{ buyerId: string }>
                 <div className="mt-3"><div className="small on-navy-muted">You owe</div><div className="text-[36px] font-extrabold num leading-none">{usd(open)}</div></div>
               </div>
               <div className="p-3 @3xl:p-6 space-y-2">
-                {ins.filter((i: any) => i.status === 'SCHEDULED').map((i: any) => (
-                  <div key={i.id} className="card px-3 py-2 text-sm flex justify-between"><span>Due {fmtDate(i.due)}</span><span className="font-semibold">{usd(i.amount_cents)}</span></div>
+                {rcvs.filter((r: any) => r.status === 'PAST_DUE').map((r: any) => (
+                  <div key={r.id} className="callout-bad text-sm">
+                    <div className="font-semibold">Past due since {fmtDate(r.due)}</div>
+                    <div className="text-xs">Ridgeline order {r.order_no} · ordered {fmtDate(addDays(r.due, -30))} · Net 30</div>
+                  </div>
                 ))}
+                {ins.filter((i: any) => i.status === 'SCHEDULED').map((i: any) => {
+                  const r = rcvs.find((x: any) => x.id === i.receivable_id);
+                  return (
+                    <div key={i.id} className="card px-3 py-2 text-sm">
+                      <div className="flex justify-between"><span className="font-semibold">Due {fmtDate(i.due)}</span><span className="font-semibold">{usd(i.amount_cents)}</span></div>
+                      {r && <div className="text-xs muted">Ridgeline order {r.order_no} · ordered {fmtDate(addDays(r.due, -30))} · Net 30</div>}
+                    </div>
+                  );
+                })}
                 {plan && (
                   <div className="card p-3 text-sm" style={{ borderColor: 'var(--accent)', borderWidth: 2 }}>
                     <div className="font-bold">Payment plan offer</div>
@@ -80,7 +93,7 @@ export default function Buyer({ params }: { params: Promise<{ buyerId: string }>
                 {!v.messages.length && <p className="small muted">No messages yet.</p>}
                 {v.messages.map((m: any) => (
                   <div key={m.id} className={`text-sm px-3 py-2 rounded-2xl max-w-[85%] ${m.sender === 'BUYER' ? 'ml-auto' : ''}`} style={{ background: m.sender === 'BUYER' ? 'var(--accent)' : 'var(--card)', color: m.sender === 'BUYER' ? 'white' : 'var(--ink)', border: m.sender === 'BUYER' ? 'none' : '1px solid var(--line)' }}>
-                    <span className="block text-[11px] opacity-80">{m.sender === 'SYSTEM' ? 'Automatic · ' : ''}{new Date(m.created_at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</span>{m.body}
+                    <span className="block text-[11px] opacity-80">{m.sender === 'SYSTEM' ? 'Automatic · ' : ''}{/* Time only: the app clock moves the date, so a real calendar date here would contradict it. */}{new Date(m.created_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}</span>{m.body}
                   </div>
                 ))}
               </div>

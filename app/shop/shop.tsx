@@ -106,8 +106,8 @@ export default function Shop({ supplierClientId }: { supplierClientId: string })
               <section className="card-hero overflow-hidden" style={{ borderColor: 'var(--blue)' }}>
                 <div className="hero-band rounded-none p-4 @lg:p-8">
                   <div className="flex flex-wrap items-center gap-2"><span className="chip chip-onnavy">New</span><span className="chip chip-onnavy">Decision in under a minute</span></div>
-                  <h2 className="t-h1 mt-4 on-navy">Pay in 30 days.<br />Ridgeline is paid today.</h2>
-                  <p className="mt-3 on-navy-muted">Net 30 for Business. Take the beans now and pay {usd(total)} on day 30 from your saved PayPal account.</p>
+                  <h2 className="t-h1 mt-4 on-navy">Net 30.<br />Ridgeline is paid today.</h2>
+                  <p className="mt-3 on-navy-muted">Net 30 for Business. Take the beans now, and {usd(total)} is charged to your saved PayPal account on day 30.</p>
                 </div>
                 <div className="p-4 @lg:p-8">
                   <ul className="space-y-3">

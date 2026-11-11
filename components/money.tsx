@@ -34,7 +34,8 @@ export function Chip({ kind, children, title }: { kind: keyof typeof CHIP; child
 
 const STATUS: Record<string, [string, string]> = {
   ACTIVE: ['chip chip-good', 'Active'], PAID: ['chip chip-good', 'Paid'], COMPLETED: ['chip chip-good', 'Charged'], SUCCESS: ['chip chip-good', 'Paid out'], OK: ['chip chip-good', 'Passed'],
-  OPEN: ['chip chip-blue', 'Open'], RESTRUCTURED: ['chip chip-warn', 'On a plan'], PENDING: ['chip chip-warn', 'Pending'], PROCESSING: ['chip chip-warn', 'Processing'],
+  OPEN: ['chip chip-blue', 'Open'], RESTRUCTURED: ['chip chip-warn', 'On a plan'], // Payouts: once PayPal accepts the batch the money has been sent; PayPal is still settling it.
+  PENDING: ['chip chip-blue', 'Payout sent, PayPal processing'], PROCESSING: ['chip chip-blue', 'Payout sent, PayPal processing'], SENDING: ['chip chip-blue', 'Sending Payout'],
   FROZEN: ['chip chip-sim', 'Frozen'], PAST_DUE: ['chip chip-sim', 'Past due'], FAILED: ['chip chip-sim', 'Declined'], NONE: ['chip', 'No line'],
 };
 export function Status({ s, label }: { s: string; label?: string }) {
@@ -92,7 +93,7 @@ export function MoneyStrip({ s }: { s: any }) {
         </Tile>
         <Tile label="Café · buyer" cents={s.totals.buyer} last={s.lastId.buyer} note="Charged to its saved PayPal account" />
       </div>
-      <p className="small muted mt-2">Real PayPal sandbox movements on every Net 30 order in this demo, including Second Shot’s order funded 30 days earlier. The funder pays out today and collects later, so its position is the fee once every café has paid. <Chip kind="assume">3% fee is an assumption</Chip></p>
+      <p className="small muted mt-2">Real PayPal sandbox movements on every Net 30 order in this demo, including Second Shot’s order, funded before the demo starts. The funder pays out today and collects later, so its position is the fee once every café has paid. <Chip kind="assume">3% fee is an assumption</Chip></p>
     </div>
   );
 }
@@ -120,7 +121,7 @@ export function DemoControls({ open = false, strip = true }: { open?: boolean; s
   const reset = async () => {
     setMsg('Resetting. This sends Ridgeline a fresh real payout for Second Shot, so it takes a few seconds…');
     const r = await fetch('/api/demo/reset', { method: 'POST' }).then((r) => r.json());
-    setMsg(r.ok ? `Reset done. Second Shot order ${r.orderNo} is funded and due tomorrow.` : r.reason || 'Reset failed.');
+    setMsg(r.ok ? `Reset done. Second Shot order ${r.orderNo} was funded yesterday on Net 30. Use Jump to next due date on the café phone to go to day 30.` : r.reason || 'Reset failed.');
     load();
   };
   return (

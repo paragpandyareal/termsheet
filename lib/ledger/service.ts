@@ -204,10 +204,13 @@ export async function armSecondShot() {
   await sql("INSERT INTO orders (id, buyer_id, order_no, amount_cents, ship_to, items_json, status) VALUES ($1,$2,$3,200000,'Second Shot Café, 88 Harbor Ave','[]','APPLIED')", [orderId, buyerId, orderNo]);
   await sql("INSERT INTO application (id, order_id, buyer_id, status, decision_json) VALUES ($1,$2,$3,'APPROVED',$4)", [newId('app'), orderId, buyerId, JSON.stringify({ outcome: 'APPROVE', limit_cents: 500000, term_days: 30, seeded: true })]);
   const f = await fundOrder(orderId, { demoSetup: true });
-  // Due on the next clock step: one app day away.
+  // A true Net 30: ordered yesterday (app date), due 29 days from today. "Jump to next due date" moves the clock about a
+  // month, so the screen shows the charge 30 days after the order. A Larkspur order approved today is due on day 30, one
+  // day later, so the jump never charges it by surprise.
   const t = await today();
-  await sql('UPDATE receivable SET due_date=$2, force_decline_once=true WHERE id=$1', [f!.receivableId, addDays(t, 1)]);
-  await sql('UPDATE instalment SET due_date=$2 WHERE receivable_id=$1', [f!.receivableId, addDays(t, 1)]);
+  const due = addDays(t, 29);
+  await sql('UPDATE receivable SET due_date=$2, force_decline_once=true WHERE id=$1', [f!.receivableId, due]);
+  await sql('UPDATE instalment SET due_date=$2 WHERE receivable_id=$1', [f!.receivableId, due]);
   return { ok: true, orderNo };
 }
 
