@@ -90,7 +90,7 @@ export default function Shop({ supplierClientId }: { supplierClientId: string })
             <div className="flex justify-between items-end pt-4 mt-2 border-t">
               <span className="font-bold">Total</span><span className="t-h2 num">{usd(total)}</span>
             </div>
-            <p className="small muted mt-2">Ships to {buyer === 'northgate' ? 'Pier 40 Freight Forwarding, Bayonne NJ' : 'Larkspur Café, Main St'}.</p>
+            <p className="small muted mt-2">Ships to {buyer === 'northgate' ? 'Pier 40 Logistics, Unit 12, Bayonne NJ' : 'Larkspur Café, Main St'}.</p>
             <div className="mt-8">
               <div className="t-label">Pay now</div>
               <div ref={btnRef} className="mt-3" style={{ minHeight: 52 }} />

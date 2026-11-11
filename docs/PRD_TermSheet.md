@@ -8,7 +8,7 @@
 | Event | PayPal AI Hackathon on Devpost |
 | Hard deadline | Thursday 12 Nov 2026, 12.00pm Pacific (20.00 UTC). Friday 13 Nov, 7.00am Melbourne |
 | Builder | One person plus an AI coding model |
-| Source research | Branch `ccr-2774405b-ccejof`, folder `research/` (see `final_termsheet.md`, `judge_final_A/B/C.md`, `scope_check.md`) |
+| Source research | Private idea research and mock judging, kept outside this repo |
 | Status | Nothing is built yet. Sandbox behaviour marked UNPROVEN below must be tested before it is relied on |
 
 How to read this file. Sections 1 to 4 say what the product is. Sections 5 to 13 say how to build it. Sections 14 to 19 cover the hackathon deliverables. Section 20 is the acceptance checklist. Every requirement has a priority.
@@ -746,7 +746,7 @@ The research read these from search extracts because the source sites were block
 | 5 | A US net terms provider publishes a 2.61% merchant fee for Net 30 | Resolve pricing page | Text only, never in the video |
 | 6 | PayPal "Pay in 30 days" is a consumer product in Germany | Finextra or a PayPal newsroom page | |
 | 7 | Pay Later volume grew about 25% in Q3 2026 | PayPal Q3 2026 earnings release | Secondary source in the research |
-| 8 | 3,373 public entrant repos surveyed and none offer net terms at checkout | `research/census.md` | Own research. Say "in our survey of public repos" |
+| 8 | 3,373 public entrant repos surveyed and none offer net terms at checkout | Own survey (private notes) | Own research. Say "in our survey of public repos" |
 | 9 | Share of B2B payments still made by cheque (wanted for the volume story) | AFP Payments Survey | Not yet sourced. Find and verify, or leave out |
 
 The B2B share of PayPal's payment volume is not disclosed. The sizing table must label it as an assumption.
@@ -755,7 +755,7 @@ The B2B share of PayPal's payment volume is not disclosed. The sizing table must
 
 ## 19. Scope checks
 
-All 15 must pass. From `research/scope_check.md`.
+All 15 must pass. From the private scope checklist.
 
 | # | Check | How TermSheet meets it |
 |---|---|---|

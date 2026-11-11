@@ -98,4 +98,3 @@ The riskiest calls were tested before any app code was written. The full record,
 ## 10. Project files
 - `docs/PRD_TermSheet.md` is the product brief.
 - `docs/BUILD_STATUS.md` is the current build state.
-- `docs/HANDOVER.md` holds the earlier handover notes.

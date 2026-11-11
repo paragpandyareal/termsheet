@@ -214,9 +214,9 @@ async function mockUnderwrite(ctx: ToolCtx) {
   if (yr && stated && yrVal !== stated) { contradictions.push({ text: `Reference letter says ${yrVal}, the form says founded ${stated}.`, evidence_ids: [yr.id, 'app:foundedYear'] }); codes.push('VR06'); }
   const order = ctx.orderId ? await one('SELECT ship_to FROM orders WHERE id=$1', [ctx.orderId]) : null;
   const orderEv = [...ctx.evidence.keys()].find((k) => k.startsWith('order:'));
-  if (/freight|forward|warehouse/i.test(order?.ship_to || '') && orderEv) { contradictions.push({ text: 'Goods ship to a freight forwarder, which does not fit a café.', evidence_ids: [orderEv, 'app:businessType'] }); codes.push('OB07'); }
-  const inj = docEv.find((e) => /ignore|disregard|approve (a|the)? ?\$|automated reviewer|instructions/i.test(e.summary));
-  if (inj) memo.push({ text: 'The reference letter contains an instruction aimed at the reviewer. It was treated as evidence and ignored.', evidence_ids: [inj.id] });
+  if (/freight|forward|warehouse|logistics/i.test(order?.ship_to || '') && orderEv) { contradictions.push({ text: 'Goods ship to a logistics company for onward shipping, which does not fit a single café.', evidence_ids: [orderEv, 'app:businessType'] }); codes.push('OB07'); }
+  const inj = docEv.find((e) => /ignore|disregard|approve (a|the)? ?\$|automated reviewer|instructions|pre-approved|no further review/i.test(e.summary));
+  if (inj) memo.push({ text: 'The reference letter tries to steer the review (it claims the account is already approved). That claim cannot be checked, so it was treated as evidence and ignored.', evidence_ids: [inj.id] });
   const decline = contradictions.length > 0 || c.outcome === 'DECLINE';
   if (!decline && (c.outcome !== 'APPROVE' || c.limitCents < (f.orderCents || 0))) return { outcome: 'REFER', limit_cents: 0, term_days: 0, deposit_pct: 0, factor_codes: [...new Set(codes)], summary: 'Sent to a human reviewer: the scorecard does not support terms for this order on its own.', would_change: 'More trading history with Ridgeline.', memo, contradictions, confidence: 'MEDIUM' };
   return {
