@@ -24,7 +24,8 @@ export function useAppState(ms = 4000) {
 }
 
 const CHIP: Record<string, [string, string, string]> = {
-  seeded: ['chip', '◷', 'Seeded'], sim: ['chip chip-sim', '⚑', 'Simulated decline'], assume: ['chip', '≈', 'Assumption'], clock: ['chip', '◔', 'App clock'], plain: ['chip', '', ''],
+  // Dashed outline = demo label, the same visual language as Zone C, so it never reads as product UI.
+  seeded: ['chip chip-demo', '◷', 'Seeded'], sim: ['chip chip-sim chip-demo', '⚑', 'Simulated decline'], assume: ['chip chip-demo', '≈', 'Assumption'], clock: ['chip chip-demo', '◔', 'App clock'], plain: ['chip', '', ''],
 };
 export function Chip({ kind, children, title }: { kind: keyof typeof CHIP; children?: React.ReactNode; title?: string }) {
   const [cls, icon, label] = CHIP[kind];
@@ -99,7 +100,7 @@ export function ClockChip({ s, onChange }: { s: any; onChange: () => void }) {
   );
 }
 
-export function DemoControls({ open = false }: { open?: boolean }) {
+export function DemoControls({ open = false, strip = true }: { open?: boolean; strip?: boolean }) {
   const [s, load] = useAppState(5000);
   const [msg, setMsg] = useState('');
   const reset = async () => {
@@ -115,7 +116,7 @@ export function DemoControls({ open = false }: { open?: boolean }) {
         <span className="small font-bold" style={{ color: 'var(--blue)' }}><span className="group-open:hidden">Show</span><span className="hidden group-open:inline">Hide</span></span>
       </summary>
       <div className="px-4 sm:px-8 pb-8 space-y-4">
-        <MoneyStrip s={s} />
+        {strip && <MoneyStrip s={s} />}
         <ClockChip s={s} onChange={load} />
         <div className="flex flex-wrap items-center gap-3">
           <button className="btn btn-ghost btn-sm" onClick={reset}>Reset demo</button>
@@ -129,14 +130,15 @@ export function DemoControls({ open = false }: { open?: boolean }) {
 export function Nav() {
   const path = usePathname();
   // Short labels on phones so every link fits without scrolling.
-  const links = [['/', 'Home', 'Home'], ['/shop', 'Checkout', 'Shop'], ['/buyer/buyer_secondshot', 'Café phone', 'Café'], ['/funder', 'Funder ledger', 'Ledger']];
+  // The logo already links home, so phones drop the Home link to make room.
+  const links = [['/', 'Home', ''], ['/shop', 'Checkout', 'Shop'], ['/buyer/buyer_secondshot', 'Café phone', 'Café'], ['/supplier', 'Roaster', 'Roaster'], ['/funder', 'Credit team', 'Credit']];
   return (
     <header className="border-b relative" style={{ background: 'var(--subtle)' }}>
-      <nav className="max-w-6xl mx-auto px-3 sm:px-4 h-14 flex items-center gap-1 sm:gap-8 whitespace-nowrap" aria-label="Main">
-        <Link href="/" className="font-extrabold text-lg mr-1" style={{ color: 'var(--navy)' }}>Term<span style={{ color: 'var(--blue)' }}>Sheet</span></Link>
+      <nav className="max-w-6xl mx-auto px-3 sm:px-4 h-14 flex items-center gap-1 lg:gap-6 whitespace-nowrap" aria-label="Main">
+        <Link href="/" className="font-extrabold text-lg mr-1 sm:mr-3" style={{ color: 'var(--navy)' }}>Term<span style={{ color: 'var(--blue)' }}>Sheet</span></Link>
         {links.map(([h, t, short]) => {
           const active = h === '/' ? path === '/' : path.startsWith(h.split('/').slice(0, 2).join('/'));
-          return <Link key={h} href={h} className="text-[15px] font-semibold h-11 px-2 sm:px-3 rounded-full inline-flex items-center" style={{ color: active ? 'var(--navy)' : 'var(--muted)', background: active ? 'var(--nav-active)' : 'transparent' }}><span className="sm:hidden">{short}</span><span className="hidden sm:inline">{t}</span></Link>;
+          return <Link key={h} href={h} aria-current={active ? 'page' : undefined} className={`text-[15px] font-semibold h-11 px-2 sm:px-3 rounded-full items-center ${short ? 'inline-flex' : 'hidden sm:inline-flex'}`} style={{ color: active ? 'var(--navy)' : 'var(--muted)', background: active ? 'var(--nav-active)' : 'transparent' }}><span className="sm:hidden">{short}</span><span className="hidden sm:inline">{t}</span></Link>;
         })}
       </nav>
     </header>
@@ -149,11 +151,12 @@ const STEPS = [
   { n: 2, t: 'Recover a payment', h: '/buyer/buyer_secondshot' },
   { n: 3, t: 'Catch a bad application', h: '/shop?buyer=northgate' },
 ];
-export function StoryBar({ step, done }: { step: 1 | 2 | 3; done?: boolean }) {
+// Sits inside Zone C (demo controls), so it never reads as part of the product.
+export function StoryBar({ step, done, children }: { step: 1 | 2 | 3; done?: boolean; children?: React.ReactNode }) {
   const next = STEPS[step];
   return (
-    <div className="border-b" style={{ background: '#fff' }}>
-      <div className="max-w-6xl mx-auto px-4 min-h-[48px] py-1 flex flex-wrap items-center gap-x-4 gap-y-2">
+    <div>
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
         <ol className="flex items-center gap-2 sm:gap-4 overflow-x-auto whitespace-nowrap" aria-label="Demo stories">
           {STEPS.map((x) => {
             const state = x.n < step ? 'past' : x.n === step ? 'now' : 'next';
@@ -168,6 +171,7 @@ export function StoryBar({ step, done }: { step: 1 | 2 | 3; done?: boolean }) {
             );
           })}
         </ol>
+        {children}
         {done && (next ? <Link href={next.h} className="btn btn-sm ml-auto">Next story: {next.t} →</Link> : <Link href="/" className="btn btn-sm ml-auto">All three done · Home</Link>)}
       </div>
     </div>

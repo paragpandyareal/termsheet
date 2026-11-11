@@ -1,8 +1,10 @@
 'use client';
-// Ridgeline wholesale checkout (PRD 4, route /shop). Hero: the Net 30 card. PayPal buttons from the supplier app sit beside it.
+// Ridgeline wholesale checkout (PRD 4, route /shop). Zone C: story bar and buyer switcher. Zone A: the checkout itself,
+// in a device frame, with the Net 30 card beside the PayPal buttons from the supplier app.
 import { useEffect, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Nav, Chip, usd, StoryBar } from '@/components/money';
+import { Zone, CustomerZone } from '@/components/zones';
 
 const CATALOG: Record<string, { sku: string; name: string; detail: string; qty: number; unit: number }[]> = {
   larkspur: [
@@ -58,68 +60,72 @@ export default function Shop({ supplierClientId }: { supplierClientId: string })
   return (
     <>
       <Nav />
-      <StoryBar step={buyer === 'northgate' ? 3 : 1} />
-      <main className="max-w-6xl mx-auto px-4 py-8">
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <div>
+      <main className="max-w-6xl mx-auto px-4 py-6 space-y-6">
+        <Zone kind="C">
+          <StoryBar step={buyer === 'northgate' ? 3 : 1}>
+            <label className="small font-bold flex items-center gap-2 ml-auto">
+              <span className="whitespace-nowrap">Buying as</span>
+              <select className="field w-auto mt-0" value={buyer} onChange={(e) => setBuyer(e.target.value)}>
+                {BUYERS.map((b) => <option key={b.key} value={b.key}>{b.label}</option>)}
+              </select>
+            </label>
+          </StoryBar>
+        </Zone>
+
+        <CustomerZone initial="desktop" url="ridgelineroasters.example/checkout" note="Ridgeline’s own checkout page, as a café sees it.">
+          <div className="p-4 @lg:p-8">
             <div className="t-label" style={{ color: 'var(--blue)' }}>Ridgeline Roasters · wholesale</div>
             <h1 className="t-h2 mt-1">Checkout</h1>
+
+            <div className="grid @3xl:grid-cols-[1fr_1.15fr] gap-4 @lg:gap-8 mt-4 @lg:mt-8 items-start">
+              <section className="card-flat p-4 @lg:p-8">
+                <h2 className="t-label">Your order</h2>
+                <ul className="mt-4 divide-y">
+                  {items.map((i) => (
+                    <li key={i.sku} className="flex justify-between gap-4 py-3">
+                      <div className="min-w-0">
+                        <div className="font-bold" style={{ color: 'var(--navy)' }}>{i.name}</div>
+                        <div className="small muted">{i.detail} · {i.qty} × {usd(i.unit)}</div>
+                      </div>
+                      <div className="font-bold num whitespace-nowrap">{usd(i.qty * i.unit)}</div>
+                    </li>
+                  ))}
+                </ul>
+                <div className="flex justify-between items-end pt-4 mt-2 border-t">
+                  <span className="font-bold">Total</span><span className="t-h2 num">{usd(total)}</span>
+                </div>
+                <p className="small muted mt-2">Ships to {buyer === 'northgate' ? 'Pier 40 Logistics, Unit 12, Bayonne NJ' : 'Larkspur Café, Main St'}.</p>
+                <div className="mt-8">
+                  <h2 className="t-label">Pay now</h2>
+                  <div ref={btnRef} className="mt-3" style={{ minHeight: 52 }} />
+                  {!supplierClientId && <p className="small muted">Supplier PayPal app not configured.</p>}
+                  {note && <p className="small mt-2" role="status">{note}</p>}
+                </div>
+              </section>
+
+              <section className="card-hero overflow-hidden" style={{ borderColor: 'var(--blue)' }}>
+                <div className="hero-band rounded-none p-4 @lg:p-8">
+                  <div className="flex flex-wrap items-center gap-2"><span className="chip chip-onnavy">New</span><span className="chip chip-onnavy">Decision in under a minute</span></div>
+                  <h2 className="t-h1 mt-4 on-navy">Pay in 30 days.<br />Ridgeline is paid today.</h2>
+                  <p className="mt-3 on-navy-muted">Net 30 for Business. Take the beans now and pay {usd(total)} on day 30 from your saved PayPal account.</p>
+                </div>
+                <div className="p-4 @lg:p-8">
+                  <ul className="space-y-3">
+                    {[
+                      ['No cost to the café', 'Ridgeline pays a 3% fee.'],
+                      ['AI credit check, with receipts', 'Every sentence of the decision links to the PayPal record behind it.'],
+                      ['Nothing charged today', 'You save your PayPal account. The charge runs on the due date, with a reminder 3 days before.'],
+                    ].map(([a, b]) => (
+                      <li key={a} className="flex gap-3"><span className="chip chip-good shrink-0 self-start mt-1">Yes</span><div><div className="font-bold" style={{ color: 'var(--navy)' }}>{a}</div><div className="small muted">{b}</div></div></li>
+                    ))}
+                  </ul>
+                  <button className="btn btn-lg w-full mt-8" disabled={busy} onClick={net30}>{busy ? 'Starting…' : `Apply for Net 30 on ${usd(total)}`}</button>
+                  <div className="flex flex-wrap gap-2 mt-3"><Chip kind="assume">3% fee is an assumption</Chip></div>
+                </div>
+              </section>
+            </div>
           </div>
-          <label className="small font-bold flex items-center gap-2">
-            <span className="muted">Judge mode · buying as</span>
-            <select className="field w-auto mt-0" value={buyer} onChange={(e) => setBuyer(e.target.value)}>
-              {BUYERS.map((b) => <option key={b.key} value={b.key}>{b.label}</option>)}
-            </select>
-          </label>
-        </div>
-
-        <div className="grid lg:grid-cols-[1fr_1.15fr] gap-8 mt-8 items-start">
-          <section className="card-flat p-4 sm:p-8">
-            <div className="t-label">Your order</div>
-            <ul className="mt-4 divide-y">
-              {items.map((i) => (
-                <li key={i.sku} className="flex justify-between gap-4 py-3">
-                  <div className="min-w-0">
-                    <div className="font-bold" style={{ color: 'var(--navy)' }}>{i.name}</div>
-                    <div className="small muted">{i.detail} · {i.qty} × {usd(i.unit)}</div>
-                  </div>
-                  <div className="font-bold num whitespace-nowrap">{usd(i.qty * i.unit)}</div>
-                </li>
-              ))}
-            </ul>
-            <div className="flex justify-between items-end pt-4 mt-2 border-t">
-              <span className="font-bold">Total</span><span className="t-h2 num">{usd(total)}</span>
-            </div>
-            <p className="small muted mt-2">Ships to {buyer === 'northgate' ? 'Pier 40 Logistics, Unit 12, Bayonne NJ' : 'Larkspur Café, Main St'}.</p>
-            <div className="mt-8">
-              <div className="t-label">Pay now</div>
-              <div ref={btnRef} className="mt-3" style={{ minHeight: 52 }} />
-              {!supplierClientId && <p className="small muted">Supplier PayPal app not configured.</p>}
-              {note && <p className="small mt-2">{note}</p>}
-            </div>
-          </section>
-
-          <section className="card-hero overflow-hidden" style={{ borderColor: 'var(--blue)' }}>
-            <div className="hero-band rounded-none p-4 sm:p-8">
-              <div className="flex flex-wrap items-center gap-2"><span className="chip chip-onnavy">New</span><span className="chip chip-onnavy">Decision in under a minute</span></div>
-              <h2 className="t-h1 mt-4 on-navy">Pay in 30 days.<br />Ridgeline is paid today.</h2>
-              <p className="mt-3 on-navy-muted">Net 30 for Business. Take the beans now and pay {usd(total)} on day 30 from your saved PayPal account.</p>
-            </div>
-            <div className="p-4 sm:p-8">
-              <ul className="space-y-3">
-                {[
-                  ['No cost to the café', 'Ridgeline pays a 3% fee.'],
-                  ['AI credit check, with receipts', 'Every sentence of the decision links to the PayPal record behind it.'],
-                  ['Nothing charged today', 'You save your PayPal account. The charge runs on the due date, with a reminder 3 days before.'],
-                ].map(([a, b]) => (
-                  <li key={a} className="flex gap-3"><span className="chip chip-good shrink-0 self-start mt-1">Yes</span><div><div className="font-bold" style={{ color: 'var(--navy)' }}>{a}</div><div className="small muted">{b}</div></div></li>
-                ))}
-              </ul>
-              <button className="btn btn-lg w-full mt-8" disabled={busy} onClick={net30}>{busy ? 'Starting…' : `Apply for Net 30 on ${usd(total)}`}</button>
-              <div className="flex flex-wrap gap-2 mt-3"><Chip kind="assume">3% fee is an assumption</Chip></div>
-            </div>
-          </section>
-        </div>
+        </CustomerZone>
       </main>
     </>
   );
