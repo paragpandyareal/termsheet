@@ -30,7 +30,7 @@ export async function sql(text: string, params: any[] = []): Promise<Row[]> {
   g.__tsdb ||= open().catch((e) => { g.__tsdb = undefined; throw e; });
   return (await g.__tsdb)(text, params);
 }
-export async function one(text: string, params: any[] = []): Promise<Row | undefined> {
+export async function one(text: string, params: any[] = []): Promise<any> {
   return (await sql(text, params))[0];
 }
 export const newId = (prefix: string) => `${prefix}_${Math.random().toString(36).slice(2, 10)}`;
