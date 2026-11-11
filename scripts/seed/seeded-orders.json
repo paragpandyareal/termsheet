@@ -1,0 +1,391 @@
+{
+ "note": "Public PayPal order and capture IDs created by scripts/seed/seed.mjs. No saved account IDs.",
+ "history": {
+  "larkspur": [
+   {
+    "ref": "RR-LA-1001",
+    "orderId": "2L1611246C5169219",
+    "captureId": "0G042576G7005140W",
+    "cents": 104057
+   },
+   {
+    "ref": "RR-LA-1002",
+    "orderId": "2V2671738H2159322",
+    "captureId": "2M526436W0683681F",
+    "cents": 112823
+   },
+   {
+    "ref": "RR-LA-1003",
+    "orderId": "76G537902D632350J",
+    "captureId": "4FY42852UU433725Y",
+    "cents": 64108
+   },
+   {
+    "ref": "RR-LA-1004",
+    "orderId": "2B052281HG938423E",
+    "captureId": "2KM68334L5205802A",
+    "cents": 142678
+   },
+   {
+    "ref": "RR-LA-1005",
+    "orderId": "3D361735WL1706343",
+    "captureId": "4E583335FP490464B",
+    "cents": 146036
+   },
+   {
+    "ref": "RR-LA-1006",
+    "orderId": "3JT29510H0780634H",
+    "captureId": "7NG45975413838423",
+    "cents": 122766
+   },
+   {
+    "ref": "RR-LA-1007",
+    "orderId": "2G840428L06428116",
+    "captureId": "1W399211D12599217",
+    "cents": 53364
+   },
+   {
+    "ref": "RR-LA-1008",
+    "orderId": "9Y182008M8511421C",
+    "captureId": "3X524314VY186845N",
+    "cents": 67272
+   },
+   {
+    "ref": "RR-LA-1009",
+    "orderId": "03N87884FA7270314",
+    "captureId": "5VV42785W0331863L",
+    "cents": 162008
+   },
+   {
+    "ref": "RR-LA-1010",
+    "orderId": "8U9378070R375422S",
+    "captureId": "6JR739798U589835D",
+    "cents": 113796
+   },
+   {
+    "ref": "RR-LA-1011",
+    "orderId": "05P62995B0532463F",
+    "captureId": "9CK20777NC143925H",
+    "cents": 154213
+   },
+   {
+    "ref": "RR-LA-1012",
+    "orderId": "0N138127DM548173G",
+    "captureId": "8NS00190KE479032D",
+    "cents": 114808
+   },
+   {
+    "ref": "RR-LA-1013",
+    "orderId": "1BN5243136867540P",
+    "captureId": "38Y13802T84327545",
+    "cents": 142044
+   },
+   {
+    "ref": "RR-LA-1014",
+    "orderId": "1FK10041HT7812450",
+    "captureId": "7KK67436YD946110B",
+    "cents": 110027
+   }
+  ],
+  "secondshot": [
+   {
+    "ref": "RR-SE-1001",
+    "orderId": "1DP56655M3888103K",
+    "captureId": "2RH527971T496910B",
+    "cents": 71106
+   },
+   {
+    "ref": "RR-SE-1002",
+    "orderId": "9P3583041R5891810",
+    "captureId": "0AA868912G3782356",
+    "cents": 104964
+   },
+   {
+    "ref": "RR-SE-1003",
+    "orderId": "55659246E0465305P",
+    "captureId": "0A800019YT8034138",
+    "cents": 106605
+   },
+   {
+    "ref": "RR-SE-1004",
+    "orderId": "6D950482K6441001G",
+    "captureId": "3K63708469107740E",
+    "cents": 191961
+   },
+   {
+    "ref": "RR-SE-1005",
+    "orderId": "92C01249D12740409",
+    "captureId": "32A928081N6370103",
+    "cents": 79484
+   },
+   {
+    "ref": "RR-SE-1006",
+    "orderId": "8G283671AV8143928",
+    "captureId": "6C5959020D748605F",
+    "cents": 146307
+   },
+   {
+    "ref": "RR-SE-1007",
+    "orderId": "1F081964AJ258892T",
+    "captureId": "8T278479727121143",
+    "cents": 133595
+   },
+   {
+    "ref": "RR-SE-1008",
+    "orderId": "43W1238254560924M",
+    "captureId": "7JT4020497367143A",
+    "cents": 100496
+   },
+   {
+    "ref": "RR-SE-1009",
+    "orderId": "3P252413EX815802L",
+    "captureId": "0J978156EY9104142",
+    "cents": 100482
+   }
+  ]
+ },
+ "sales": {
+  "larkspur": [
+   {
+    "ref": "LA-TILL-2001",
+    "orderId": "2HP068249G200342T",
+    "captureId": "0YF370354U5347820",
+    "cents": 36052
+   },
+   {
+    "ref": "LA-TILL-2002",
+    "orderId": "92292255NX263181P",
+    "captureId": "7HB07016V41595439",
+    "cents": 55361
+   },
+   {
+    "ref": "LA-TILL-2003",
+    "orderId": "8VD52947DY7325619",
+    "captureId": "5NJ30508RR318422F",
+    "cents": 30920
+   },
+   {
+    "ref": "LA-TILL-2004",
+    "orderId": "9GY56239C36909918",
+    "captureId": "0JP24078R99934024",
+    "cents": 18748
+   },
+   {
+    "ref": "LA-TILL-2005",
+    "orderId": "8HH98608J5886963U",
+    "captureId": "6XG75331CC004181C",
+    "cents": 27383
+   },
+   {
+    "ref": "LA-TILL-2006",
+    "orderId": "3KJ73384FC3496500",
+    "captureId": "2FY42497BM308153A",
+    "cents": 55369
+   },
+   {
+    "ref": "LA-TILL-2007",
+    "orderId": "2BX652095V514211S",
+    "captureId": "8SV97511C52404623",
+    "cents": 38772
+   },
+   {
+    "ref": "LA-TILL-2008",
+    "orderId": "8FJ30855F8754570C",
+    "captureId": "43G58747R6796561Y",
+    "cents": 46106
+   },
+   {
+    "ref": "LA-TILL-2009",
+    "orderId": "5F458791FJ903413W",
+    "captureId": "3AV32681PU166461S",
+    "cents": 45926
+   },
+   {
+    "ref": "LA-TILL-2010",
+    "orderId": "9AN36967R7910983G",
+    "captureId": "87J53054PW7630603",
+    "cents": 56765
+   },
+   {
+    "ref": "LA-TILL-2011",
+    "orderId": "2GC740038T6116944",
+    "captureId": "3JW87930YX234573K",
+    "cents": 72169
+   },
+   {
+    "ref": "LA-TILL-2012",
+    "orderId": "74M618475T1152418",
+    "captureId": "54S44920R5176024B",
+    "cents": 30704
+   },
+   {
+    "ref": "LA-TILL-2013",
+    "orderId": "5UN35384UT213793M",
+    "captureId": "8SK15722SJ0339424",
+    "cents": 33369
+   },
+   {
+    "ref": "LA-TILL-2014",
+    "orderId": "1R900616PD412732V",
+    "captureId": "66C558994V459934X",
+    "cents": 66214
+   },
+   {
+    "ref": "LA-TILL-2015",
+    "orderId": "3W683254SE6538325",
+    "captureId": "6LH07881RE302873L",
+    "cents": 37816
+   },
+   {
+    "ref": "LA-TILL-2016",
+    "orderId": "68028776R19534932",
+    "captureId": "51V68656XM317615D",
+    "cents": 64170
+   },
+   {
+    "ref": "LA-TILL-2017",
+    "orderId": "9X136312288714826",
+    "captureId": "1SR66808PK0273940",
+    "cents": 56354
+   },
+   {
+    "ref": "LA-TILL-2018",
+    "orderId": "7LB26530Y2833130V",
+    "captureId": "5UK78334L73498443",
+    "cents": 27904
+   },
+   {
+    "ref": "LA-TILL-2019",
+    "orderId": "4LB71230MK792291V",
+    "captureId": "3T245984WU750043H",
+    "cents": 42336
+   },
+   {
+    "ref": "LA-TILL-2020",
+    "orderId": "6N254182TW198904N",
+    "captureId": "30T76175BT5965138",
+    "cents": 70703
+   },
+   {
+    "ref": "LA-TILL-2021",
+    "orderId": "6NP173323A934393M",
+    "captureId": "1U147832F25217534",
+    "cents": 29082
+   },
+   {
+    "ref": "LA-TILL-2022",
+    "orderId": "5ET05129FT336273J",
+    "captureId": "12J7428169107201B",
+    "cents": 63453
+   },
+   {
+    "ref": "LA-TILL-2023",
+    "orderId": "4ME12264V7308304X",
+    "captureId": "6WL28694982734420",
+    "cents": 69902
+   },
+   {
+    "ref": "LA-TILL-2024",
+    "orderId": "6J439228FK0142025",
+    "captureId": "3VK00652DC718311R",
+    "cents": 69462
+   },
+   {
+    "ref": "LA-TILL-2025",
+    "orderId": "9W502627YG483832K",
+    "captureId": "3F458930VH127380K",
+    "cents": 20691
+   },
+   {
+    "ref": "LA-TILL-2026",
+    "orderId": "5X750519Y43984938",
+    "captureId": "5SL25345VB2109635",
+    "cents": 14593
+   },
+   {
+    "ref": "LA-TILL-2027",
+    "orderId": "1UK92938XM6898239",
+    "captureId": "45C283826N5268433",
+    "cents": 42214
+   },
+   {
+    "ref": "LA-TILL-2028",
+    "orderId": "26545899VT5627643",
+    "captureId": "088932564C238663F",
+    "cents": 77106
+   },
+   {
+    "ref": "LA-TILL-2029",
+    "orderId": "5BM138755E946871R",
+    "captureId": "35R60916DX465952D",
+    "cents": 67832
+   },
+   {
+    "ref": "LA-TILL-2030",
+    "orderId": "3NN53967667412256",
+    "captureId": "7CC54558MJ0821002",
+    "cents": 42922
+   },
+   {
+    "ref": "LA-TILL-2031",
+    "orderId": "42E040263G307314R",
+    "captureId": "2LN42647S2274725X",
+    "cents": 58395
+   },
+   {
+    "ref": "LA-TILL-2032",
+    "orderId": "0P702439V8240205A",
+    "captureId": "8DK6119179589050Y",
+    "cents": 55317
+   },
+   {
+    "ref": "LA-TILL-2033",
+    "orderId": "7L885181KJ919130N",
+    "captureId": "2PE73043F79542646",
+    "cents": 32230
+   },
+   {
+    "ref": "LA-TILL-2034",
+    "orderId": "97W11062YR756935K",
+    "captureId": "7JT17190GT9633029",
+    "cents": 60146
+   },
+   {
+    "ref": "LA-TILL-2035",
+    "orderId": "9LD13835CW391233L",
+    "captureId": "7BA92037PC314681S",
+    "cents": 72634
+   },
+   {
+    "ref": "LA-TILL-2036",
+    "orderId": "58680352CS876070U",
+    "captureId": "6SR52858UW587435P",
+    "cents": 38249
+   },
+   {
+    "ref": "LA-TILL-2037",
+    "orderId": "7679262158181761D",
+    "captureId": "82U48921NA9708320",
+    "cents": 42997
+   },
+   {
+    "ref": "LA-TILL-2038",
+    "orderId": "1XB95369BP608174N",
+    "captureId": "4GM447981G312094F",
+    "cents": 12951
+   },
+   {
+    "ref": "LA-TILL-2039",
+    "orderId": "73L27021W00221256",
+    "captureId": "4N634664BP970241J",
+    "cents": 21621
+   },
+   {
+    "ref": "LA-TILL-2040",
+    "orderId": "2VB223620R073551R",
+    "captureId": "4YK957981V0891425",
+    "cents": 35062
+   }
+  ]
+ }
+}
