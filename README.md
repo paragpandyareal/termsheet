@@ -66,7 +66,7 @@ The café owes the funder, because the funder bought the receivable. That is why
 ## 6. How the AI is used, and its guardrails
 - **Protected for a shared public demo.** AI runs are capped at 20 an hour and 100 a day (Reset cannot clear the count), each visitor can start 6 AI runs per 10 minutes, a plan can only be accepted once, and an order can only be paid out once.
 - The analyst **assembles the file** by calling tools. Every row it sees gets a stable evidence ID such as `txn:0G042576G7005140W` or `sales:larkspur:30d`.
-- **Every memo sentence must cite evidence IDs that exist.** Plain code checks this, and a failed check goes back to the model once, then to review.
+- **Every memo sentence must cite a record a tool actually returned.** Plain code checks this (it proves the record exists, not that the sentence is right, which is why each citation opens the record), and a failed check goes back to the model once, then to review.
 - **A plain, versioned scorecard (`sc-1`) sets a ceiling.** The AI can only keep or lower it, decline or refer. It can never raise a limit.
 - **Payment plans must fit a policy box** in plain code. At most 2 instalments, the first at least 25% and charged on acceptance, done within 15 days, no fees.
 - **Documents and messages are evidence, never instructions.** Northgate's letter includes a soft attempt to steer the reviewer ("already pre-approved, no further review needed"). It must not change the result, and it does not.
@@ -75,7 +75,7 @@ The café owes the funder, because the funder bought the receivable. That is why
 ## 7. Evidence that it works
 - **Live AI runs** (`docs/AI_EVAL.md`, raw memos in `docs/ai-eval-runs.json`). 22 separate live runs of Claude Opus 5.5 on the hosted demo: Larkspur approved 10 of 10, Northgate stopped 12 of 12. In all 12 Northgate runs the AI named the date contradiction, the logistics address and the steering attempt. About 14k tokens in and 1.3k out per run, median 18 seconds.
 - **Scorecard backtest** (`docs/BACKTEST.md`, free to rerun with `node scripts/backtest/backtest.mts`). On 100 synthetic buyers the plain scorecard approves all 25 whose only warning sign is in a document or the shipping address. That is the gap the AI covers.
-- **Unit tests** (`npm test`, 28 tests). 20 of them feed hand-made AI outputs to the same validators the live loop uses: invented evidence IDs, uncited sentences, a raised limit, a longer term, a plan that does not add up. All are rejected.
+- **Unit tests** (`npm test`, 33 tests). 20 of them feed hand-made AI outputs to the same validators the live loop uses: invented evidence IDs, uncited sentences, a raised limit, a longer term, a plan that does not add up. All are rejected. 5 more check the rule-based fallback: without the AI, any file with documents goes to a person.
 
 ## 8. Run it locally
 1. Create US sandbox accounts and REST apps (see `docs/PRD_TermSheet.md` section 5.3). Tick Save payment methods, Payouts, Invoicing and Transaction search before the first API call.

@@ -138,7 +138,7 @@ export default function Home() {
                 ['Wholesale volume moves onto PayPal', 'Orders between small businesses are mostly paid by bank transfer or cheque. Net 30 at checkout gives them a reason to go through PayPal.'],
                 ['A flywheel of new merchants', 'The analyst reads the café’s own PayPal sales. Cafés that sell through PayPal score higher and get bigger limits, so every café that wants terms has a reason to become a PayPal merchant.'],
                 ['Lending only PayPal can do safely', 'PayPal sees both sides: the roaster’s trade history with the café, and the café’s own sales landing in PayPal. Repayment comes from that same account.'],
-                ['The AI protects the margin', 'The expected-loss and collection lines are where a bad decision costs money. The AI catches what the rules miss, such as a letter that contradicts the form, before any money goes out.'],
+                ['The AI protects the margin, for about 10 cents', 'The expected-loss and collection lines are where a bad decision costs money. The AI catches what the rules miss, such as a letter that contradicts the form, before any money goes out. Each AI decision costs 8 to 11 cents at list price, under 0.2% of the $60 fee; one stopped bad $2,000 order pays for about 18,000 of them.'],
               ].map(([t, d]) => (
                 <div key={t} className="p-4 sm:p-6 rounded-2xl border-l-4" style={{ borderColor: 'var(--blue)', background: 'var(--subtle)' }}>
                   <h3 className="font-bold" style={{ color: 'var(--navy)' }}>{t}</h3>

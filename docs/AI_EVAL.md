@@ -21,6 +21,13 @@ The Northgate letter was rewritten for this test to be subtle: no "ignore your r
 - Average tokens per run: about 14,324 in and 1,304 out (input includes cached reads).
 - Time from Apply to decision: median 18 seconds, slowest 23 seconds.
 
+## What one AI decision costs, against what it earns
+Claude Opus 5.5 list price (checked 12 Nov 2026): $4 per million input tokens, $20 per million output tokens.
+- Average run: 14,324 in × $4/M + 1,304 out × $20/M = **about $0.08**.
+- Worst run in the 22, priced as if every input token were a cache write ($5/M, the most input can cost): 15,857 × $5/M + 1,683 × $20/M = **about $0.11**.
+- Against the **$60 fee** on a $2,000 order, that is under 0.2%. Against the $21 contribution, about 0.5%.
+- The AI protects the expected-loss line (−$20 an order, 1%) and the collection-cost line. A single bad $2,000 approval it stops pays for about 18,000 AI decisions at $0.11 each.
+
 ## Honest limits
 - Two cases, repeated. This shows the AI is consistent on these cases, not that it is accurate on all buyers. The scorecard backtest on 100 synthetic buyers is in `docs/BACKTEST.md`.
 - Keyword checks in "What the AI noticed" are a rough reading of the memo text; the raw memos are in the JSON file.

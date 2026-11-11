@@ -59,12 +59,13 @@ Six sandbox accounts (funder, supplier, three cafés and a walk-in shopper), wit
 - **The AI never moves money.** Only ledger code calls the money APIs.
 - **Documents are evidence, never instructions.** A letter that tries to steer the decision is flagged and ignored.
 - **Protected for a shared public demo.** A spend cap that Reset cannot clear, a per-visitor limit on AI runs, and single-use claims so a plan is charged once and an order is paid out once.
-- **Safe failure.** If the AI is unavailable, over its spending cap or fails validation twice, a plain rule-based writer drafts the memo from the same live PayPal evidence, and the screen labels it.
+- **Safe failure.** If the AI is unavailable, over its spending cap or fails validation twice, a plain rule-based writer drafts the memo from the same live PayPal evidence, and the screen labels it. It does not try to judge documents: any file with documents goes to a person.
 
 **Proof it works.**
 - **22 live AI runs** on the hosted demo (`docs/AI_EVAL.md`, with every memo in `docs/ai-eval-runs.json`). Larkspur approved 10 times out of 10. Northgate stopped 12 times out of 12, even though the rules alone would approve it. Median 18 seconds per decision.
+- **What the AI costs against what it earns.** About 14k tokens in and 1.3k out per decision: 8 to 11 cents at Claude Opus 5.5 list price, under 0.2% of the $60 fee. It guards the expected-loss line (1% of each order), so one stopped bad $2,000 approval pays for about 18,000 AI decisions.
 - **Scorecard backtest** on 100 synthetic buyers (`docs/BACKTEST.md`, free to rerun). The plain scorecard approves all 25 buyers whose only warning sign is in a document or the shipping address. That is the gap the AI covers.
-- **28 unit tests.** 20 of them feed hand-made bad AI outputs to the validators (invented evidence, uncited sentences, a raised limit, a plan that does not add up) and confirm each is rejected.
+- **33 unit tests.** 20 of them feed hand-made bad AI outputs to the validators (invented evidence, uncited sentences, a raised limit, a plan that does not add up) and confirm each is rejected. 5 more check that without the AI, any file with documents goes to a person.
 
 Stack: Next.js, TypeScript, Postgres, hosted on Render.
 
@@ -110,7 +111,7 @@ The idea works only if losses stay near 2% or lower. Three levers keep them ther
 
 - **A saved PayPal account used as a repayment method.** The café saves its account once with no purchase, and the funder collects on day 30 with the café not present.
 - **Underwriting from both sides of the PayPal network.** The supplier's trade history with the café, read through the PayPal Agent Toolkit, plus the café's own PayPal sales, read with its own app.
-- **AI that shows its working.** Every sentence is tied to a PayPal record, and code rejects anything uncited.
+- **AI that shows its working.** Every sentence must cite a record a tool actually returned, and plain code checks that before anyone sees it.
 - **AI that can only tighten.** The AI adds judgement the rules cannot (a letter that contradicts the form, a shipping address that does not fit a café, an attempt to steer the reviewer), but it cannot loosen a decision.
 - **Credit for the business buyer, at checkout.** PayPal Pay in 4 lends to shoppers and PayPal Working Capital lends to sellers. TermSheet is credit for the business that is buying, offered at the supplier's checkout and repaid from the buyer's own PayPal account.
 - **A payment plan at the moment of failure.** Instead of a collections letter, the café explains in its own words, the AI checks the story against real sales, and a real charge recovers the money.

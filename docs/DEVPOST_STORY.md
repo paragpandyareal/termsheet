@@ -98,7 +98,7 @@ Break-even is at about a 2% loss rate. Three levers keep losses below that: smal
 
 ## What we learned
 
-- An AI is easiest to trust when plain code checks its work. Requiring a real evidence ID for every sentence removed made-up claims entirely.
+- An AI is easiest to trust when plain code checks its work. Requiring every sentence to cite a record a tool actually returned means the AI cannot point at evidence that does not exist. It does not prove each sentence is right, which is why the records sit one click away.
 - The best job for the AI was not replacing the scorecard but covering what the scorecard cannot see: documents, addresses and contradictions.
 - The failure path is the most convincing part of a payments demo.
 
