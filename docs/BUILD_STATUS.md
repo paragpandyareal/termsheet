@@ -1,6 +1,6 @@
 # Build status. Read this first
 
-Last updated Wednesday 11 Nov 2026, 14.15 Sydney (03.15 UTC). Deadline Thursday 12 Nov 2026, 20.00 UTC.
+Last updated Wednesday 11 Nov 2026, 15.30 Sydney (04.30 UTC). Deadline Thursday 12 Nov 2026, 20.00 UTC.
 
 ## 0. Where things stand
 - **Phases 1 to 4 of PRD 13 are built and pushed to `main`** of the private repo github.com/paragpandyareal/termsheet. Phase 5 (README, judge mode) is in progress. `npm run build` passes. **Deployed at 14.20 Sydney to https://termsheet-tgwl.onrender.com** (Render free web service plus free Postgres, from `render.yaml`). The keys were copied to Render by `scripts/seed/render-env.mjs`, which prints names only. PayPal webhooks are made by `scripts/seed/webhooks.mjs` (funder `8F925359EA092550F`, supplier `1AC71676XW3261817`). Hosted check at 14.25: reset armed Second Shot (real Payout), and Larkspur was approved $5,000 with 23 evidence rows. The hosted analyst runs in practice mode (`ANALYST_MODE=mock` in render.yaml) to protect the Anthropic credit.
@@ -9,6 +9,21 @@ Last updated Wednesday 11 Nov 2026, 14.15 Sydney (03.15 UTC). Deadline Thursday 
   - Larkspur applies and the analyst approves $5,000 with 23 cited evidence rows. The account is saved and Ridgeline gets a $1,940 Payout.
   - Second Shot's day 30 charge gives INSTRUMENT_DECLINED (method C, debug `f3394068dd74c`). The limit drops to $1,000, the café replies, and a plan is proposed. Accepting it makes a real $1,000 capture (debug `ca589e8e4fd0d`).
 - **Unit tests.** `npm test` runs 8 tests on the scorecard, policy box and limit rules. All pass.
+
+## 0b. Since 14.30 (for reviewers)
+- **Two independent reviews were run by separate agents** (UI/UX and AI quality). Their findings were applied in commits 33e7346 and 345fbcd.
+- **The AI changes in response:**
+  - Tools return real invoice, dispute and daily-sales rows to the model.
+  - `get_policy` gathers any missing ceiling facts in code.
+  - Stronger validators: whole numbers, two-sided contradictions, and plan amounts must match the message.
+  - `tightened_from_scorecard` is computed in code.
+  - A labelled automatic fallback runs when the AI call fails.
+  - Hourly and daily caps are stored in the database (30 and 300).
+  - New `summary`, `tightening_reason` and `would_change` fields.
+  - A story check card on the café phone.
+- **First live AI run** (hosted, Northgate, claude-haiku-5-5). It declined with both contradictions and ignored the injection. It used about 30k input and 2.8k output tokens. The first submit failed validation because the model sent arrays as strings; the run retried and passed. The model output is now normalised.
+- **Design.** PayPal-aligned tokens (navy #001C64, blue #0070E0, no logo), a 4/8/12/16/32 spacing scale, a type scale, and one hero per page. See `app/globals.css`.
+- **Open decision.** Whether the hosted judge demo runs `ANALYST_MODE=live` with the caps (recommended by both reviewers) or `mock`. `render.yaml` currently says `mock`.
 
 ## 1. Deviations from the PRD (all deliberate)
 
