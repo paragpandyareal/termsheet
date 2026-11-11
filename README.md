@@ -21,14 +21,16 @@ Last updated Tuesday 10 Nov 2026, 22.00 UTC.
 
 **Correction, 11 Nov 12.36 Sydney.** The entrant found that `larkspur.termsheet@example.com` was created as a **Personal** sandbox account by mistake, not Business. So every S1, S2 and S3 result so far used a **personal payer**. S2 proves buyer absent charging for a personal account only, which is the PRD 12 fallback ("owner's PayPal"). **Charging a business payer is still unproven.** Next step is a new Business Larkspur account, then rerun S1 and S2.
 
+**Business payer proven, 11 Nov 12.45 Sydney.** The personal Larkspur account was deleted and `larkspur.termsheet@example.com` was recreated as a **Business** account. On it, S1 no purchase save PASS (payment token debug `f434131f90084`), S2 buyer absent CAPTURE PASS (order `7LL66346VM5734515`, capture `9TG326348T078043C`, debug `f201904e51969`), and S3 method C with CAPTURE PASS (422 INSTRUMENT_DECLINED, debug `f156045203d2d`). Earlier vault IDs belonged to the deleted personal account and are dead.
+
 | Test | Result | Lock the build to |
 |---|---|---|
 | S1 save account without purchase | **PASS on retry, 11 Nov 12.28 Sydney.** The first 3 tries got 403 because PayPal reused an access token issued before Vault was ticked. A fresh token (about 3 hours later) had the vault, invoicing and reporting scopes | PRD 6.3 as written. Café is charged $0. The deposit fallback also works but is not used |
-| S2 buyer absent charge, business payer | **NOT YET PROVEN.** Passed with a personal payer only (see correction above) | Rerun with a Business Larkspur account |
+| S2 buyer absent charge, business payer | **PASS with a Business payer** (see above). Earlier pass was a personal payer | PRD 6.4 as written |
 | S3 test decline | **PASS with method C,** with both intent AUTHORIZE and intent CAPTURE. A returned 403, B did not apply | Mock header on order create. Label SIMULATED DECLINE |
 | S4 payout to supplier | **PASS.** Batch and item SUCCESS by polling | PRD 6.5. Webhook not yet tested (no public address) |
 
-Sandbox setup that now exists (US, all Business). TermSheet Funding `funder@termsheet.example.com` with REST app "TermSheet Funding". Ridgeline Roasters `ridgeline.termsheet@example.com`. Larkspur `larkspur.termsheet@example.com` (**Personal by mistake**, needs replacing with a Business account). Second Shot, Northgate, Pier 9 and the walk in account are not made yet. Ridgeline and Larkspur have no REST apps yet.
+Sandbox setup that now exists (US, all Business). TermSheet Funding `funder@termsheet.example.com` with REST app "TermSheet Funding". Ridgeline Roasters `ridgeline.termsheet@example.com`. Larkspur `larkspur.termsheet@example.com` (recreated as **Business** on 11 Nov 12.38, REST app "Larkspur Cafe" made). Second Shot, Northgate, Pier 9 and the walk in account are not made yet. Ridgeline and Larkspur have no REST apps yet.
 
 Full record of this session for checking by another tool. `docs/SESSION_LOG_2026-11-11.md`.
 

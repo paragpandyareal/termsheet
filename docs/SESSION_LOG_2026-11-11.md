@@ -144,3 +144,7 @@ Still not run. S5 (two SDK copies), S6 (Agent Toolkit reads on the supplier app)
 **Correction, 11 Nov 12.36 Sydney.** The entrant found that `larkspur.termsheet@example.com` was created as a **Personal** sandbox account by mistake, not Business. So every S1, S2 and S3 result so far used a **personal payer**. S2 proves buyer absent charging for a personal account only, which is the PRD 12 fallback ("owner's PayPal"). **Charging a business payer is still unproven.** Next step is a new Business Larkspur account, then rerun S1 and S2.
 
 What this changes. Section 1 and section 8 say "business payer" for S2. That is wrong, the payer was personal. S1 and S3 results still hold for the funder app but were also run against a personal payer. The Larkspur row in section 2.3 should read Personal.
+
+## 10. Business payer rerun
+
+**Business payer proven, 11 Nov 12.45 Sydney.** The personal Larkspur account was deleted and `larkspur.termsheet@example.com` was recreated as a **Business** account. On it, S1 no purchase save PASS (payment token debug `f434131f90084`), S2 buyer absent CAPTURE PASS (order `7LL66346VM5734515`, capture `9TG326348T078043C`, debug `f201904e51969`), and S3 method C with CAPTURE PASS (422 INSTRUMENT_DECLINED, debug `f156045203d2d`). Earlier vault IDs belonged to the deleted personal account and are dead.

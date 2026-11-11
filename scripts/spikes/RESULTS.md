@@ -469,3 +469,134 @@ Delete 204, then read back 404 (404 means gone).
 ## Correction, 11 Nov 12.36 Sydney
 
 **Correction, 11 Nov 12.36 Sydney.** The entrant found that `larkspur.termsheet@example.com` was created as a **Personal** sandbox account by mistake, not Business. So every S1, S2 and S3 result so far used a **personal payer**. S2 proves buyer absent charging for a personal account only, which is the PRD 12 fallback ("owner's PayPal"). **Charging a business payer is still unproven.** Next step is a new Business Larkspur account, then rerun S1 and S2.
+
+## S1. Save PayPal account without purchase. PASS
+Run at 2026-11-11T01:44:35.837Z
+
+Vault ID came back and is stored in the git ignored file scripts/spikes/.state.json. payment_source keys returned: paypal.
+
+- `POST /v3/vault/setup-tokens` -> **201**, debug ID `f27268849f02b`
+  <details><summary>sent</summary>
+
+```json
+{
+  "payment_source": {
+    "paypal": {
+      "description": "Net 30 for Business (concept). Charged on each order's due date, up to your limit.",
+      "usage_type": "MERCHANT",
+      "customer_type": "BUSINESS",
+      "permit_multiple_payment_tokens": false,
+      "experience_context": {
+        "brand_name": "TermSheet Funding",
+        "shipping_preference": "NO_SHIPPING",
+        "return_url": "https://example.com/apply/return",
+        "cancel_url": "https://example.com/apply/cancel"
+      }
+    }
+  }
+}
+```
+</details>
+- `POST /v3/vault/payment-tokens` -> **201**, debug ID `f434131f90084`
+  <details><summary>sent</summary>
+
+```json
+{
+  "payment_source": {
+    "token": {
+      "id": "8D24638619860523N",
+      "type": "SETUP_TOKEN"
+    }
+  }
+}
+```
+</details>
+
+## S2. Charge vault ID, buyer absent, intent CAPTURE. PASS
+Run at 2026-11-11T01:44:39.527Z
+
+Order status COMPLETED, capture status COMPLETED, order 7LL66346VM5734515, capture 9TG326348T078043C.
+
+- `POST /v2/checkout/orders` -> **201**, debug ID `f201904e51969`
+  <details><summary>sent</summary>
+
+```json
+{
+  "intent": "CAPTURE",
+  "purchase_units": [
+    {
+      "reference_id": "S2-1794361475881",
+      "invoice_id": "TS-S2-1794361475881-1",
+      "description": "Net 30 repayment, Ridgeline order SPIKE",
+      "amount": {
+        "currency_code": "USD",
+        "value": "20.00"
+      }
+    }
+  ],
+  "payment_source": {
+    "paypal": {
+      "vault_id": "<vault id masked>"
+    }
+  }
+}
+```
+</details>
+
+## S3 extra. Method C with intent CAPTURE. PASS
+Run at 2026-11-11T01:44:41.200Z
+
+Mock header on a CAPTURE order create gives INSTRUMENT_DECLINED. No order created, no money moved.
+
+- `POST /v2/checkout/orders` -> **422**, debug ID `f156045203d2d`
+  - extra headers `{"PayPal-Mock-Response":"{\"mock_application_codes\":\"INSTRUMENT_DECLINED\"}"}`
+  <details><summary>sent</summary>
+
+```json
+{
+  "intent": "CAPTURE",
+  "purchase_units": [
+    {
+      "reference_id": "S3CC-1794361479577",
+      "invoice_id": "TS-S3CC-1794361479577",
+      "amount": {
+        "currency_code": "USD",
+        "value": "15.00"
+      }
+    }
+  ],
+  "payment_source": {
+    "paypal": {
+      "vault_id": "<vault id masked>"
+    }
+  }
+}
+```
+</details>
+  <details><summary>response</summary>
+
+```json
+{
+  "name": "UNPROCESSABLE_ENTITY",
+  "details": [
+    {
+      "issue": "INSTRUMENT_DECLINED",
+      "description": "The instrument presented  was either declined by the processor or bank, or it can't be used for this payment."
+    }
+  ],
+  "message": "The requested action could not be performed, semantically incorrect, or failed business validation.",
+  "debug_id": "70c28ae654da",
+  "links": [
+    {
+      "href": "https://developer.paypal.com/api/rest/reference/orders/v2/errors/#INSTRUMENT_DECLINED",
+      "rel": "information_link",
+      "method": "GET"
+    }
+  ]
+}
+```
+</details>
+
+## Note
+
+**Business payer proven, 11 Nov 12.45 Sydney.** The personal Larkspur account was deleted and `larkspur.termsheet@example.com` was recreated as a **Business** account. On it, S1 no purchase save PASS (payment token debug `f434131f90084`), S2 buyer absent CAPTURE PASS (order `7LL66346VM5734515`, capture `9TG326348T078043C`, debug `f201904e51969`), and S3 method C with CAPTURE PASS (422 INSTRUMENT_DECLINED, debug `f156045203d2d`). Earlier vault IDs belonged to the deleted personal account and are dead.
