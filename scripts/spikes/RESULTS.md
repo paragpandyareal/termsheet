@@ -465,3 +465,7 @@ Delete 204, then read back 404 (404 means gone).
 }
 ```
 </details>
+
+## Correction, 11 Nov 12.36 Sydney
+
+**Correction, 11 Nov 12.36 Sydney.** The entrant found that `larkspur.termsheet@example.com` was created as a **Personal** sandbox account by mistake, not Business. So every S1, S2 and S3 result so far used a **personal payer**. S2 proves buyer absent charging for a personal account only, which is the PRD 12 fallback ("owner's PayPal"). **Charging a business payer is still unproven.** Next step is a new Business Larkspur account, then rerun S1 and S2.

@@ -6,6 +6,8 @@ Scope. Only tests S1 to S4 from PRD section 12. No app code was written.
 
 This file explains everything that happened so another person or AI tool can check it. The raw record written by the scripts is `scripts/spikes/RESULTS.md`. Every PayPal call listed here has a PayPal debug ID, which PayPal support can look up.
 
+> **Correction, 11 Nov 12.36 Sydney.** The entrant found that `larkspur.termsheet@example.com` was created as a **Personal** sandbox account by mistake, not Business. So every S1, S2 and S3 result so far used a **personal payer**. S2 proves buyer absent charging for a personal account only, which is the PRD 12 fallback ("owner's PayPal"). **Charging a business payer is still unproven.** Next step is a new Business Larkspur account, then rerun S1 and S2.
+
 ## 1. Summary
 
 | Test | Result | Key evidence (PayPal debug IDs) | What the build should use |
@@ -136,3 +138,9 @@ An outside AI review raised seven points. Each was checked.
 | Vault ID and local path visible | Masked in RESULTS.md (and in future runs by `lib.mjs`) and in this log | |
 
 Still not run. S5 (two SDK copies), S6 (Agent Toolkit reads on the supplier app) and S7 (café's own sales). All three need REST apps for Ridgeline and Larkspur, which do not exist yet.
+
+## 9. Correction, 11 Nov 12.36 Sydney
+
+**Correction, 11 Nov 12.36 Sydney.** The entrant found that `larkspur.termsheet@example.com` was created as a **Personal** sandbox account by mistake, not Business. So every S1, S2 and S3 result so far used a **personal payer**. S2 proves buyer absent charging for a personal account only, which is the PRD 12 fallback ("owner's PayPal"). **Charging a business payer is still unproven.** Next step is a new Business Larkspur account, then rerun S1 and S2.
+
+What this changes. Section 1 and section 8 say "business payer" for S2. That is wrong, the payer was personal. S1 and S3 results still hold for the funder app but were also run against a personal payer. The Larkspur row in section 2.3 should read Personal.
