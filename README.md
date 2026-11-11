@@ -1,171 +1,101 @@
-# PayPal AI Hackathon entries. Start here
+# TermSheet. Net 30 for Business (concept)
 
-This repo holds the research and the build briefs for two entries to the PayPal AI Hackathon on Devpost. **No app code exists yet.** This file tells a new developer or AI model exactly where things stand and what to do next.
+A café buying from a small coffee roaster can ask for 30 days to pay, right inside PayPal checkout. An AI credit analyst reads the café's PayPal history and writes a credit memo where every sentence links to the PayPal record it came from. The roaster is paid today by a funder through PayPal Payouts, and the funder charges the café's saved PayPal account on day 30.
 
-Last updated Tuesday 10 Nov 2026, 22.00 UTC.
+> **Concept demo. PayPal sandbox only. Not an offer of credit.** TermSheet is a concept for a PayPal product. PayPal does not offer this today.
 
-## 1. The situation in 60 seconds
+Built for the PayPal AI Hackathon. MIT licence.
 
-| Item | Detail |
-|---|---|
-| Deadline | **Thursday 12 Nov 2026, 20.00 UTC** (12.00pm Pacific. Friday 13 Nov, 7.00am Melbourne) |
-| Who | One entrant in Melbourne, working with an AI coding model |
-| Entry 1 | **TermSheet.** Net 30 for business buyers inside PayPal checkout, with an AI credit analyst. Build this first and finish it fully |
-| Entry 2 | **Everyone Goes.** School and club money through PayPal invoices, with private sponsor funded help. Build only if time allows |
-| Entry 2, alternative | **Blindfold.** Attack Mode for PayPal card forms. Bots testing stolen cards get no answer. A full PRD exists. Pick this or Everyone Goes as the second entry, not both unless time allows |
-| What is done | Research, three rounds of judging, refinements, and a full PRD for all three ideas |
-| What is done, 11 Nov | Sandbox tests S1 to S4. See "Current state" below and `scripts/spikes/RESULTS.md` |
-| What is not done | Tests S5 to S8, all app code, hosting, statistics checks, Devpost text, video |
+## 1. Try it in five minutes
 
-## 1b. Current state (11 Nov 2026). Read this before building
+**Hosted demo.** Link coming soon. Free hosting sleeps, so the first load can take up to a minute.
 
-**Correction, 11 Nov 12.36 Sydney.** The entrant found that `larkspur.termsheet@example.com` was created as a **Personal** sandbox account by mistake, not Business. So every S1, S2 and S3 result so far used a **personal payer**. S2 proves buyer absent charging for a personal account only, which is the PRD 12 fallback ("owner's PayPal"). **Charging a business payer is still unproven.** Next step is a new Business Larkspur account, then rerun S1 and S2.
+1. **Approve a café.** Open the judge hub, then *Approve a café*. Larkspur Café has $2,000 of beans in the cart. Click *Apply for Net 30*, then *Submit application*. Watch the analyst call its tools live, then read the memo. Click any citation number to jump to its evidence row. Click *Save my PayPal account with TermSheet Funding* and log in with the Larkspur sandbox login below. You come back with $0 charged, and Ridgeline is paid $1,940 by PayPal Payout.
+2. **Watch a payment fail and recover.** Open *Café phone*. Second Shot Café already owes $2,000. Click *Jump to next due date*. The real charge runs with the café absent and comes back INSTRUMENT_DECLINED (a sandbox simulated decline, labelled on screen). The limit drops and the line freezes. Reply as the café ("Espresso machine died, can pay half Friday."). The analyst checks the story and proposes a plan inside fixed policy limits. Tap *Accept* and a real $1,000 charge goes through.
+3. **See a decline.** In the shop, switch the buyer to *Northgate Resale LLC*. It says it is a café, but it orders about 9 times the usual café volume, ships to a freight forwarder, and its reference letter contradicts its form. The letter also tries to instruct the AI to approve $50,000, which is ignored.
 
-**Business payer proven, 11 Nov 12.45 Sydney.** The personal Larkspur account was deleted and `larkspur.termsheet@example.com` was recreated as a **Business** account. On it, S1 no purchase save PASS (payment token debug `f434131f90084`), S2 buyer absent CAPTURE PASS (order `7LL66346VM5734515`, capture `9TG326348T078043C`, debug `f201904e51969`), and S3 method C with CAPTURE PASS (422 INSTRUMENT_DECLINED, debug `f156045203d2d`). Earlier vault IDs belonged to the deleted personal account and are dead.
+The *Funder ledger* shows every PayPal order ID, capture ID, Payout batch and debug ID.
 
-| Test | Result | Lock the build to |
+## 2. Sandbox logins
+
+| Who | Email | Password |
 |---|---|---|
-| S1 save account without purchase | **PASS on retry, 11 Nov 12.28 Sydney.** The first 3 tries got 403 because PayPal reused an access token issued before Vault was ticked. A fresh token (about 3 hours later) had the vault, invoicing and reporting scopes | PRD 6.3 as written. Café is charged $0. The deposit fallback also works but is not used |
-| S2 buyer absent charge, business payer | **PASS with a Business payer** (see above). Earlier pass was a personal payer | PRD 6.4 as written |
-| S3 test decline | **PASS with method C,** with both intent AUTHORIZE and intent CAPTURE. A returned 403, B did not apply | Mock header on order create. Label SIMULATED DECLINE |
-| S4 payout to supplier | **PASS.** Batch and item SUCCESS by polling | PRD 6.5. Webhook not yet tested (no public address) |
-| S5 two SDK copies on one page | **INCONCLUSIVE.** Both copies load and render without clashing, but every PayPal button shows blank on this PC, even a single button with PayPal's generic test ID | Use the proven redirect approval link for saving the account, until the blank buttons are solved. **Update.** Likely cause is PayPal's sandbox returning HTTP 500 for the button iframe in bursts, not the PC (see "S5 follow up" in RESULTS.md). The S5 page now redraws a blank button. Rerun S5 |
-| S6 Agent Toolkit reads, supplier app | **PASS.** `list_transactions` returned rows | `@paypal/agent-toolkit` 1.11.0, `openai` export, `handleToolCall` |
-| S7 café reads own sales | **PARTIAL.** Call and reporting scope work; no seeded sales yet to compare | Recheck after seeding (PRD 11) |
+| Larkspur Café (buyer, used in the PayPal popup) | `larkspur.termsheet@example.com` | *(added before submission)* |
 
-Sandbox setup that now exists (US, all Business). TermSheet Funding `funder@termsheet.example.com` with REST app "TermSheet Funding". Ridgeline Roasters `ridgeline.termsheet@example.com`. Larkspur `larkspur.termsheet@example.com` (recreated as **Business** on 11 Nov 12.38, REST app "Larkspur Cafe" made). Second Shot, Northgate, Pier 9 and the walk in account are not made yet. REST apps "Ridgeline Roasters" and "Larkspur Cafe" exist (made 11 Nov). Keys are in `.env` as SUPPLIER_CLIENT_ID/SECRET and LARKSPUR_CLIENT_ID/SECRET. ANTHROPIC_API_KEY is also set. **Anthropic credit is low.** Use mocked analyst replies while building, Haiku for real runs, and ask the entrant before any real call.
+These are PayPal **sandbox** test accounts with fake money. Client secrets are never published.
 
-Full record of this session for checking by another tool. `docs/SESSION_LOG_2026-11-11.md`.
+## 3. What is real and what is seeded
 
-How to run the spikes. Secrets live in `.env` at the repo root (git ignored). Run `node --env-file=.env scripts/spikes/<name>.mjs`. The saved vault ID lives in `scripts/spikes/.state.json` (git ignored). `scopes.mjs` lists which permissions the funder app has.
+> Every dollar on screen is a real PayPal sandbox transaction. That covers saved account approvals, charges with the buyer absent, and Payouts. The analyst's tool calls read the PayPal sandbox live. Seeded items are buyer history (created this month), the app clock and the test decline. All rates are assumptions. TermSheet is a concept for a PayPal product and is not an offer of credit.
 
-Next steps. 1) Solve or work around the blank PayPal buttons (S5). 2) Seed history (PRD 11). 3) Build PRD 13 phases 1 to 5, P0 only. Render account not yet made. No app code exists yet.
+- **Seeded history.** 14 past Ridgeline orders and 40 café sales for Larkspur, plus 9 Ridgeline orders for Second Shot, were made by real sandbox calls on 11 Nov 2026 (`scripts/seed`). Sandbox history cannot be backdated, so all dates are this month.
+- **App clock.** Only the app's date moves. Every charge is a real sandbox call.
+- **Test decline.** PayPal's sandbox negative testing header on the order create call (`PayPal-Mock-Response: INSTRUMENT_DECLINED`). Labelled SIMULATED DECLINE.
+- **Analyst modes.** In *practice mode* the analyst makes the same live PayPal reads, and a plain rule based writer drafts the memo with no AI call. The screen says which mode ran. *Live mode* uses Claude with tool use and is rate limited.
 
-Safety rule on the entrant's PC. A Claude Code hook blocks any AI from reading `.env`. Only `node --env-file=.env scripts/spikes/<name>.mjs` may run. `scripts/spikes/check-env.mjs` shows which keys are filled in without showing them.
-
-## 2. What to read, in order
-
-| Order | File | Why |
-|---|---|---|
-| 1 | This file | Current state and next steps |
-| 1a | `docs/SESSION_LOG_2026-11-11.md` | What was set up and tested on 11 Nov, with every PayPal debug ID |
-| 2 | `docs/PRD_TermSheet.md` | **The build brief for entry 1. This is the source of truth** |
-| 3 | `docs/PRD_EveryoneGoes.md` | The build brief for entry 2 |
-| 3b | `docs/PRD_Blindfold.md` | The build brief for the alternative entry 2. Section 1.8 compares the two |
-| 4 | `research/scope_check.md` | The 15 checks every entry must pass |
-| 5 | `research/brief.md` | Official rules, judging criteria, prizes, what the sandbox can and cannot do |
-| 6 | `research/judge_final_A.md`, `judge_final_B.md`, `judge_final_C.md` | What the final judges liked, doubted and asked to fix |
-| 7 | `STATUS.md` | Summary of the research result |
-| Background only | Everything else in `research/` | Earlier rounds, the competitor survey (`census.md`), the fact check (`redteam_r2.md`) |
-
-**If the PRDs and the research disagree, the PRDs win.** They are newer and include every judge fix. Known differences.
-- `research/final_termsheet.md` says the test decline header goes on order create. **Spike S3 on 11 Nov proved this works** (method C). Use method C, see PRD section 6.6.
-- The TermSheet PRD adds reading each café's own PayPal sales, a money strip, a locked backtest and a reordered video.
-- The Everyone Goes PRD removes the "payday on the 28th" moment and adds a sponsor joining on camera.
-- The Blindfold PRD widens the pitch to every small PayPal card merchant, drops the forced security check from the main plan, and publishes no working card testing tool.
-
-## 3. Branches
-
-| Branch | Contents |
-|---|---|
-| `main` in github.com/paragpandyareal/termsheet (private) | **Work here from 11 Nov.** Same history as the old branch |
-| `claude/paypal-hackathon-termsheet-skt5o9` in Paypalai | Old home, kept as a backup. Research plus `docs/` plus this README |
-| `ccr-2774405b-ccejof` | Original research only. Already included in the branch above |
-
-Make the termsheet repo public before submitting. Do not open a pull request unless the entrant asks.
-
-## 4. What the entrant must supply before any build
-
-**Update 11 Nov.** The funder account, Ridgeline, Larkspur and the TermSheet Funding REST app now exist (see section 1b). Everything else below is still to do. Ask for secrets through a secure form or environment settings. **Never ask for secrets in chat and never commit them.**
-
-### 4.1 PayPal sandbox setup (developer.paypal.com, Testing Tools, Sandbox Accounts)
-All accounts must be **US** sandbox accounts. Full tables are in PRD section 5.3.
-
-For TermSheet.
-
-| Account | Type | REST app needed | Features to switch on in the app |
-|---|---|---|---|
-| TermSheet Funding | Business | Yes | Vault, Payouts, Invoicing, Transaction Search |
-| Ridgeline Roasters | Business | Yes | Vault, Invoicing, Transaction Search, Disputes |
-| Larkspur Café | Business | Yes | Vault, Transaction Search |
-| Second Shot Café | Business | Yes | Vault, Transaction Search |
-| Northgate Resale LLC | Business | Optional | Transaction Search |
-| Pier 9 Deli | Business | No | |
-| Walk in customers | Personal | No | |
-
-Give the funder, buyer and walk in accounts large starting balances. For each REST app the build needs the client ID and secret. For each account it needs the sandbox email and password (these are safe to publish in the product README, and judges need them).
-
-### 4.2 Other items
-- An AI API key (the PRDs assume the Anthropic API) and a spending cap for the public demo.
-- A hosting account that gives a public HTTPS address. The PRDs assume Render.
-- For entry 2, a second public GitHub repository.
-- If Blindfold is built, one more US business sandbox account with a REST app that has advanced card payments and Invoicing switched on, plus two personal accounts (PRD section 5.3).
-
-## 5. Next steps for whoever picks this up
-
-Do these in order. Details are in `docs/PRD_TermSheet.md`.
-
-1. **Confirm the open decisions in section 6 with the entrant.** Do not block on them. Use the stated defaults if there is no answer.
-2. **Get credentials** (section 4).
-3. **Run the riskiest sandbox tests first** (PRD section 12, tests S1 to S7) and write results to `scripts/spikes/RESULTS.md`. The three that matter most.
-   - Charging a saved PayPal account with the buyer absent, with a business account as payer.
-   - The test decline, using an AUTHORIZE order with the mock response on the authorise or capture step.
-   - Payouts.
-4. **Report to the entrant which tests pass** before building anything else. Lock the build to what passes and label every fallback.
-5. **Start seeding sandbox history straight after tests S1 and S2 pass** (PRD section 11). Transaction Search can lag 3 hours or more.
-6. **Build in the order in PRD section 13.** P0 first, then P1, then P2.
-7. **Verify every statistic at its original source** (PRD section 18) and record the quote in `docs/STATS_VERIFIED.md`. No number goes in the write up or video until this is done.
-8. **Write the deliverables.** Product README, `LICENSE` (already added, MIT), `docs/DEVPOST.md` with the five judging criteria as headings, `docs/VIDEO_SCRIPT.md`.
-9. **Run three full rehearsals on the hosted build**, then hand the entrant the script to record and upload the video.
-10. **Only then** consider entry 2. Everyone Goes needs at least 14 hours. Blindfold needs at least 20.
-
-When the product README is written, move this file to `docs/HANDOVER.md`.
-
-## 6. Open decisions
-
-| # | Question | Default if no answer |
-|---|---|---|
-| 1 | Who records the opening line and voiceover. A person on camera or a still image with voiceover | Still image with voiceover |
-| 2 | Are four café REST apps acceptable to set up | Read café sales for Larkspur and Second Shot only |
-| 3 | Which AI key and model, and what spending cap for judge mode | Anthropic API, model from env, 30 analyst runs an hour |
-| 4 | Is entry 2 Everyone Goes or Blindfold | Everyone Goes, since it reuses the same PayPal building blocks and is quicker to build. Blindfold has zero overlap with TermSheet but needs a whole new stack |
-| 5 | Name of the second public repo for entry 2 | Ask before starting entry 2 |
-| 6 | Does this repo become the public TermSheet repo, or is a fresh one created | Use this repo and make it public before submitting |
-
-## 7. Working rules
-
-- **Stay inside the 15 scope checks** in `research/scope_check.md`.
-- **Only PayPal plus AI.** No other payment rail, no crypto.
-- **Sandbox only.** Every dollar on screen must be a real PayPal sandbox transaction with a stored PayPal ID.
-- **Be honest on screen.** Label anything seeded, simulated or assumed. Never describe a fallback as the real thing.
-- **No secrets in git.** Client secrets and API keys live in environment variables. Sandbox buyer logins may go in the product README.
-- **No third party brands or copyrighted music** in the app or video. Fictional businesses only.
-- **Never call the option "Pay in 30 days".** It is "Net 30 for Business (concept)".
-- **Check layouts by screenshot** at 390, 1280 and 1440 px wide. Nothing may overlap or clip.
-- **Commit and push after every working step.**
-- **The entrant's writing style.** Simple language, no em dashes, and statistics always checked at source.
-
-## 8. Submission checklist (official rules)
-
-- [ ] Working build that judges can run, by hosted link or by repo instructions
-- [ ] Public open source repo with a licence file visible in the About section
-- [ ] Sandbox test logins in the README
-- [ ] Text description with headings matching the five judging criteria
-- [ ] List of AI tools used and how
-- [ ] Demo video under 3 minutes, public on YouTube, no third party marks or music
-- [ ] Project works exactly as the video and text show
-- [ ] If two entries are submitted, they are clearly different from each other
-
-Judging criteria, equally weighted, with ties broken in this order. Technological Implementation, Design, Potential Impact, Innovation/Idea, Presentation.
-
-## 9. Repo map
+## 4. How it works
 
 ```
-README.md                    this handover
-LICENSE                      MIT
-STATUS.md                    research summary and ranking
-docs/PRD_TermSheet.md        build brief, entry 1
-docs/PRD_EveryoneGoes.md     build brief, entry 2
-docs/PRD_Blindfold.md        build brief, alternative entry 2
-research/                    rules, ideas, three rounds of judging, final specs, scope checks
+ Café (buyer)            Ridgeline Roasters (supplier)        TermSheet Funding (funder)
+ PayPal Business          PayPal Business + REST app           PayPal Business + REST app
+      |                            |                                    |
+      |-- applies at checkout ---->|                                    |
+      |                     AI analyst reads supplier history (Agent Toolkit) and
+      |                     the café's own sales (café's app, Transaction Search)
+      |-- saves PayPal account (Vault setup token, funder app) -------->|  $0 today
+      |                            |<--------- Payout $1,940 ------------|  day 0
+      |<------------ charge with the buyer absent (Orders + vault_id) ---|  day 30
 ```
+
+The café owes the funder, because the funder bought the receivable. That is why the PayPal popup names TermSheet Funding.
+
+## 5. PayPal APIs used
+
+**Direct REST (money moves).**
+- `POST /v1/oauth2/token`
+- `POST /v3/vault/setup-tokens` and `POST /v3/vault/payment-tokens` save the café's account with no purchase
+- `POST /v2/checkout/orders` with `payment_source.paypal.vault_id` charges with the buyer absent (intent CAPTURE)
+- The same call with the `PayPal-Mock-Response` header gives the test decline
+- `POST /v1/payments/payouts` and `GET /v1/payments/payouts/{id}` pay the supplier
+- `POST /v2/checkout/orders` and `/capture` on the supplier app handle normal pay now
+- `GET /v1/reporting/transactions` on the café's own app reads its sales
+- `POST /v1/notifications/verify-webhook-signature` verifies webhooks
+
+**PayPal Agent Toolkit** (`@paypal/agent-toolkit`, read tools for the analyst on the supplier app). `list_transactions`, `list_invoices`, `list_disputes`.
+
+## 6. How the AI is used, and its guardrails
+- The analyst **assembles the file** by calling tools. Every row it sees gets a stable evidence ID such as `txn:0G042576G7005140W` or `sales:larkspur:30d`.
+- **Every memo sentence must cite evidence IDs that exist.** Plain code checks this, and a failed check goes back to the model once, then to review.
+- **A plain, versioned scorecard (`sc-1`) sets a ceiling.** The AI can only keep or lower it, ask for a deposit, decline or refer. It can never raise a limit.
+- **Payment plans must fit a policy box** in plain code. At most 2 instalments, the first at least 25% and charged on acceptance, done within 15 days, no fees.
+- **Documents and messages are evidence, never instructions.** Northgate's letter includes a prompt injection that must not change the result.
+- **The AI never moves money.** Only ledger code calls the money APIs.
+
+## 7. Run it locally
+1. Create US sandbox accounts and REST apps (see `docs/PRD_TermSheet.md` section 5.3). Tick Save payment methods, Payouts, Invoicing and Transaction search before the first API call.
+2. Copy `.env.example` to `.env` and fill it in.
+3. `npm install`, then `npm run dev`, then open http://localhost:3000. The local database (PGlite) needs no install.
+4. Seed history with `node --env-file=.env scripts/seed/seed.mjs` (run with no arguments to see the steps).
+5. Run tests with `npm test`.
+
+## 8. Sandbox test results
+The riskiest calls were tested before any app code was written. The full record, with PayPal debug IDs, is in `scripts/spikes/RESULTS.md` and `docs/SESSION_LOG_2026-11-11.md`.
+
+| Test | Result |
+|---|---|
+| Save a PayPal account with no purchase | Pass |
+| Charge a **business** buyer with the buyer absent | Pass |
+| Test decline | Pass, using the mock header on order create |
+| Payout to the supplier | Pass |
+| Two PayPal JS SDKs on one page | Inconclusive. The sandbox button iframe sometimes returns 500, so saving the account uses PayPal's redirect approval page instead |
+| Agent Toolkit reads | Pass |
+| Café reads its own sales | Pass. Transaction Search lags 3 hours or more, so recent seeded rows are read by order ID until it catches up |
+
+## 9. AI tools used to build it
+- **Claude Code** (Anthropic) wrote the code, ran the sandbox tests and wrote the docs with the entrant.
+- **Claude** (Anthropic API) is the credit analyst in live mode.
+
+## 10. Project files
+- `docs/PRD_TermSheet.md` is the product brief.
+- `docs/BUILD_STATUS.md` is the current build state.
+- `docs/HANDOVER.md` holds the earlier handover notes.
