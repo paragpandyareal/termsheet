@@ -242,16 +242,20 @@ async function mockPlan(ctx: ToolCtx, balance: number) {
   };
 }
 
-async function pickMode() {
+// When live AI is switched on but the hourly or daily cap is used up, the run is stored and labelled as a fallback,
+// not as practice mode, so the screen says honestly why the AI did not run.
+async function pickMode(): Promise<{ mode: 'live' | 'mock'; dbMode: string; model: string }> {
   const m = analystMode();
-  return m === 'live' && !(await liveAllowed()) ? 'mock' : m;
+  if (m === 'live' && !(await liveAllowed())) return { mode: 'mock', dbMode: 'fallback', model: 'rule-based writer (AI limit for this hour reached)' };
+  return m === 'live' ? { mode: 'live', dbMode: 'live', model: MODEL } : { mode: 'mock', dbMode: 'mock', model: 'rule-based writer (no AI)' };
 }
 
 export async function startUnderwrite(orderId: string) {
   const order = await one('SELECT o.*, b.key FROM orders o JOIN buyer b ON b.id=o.buyer_id WHERE o.id=$1', [orderId]);
-  const mode = await pickMode();
+  const picked = await pickMode(), mode = picked.mode;
   const runId = newId('run');
-  await sql("INSERT INTO analyst_run (id, kind, subject_id, model, mode) VALUES ($1,'UNDERWRITE',$2,$3,$4)", [runId, orderId, mode === 'live' ? MODEL : 'rule-based writer (no AI)', mode]);
+  await sql("INSERT INTO analyst_run (id, kind, subject_id, model, mode) VALUES ($1,'UNDERWRITE',$2,$3,$4)", [runId, orderId, picked.model, picked.dbMode]);
+  if (picked.dbMode === 'fallback') await trace(runId, { type: 'fallback', reason: 'AI limit for this hour reached' });
   void (async () => {
     const ctx: ToolCtx = { runId, buyerId: order.buyer_id, buyerKey: order.key, orderId, evidence: new Map(), facts: {} };
     let out: any = null, msgs: any = null, usage: any = null, fallbackWhy = '';
@@ -285,9 +289,10 @@ export async function startPlan(receivableId: string) {
   const rcv = await one('SELECT r.*, b.key FROM receivable r JOIN buyer b ON b.id=r.buyer_id WHERE r.id=$1', [receivableId]);
   const paid = await one("SELECT coalesce(sum(amount_cents),0)::int AS c FROM instalment WHERE receivable_id=$1 AND status='PAID'", [receivableId]);
   const balance = rcv.principal_cents - (paid?.c || 0);
-  const mode = await pickMode();
+  const picked = await pickMode(), mode = picked.mode;
   const runId = newId('run');
-  await sql("INSERT INTO analyst_run (id, kind, subject_id, model, mode) VALUES ($1,'RESTRUCTURE',$2,$3,$4)", [runId, receivableId, mode === 'live' ? MODEL : 'rule-based writer (no AI)', mode]);
+  await sql("INSERT INTO analyst_run (id, kind, subject_id, model, mode) VALUES ($1,'RESTRUCTURE',$2,$3,$4)", [runId, receivableId, picked.model, picked.dbMode]);
+  if (picked.dbMode === 'fallback') await trace(runId, { type: 'fallback', reason: 'AI limit for this hour reached' });
   void (async () => { try {
     const ctx: ToolCtx = { runId, buyerId: rcv.buyer_id, buyerKey: rcv.key, receivableId, evidence: new Map(), facts: {} };
     let out: any = null, fallbackWhy = '';

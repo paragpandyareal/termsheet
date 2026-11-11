@@ -155,7 +155,7 @@ export default function Apply({ params }: { params: Promise<{ orderId: string }>
                 <h2 className="t-h3">How the AI analyst worked</h2>
                 {mode === 'live'
                   ? <span className="chip chip-blue">Claude · {model} · {tools.length} tool calls{totalMs ? ` · ${(totalMs / 1000).toFixed(1)}s` : ''}</span>
-                  : mode === 'fallback' ? <span className="chip chip-warn" title="The AI call failed or its budget was used up. Same live PayPal reads; plain code wrote the memo.">AI unavailable · rule-based fallback</span>
+                  : mode === 'fallback' ? <span className="chip chip-warn" title="The AI call failed or its budget was used up. Same live PayPal reads; plain code wrote the memo.">{String(model || '').includes('limit') ? 'AI hourly limit reached · rule-based fallback' : 'AI unavailable · rule-based fallback'}</span>
                   : mode ? <span className="chip chip-warn" title="Same live PayPal reads. Plain code wrote the memo. No AI call.">Practice mode · no AI call</span> : null}
               </div>
               <ol className="mt-4 space-y-3">

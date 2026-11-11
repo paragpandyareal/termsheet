@@ -83,7 +83,7 @@ export default function Buyer({ params }: { params: Promise<{ buyerId: string }>
           {(() => { const p = v.plans[0]; if (!p) return null; const pj = p.proposal_json || {}; const sc = pj.story_check || {}; const md = pj.mode?.mode; return (
             <div className="card p-5 min-w-0">
               <div className="flex flex-wrap items-center justify-between gap-2"><h2 className="font-bold">Why this plan</h2>
-                <span className={md === 'live' ? 'chip chip-blue' : 'chip chip-warn'}>{md === 'live' ? 'Claude · ' + (pj.mode?.model || '') : md === 'fallback' ? 'AI unavailable · rule-based fallback' : 'Practice mode · no AI call'}</span></div>
+                <span className={md === 'live' ? 'chip chip-blue' : 'chip chip-warn'}>{md === 'live' ? 'Claude · ' + (pj.mode?.model || '') : md === 'fallback' ? (String(pj.mode?.model || '').includes('limit') ? 'AI hourly limit reached · rule-based fallback' : 'AI unavailable · rule-based fallback') : 'Practice mode · no AI call'}</span></div>
               {sc.claim && <p className="small mt-2"><b>What the café said it can do:</b> {sc.claim}</p>}
               <p className={'mt-2 ' + (sc.consistent ? 'callout-good' : 'callout-bad')}><b>{sc.consistent ? 'Story checks out.' : 'Story does not fully check out.'}</b> {sc.text}</p>
               {(pj.memo || []).map((m: any, i: number) => <p key={i} className="small mt-2">{m.text}</p>)}
