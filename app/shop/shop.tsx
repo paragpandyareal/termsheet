@@ -46,7 +46,7 @@ export default function Shop({ supplierClientId }: { supplierClientId: string })
     else if (!document.getElementById('pp-supplier')) {
       const s = document.createElement('script');
       s.id = 'pp-supplier';
-      s.src = `https://www.paypal.com/sdk/js?client-id=${supplierClientId}&currency=USD&components=buttons`;
+      s.src = `https://www.paypal.com/sdk/js?client-id=${supplierClientId}&currency=USD&components=buttons&disable-funding=card,credit,paylater,venmo`;
       s.setAttribute('data-namespace', 'paypalSupplier');
       s.onload = render;
       document.head.appendChild(s);
@@ -65,12 +65,12 @@ export default function Shop({ supplierClientId }: { supplierClientId: string })
       <main className="max-w-5xl mx-auto px-4 py-6">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
-            <div className="text-sm font-semibold" style={{ color: 'var(--accent)' }}>Ridgeline Roasters · Wholesale</div>
-            <h1 className="text-2xl font-bold">Checkout</h1>
+            <div className="small font-semibold" style={{ color: 'var(--blue)' }}>Ridgeline Roasters · wholesale coffee</div>
+            <h1 className="text-[28px] font-bold">Checkout</h1>
           </div>
           <label className="text-sm">
             <span className="muted mr-2">Judge mode, buying as</span>
-            <select className="card px-2 py-1" value={buyer} onChange={(e) => setBuyer(e.target.value)}>
+            <select className="field inline-block w-auto" value={buyer} onChange={(e) => setBuyer(e.target.value)}>
               {BUYERS.map((b) => <option key={b.key} value={b.key}>{b.label}</option>)}
             </select>
           </label>
@@ -91,16 +91,17 @@ export default function Shop({ supplierClientId }: { supplierClientId: string })
 
           <section className="md:col-span-2 space-y-3">
             <div className="card p-4">
-              <div className="font-bold mb-2">Pay now</div>
+              <div className="font-bold mb-2" style={{ color: 'var(--navy)' }}>Pay now</div>
               <div ref={btnRef} style={{ minHeight: 50 }} />
               {!supplierClientId && <p className="text-xs muted">Supplier PayPal app not configured.</p>}
               {note && <p className="text-xs mt-2">{note}</p>}
             </div>
-            <div className="card p-4" style={{ borderColor: 'var(--accent)', borderWidth: 2 }}>
-              <div className="flex items-center gap-2"><span className="font-bold">Net 30 for Business</span><Chip kind="plain">concept</Chip></div>
+            <div className="flex items-center gap-3 small muted"><span className="flex-1 border-t" style={{ borderColor: 'var(--line)' }} />or pay later<span className="flex-1 border-t" style={{ borderColor: 'var(--line)' }} /></div>
+            <div className="card p-5" style={{ borderColor: 'var(--blue)', borderWidth: 2 }}>
+              <div className="flex flex-wrap items-center gap-2"><span className="font-bold text-lg" style={{ color: 'var(--navy)' }}>Net 30 for Business</span><span className="chip">concept</span><span className="chip chip-blue">Decision in under a minute</span></div>
               <p className="text-sm muted mt-1">Take the beans today, pay in 30 days. Ridgeline is paid now by TermSheet Funding. Decision in under a minute.</p>
               <button className="btn w-full justify-center mt-3" disabled={busy} onClick={net30}>{busy ? 'Starting…' : `Apply for Net 30 on ${usd(total)}`}</button>
-              <p className="text-xs muted mt-2">3% fee paid by Ridgeline <Chip kind="assume">ASSUMPTION</Chip></p>
+              <p className="small muted mt-2">No cost to the café. Ridgeline pays a 3% fee <Chip kind="assume" /></p>
             </div>
           </section>
         </div>

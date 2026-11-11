@@ -144,7 +144,7 @@ export async function runCollections() {
   for (const i of await sql("SELECT i.* FROM instalment i JOIN receivable r ON r.id=i.receivable_id WHERE i.status='SCHEDULED' AND NOT i.reminded AND i.due_date <= ($1::date + 3)", [t])) {
     await sql('UPDATE instalment SET reminded=true WHERE id=$1', [i.id]);
     const r = await one('SELECT buyer_id FROM receivable WHERE id=$1', [i.receivable_id]);
-    await postMessage(r.buyer_id, 'SYSTEM', `Reminder. $${(i.amount_cents / 100).toFixed(2)} will be charged to your saved PayPal account on ${i.due_date.toISOString?.().slice(0, 10) || i.due_date}.`, i.receivable_id);
+    await postMessage(r.buyer_id, 'SYSTEM', `Reminder. ${(i.amount_cents / 100).toLocaleString('en-US', { minimumFractionDigits: 2 })} will be charged to your saved PayPal account on ${i.due_date.toISOString?.().slice(0, 10) || i.due_date}.`, i.receivable_id);
   }
   const due = await sql("SELECT id FROM instalment WHERE status='SCHEDULED' AND due_date <= $1::date ORDER BY due_date, seq", [t]);
   let charged = 0;

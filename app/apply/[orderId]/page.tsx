@@ -1,11 +1,15 @@
 'use client';
-// Application and Analyst panel (PRD 4.2). Live tool trace, memo with citation chips, evidence grid, decision, consent, save account.
-import { use, useEffect, useRef, useState } from 'react';
+// Application and Analyst panel (PRD 4.2). Decision first, then the analyst's live trace and cited memo, then the evidence.
+import { use, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Nav, Chip, MoneyStrip, useAppState, usd } from '@/components/money';
 import { REASONS } from '@/lib/scorecard/scorecard';
 
-type Row = { type: string; name?: string; args?: any; summary?: string; ms?: number; status?: string; errors?: string[]; outcome?: string };
+type Row = { at?: number; type: string; name?: string; args?: any; summary?: string; ms?: number; status?: string; errors?: string[]; outcome?: string };
+const TOOL_LABEL: Record<string, string> = {
+  get_application: 'Read application', list_transactions: 'Ridgeline order history', search_invoices: 'Ridgeline invoices', list_disputes: 'PayPal disputes',
+  get_buyer_sales_summary: "Café's own PayPal sales", get_repayment_record: 'TermSheet repayment record', read_document: 'Read reference letter', get_thread: 'Read messages', get_policy: 'Scorecard ceiling',
+};
 
 export default function Apply({ params }: { params: Promise<{ orderId: string }> }) {
   const { orderId } = use(params);
@@ -14,15 +18,15 @@ export default function Apply({ params }: { params: Promise<{ orderId: string }>
   const [trace, setTrace] = useState<Row[]>([]);
   const [final, setFinal] = useState<any>(null);
   const [hl, setHl] = useState('');
+  const [showAll, setShowAll] = useState(false);
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState('');
   const [s, loadState] = useAppState(5000);
   const [form, setForm] = useState({ businessName: '', businessType: 'Café', foundedYear: '', shipTo: '', letter: '' });
-  const gridRef = useRef<HTMLDivElement>(null);
 
   const load = () => fetch(`/api/apply/${orderId}`, { cache: 'no-store' }).then((r) => r.json()).then((d) => {
     setData(d);
-    setForm((f) => f.businessName ? f : { ...f, businessName: d.order?.display_name || '', foundedYear: d.order?.key === 'northgate' ? '2019' : d.order?.key === 'larkspur' ? '2019' : '', shipTo: d.order?.ship_to || '' });
+    setForm((f) => f.businessName ? f : { ...f, businessName: d.order?.display_name || '', foundedYear: d.order?.key === 'secondshot' ? '2021' : '2019', shipTo: d.order?.ship_to || '' });
     if (d.run?.status === 'DONE') setTrace(d.run.trace_json || []);
     else if (d.run && !final) stream(d.run.id);
   });
@@ -47,102 +51,89 @@ export default function Apply({ params }: { params: Promise<{ orderId: string }>
     if (r.approveUrl) window.location.href = r.approveUrl;
     else { setErr(`Could not start PayPal. Debug ID ${r.debugId || 'n/a'}`); setSaving(false); }
   };
-  const cite = (id: string) => { setHl(id); document.getElementById(`ev-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' }); };
+  const cite = (id: string) => { setShowAll(true); setHl(id); setTimeout(() => document.getElementById(`ev-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 50); };
 
   const order = data?.order;
-  const out = final?.output || (data?.app?.decision_json && data?.run?.status === 'DONE' ? data.app.decision_json : null);
+  const out = final?.output || (data?.run?.status === 'DONE' ? data.app?.decision_json : null);
   const evidence: any[] = final?.evidence || data?.evidence || [];
   const evIndex = new Map(evidence.map((e, i) => [e.evidence_id, i + 1]));
   const started = !!data?.run || trace.length > 0;
   const approved = out && (out.outcome === 'APPROVE' || out.outcome === 'COUNTEROFFER');
   const saved = data?.line?.saved && data?.payout;
   const mode = final?.mode || data?.run?.mode;
+  const model = final?.model || data?.run?.model;
+  const tools = trace.filter((t) => t.type === 'tool_end');
+  const totalMs = trace.length > 1 && trace[0].at && trace[trace.length - 1].at ? trace[trace.length - 1].at! - trace[0].at! : 0;
+  const maxMs = Math.max(1, ...tools.map((t) => t.ms || 0));
+  const validate = trace.find((t) => t.type === 'validate');
+  const sc = data?.app?.scorecard_json;
+  const Cites = ({ ids }: { ids: string[] }) => <>{ids?.map((id) => <button key={id} onClick={() => cite(id)} className="chip-btn" aria-label={`Source ${evIndex.get(id) ?? '?'}: ${id}`} title={id}>{evIndex.get(id) ?? '?'}</button>)}</>;
+
+  // Group repeated evidence sources so the table stays readable.
+  const groups: { source: string; rows: any[] }[] = [];
+  for (const e of evidence) { const g = groups.find((x) => x.source === e.source); if (g) g.rows.push(e); else groups.push({ source: e.source, rows: [e] }); }
 
   return (
     <>
       <Nav />
-      <main className="max-w-6xl mx-auto px-4 py-6 space-y-4">
+      <main className="max-w-6xl mx-auto px-4 py-6 space-y-5">
         <div>
-          <div className="text-sm font-semibold" style={{ color: 'var(--accent)' }}>Net 30 for Business (concept)</div>
-          <h1 className="text-2xl font-bold">{order ? `${order.display_name} · order ${order.order_no} · ${usd(order.amount_cents)}` : 'Loading…'}</h1>
+          <div className="small font-semibold" style={{ color: 'var(--blue)' }}>Net 30 for Business (concept) · application</div>
+          <h1 className="text-2xl sm:text-[28px] font-bold">{order ? `${order.display_name} · ${usd(order.amount_cents)}` : 'Loading…'}</h1>
+          {order && <div className="small muted">Ridgeline order {order.order_no} · ships to {order.ship_to}</div>}
         </div>
 
         {!started && order && (
-          <section className="card p-4 grid sm:grid-cols-2 gap-3">
-            {([['businessName', 'Business name'], ['businessType', 'Business type'], ['foundedYear', 'Year founded'], ['shipTo', 'Shipping address']] as const).map(([k, l]) => (
-              <label key={k} className="text-sm"><span className="muted">{l}</span>
-                <input className="card w-full px-2 py-1.5 mt-1" value={(form as any)[k]} onChange={(e) => setForm({ ...form, [k]: e.target.value })} /></label>
-            ))}
-            <label className="text-sm sm:col-span-2"><span className="muted">Reference letter (optional, paste text){order.key === 'northgate' ? '. Northgate’s letter is on file.' : ''}</span>
-              <textarea className="card w-full px-2 py-1.5 mt-1" rows={3} value={form.letter} onChange={(e) => setForm({ ...form, letter: e.target.value.slice(0, 200000) })} /></label>
-            <div className="sm:col-span-2"><button className="btn" onClick={submit}>Submit application</button></div>
-          </section>
-        )}
-
-        {started && (
-          <section className="grid lg:grid-cols-2 gap-4">
-            <div className="card p-4 min-w-0">
-              <div className="flex items-center justify-between gap-2">
-                <div className="font-bold">Analyst trace</div>
-                <span className="text-xs muted">{mode === 'live' ? `Live AI · ${final?.model || data?.run?.model}` : 'Practice mode. Live PayPal reads, rule based writer, no AI call'}</span>
-              </div>
-              <div className="mt-2 space-y-1">
-                {trace.filter((t) => t.type === 'tool_end' || t.type === 'validate').map((t, i) => (
-                  <div key={i} className="flex gap-2 text-sm items-start">
-                    <span className="mono shrink-0" style={{ color: t.status === 'error' || (t.type === 'validate' && t.errors?.length) ? 'var(--bad)' : 'var(--accent)' }}>{t.type === 'validate' ? 'validate' : t.name}</span>
-                    <span className="min-w-0 break-words">{t.type === 'validate' ? (t.errors?.length ? t.errors.join('; ') : 'Every sentence cites real evidence. Within the scorecard ceiling.') : t.summary}</span>
-                    {t.ms !== undefined && <span className="mono muted ml-auto shrink-0">{(t.ms / 1000).toFixed(1)}s</span>}
-                  </div>
-                ))}
-                {!out && <div className="text-sm muted animate-pulse">Working…</div>}
-              </div>
+          <section className="card p-5">
+            <h2 className="font-bold">Tell us about your business</h2>
+            <p className="small muted">Takes under a minute. The AI analyst reads your PayPal history with Ridgeline and your own PayPal sales.</p>
+            <div className="grid sm:grid-cols-2 gap-4 mt-3">
+              {([['businessName', 'Business name'], ['businessType', 'Business type'], ['foundedYear', 'Year founded'], ['shipTo', 'Shipping address']] as const).map(([k, l]) => (
+                <label key={k} className="small font-semibold">{l}<input className="field font-normal" value={(form as any)[k]} onChange={(e) => setForm({ ...form, [k]: e.target.value })} /></label>
+              ))}
+              <label className="small font-semibold sm:col-span-2">Reference letter (optional, paste text){order.key === 'northgate' ? ' · Northgate’s letter is already on file' : ''}
+                <textarea className="field font-normal" rows={3} value={form.letter} onChange={(e) => setForm({ ...form, letter: e.target.value.slice(0, 200000) })} /></label>
             </div>
-
-            <div className="card p-4 min-w-0">
-              <div className="font-bold">Credit memo</div>
-              {!out && <p className="text-sm muted mt-2">The memo appears when the analyst finishes.</p>}
-              {out && (
-                <div className="mt-2 space-y-2 text-sm">
-                  {out.memo?.map((m: any, i: number) => (
-                    <p key={i}>{m.text} {m.evidence_ids?.map((id: string) => <button key={id} onClick={() => cite(id)} className="chip mx-0.5" title={id}>{evIndex.get(id) ?? '?'}</button>)}</p>
-                  ))}
-                  {out.contradictions?.map((m: any, i: number) => (
-                    <p key={'c' + i} style={{ color: 'var(--bad)' }}>⚠ {m.text} {m.evidence_ids?.map((id: string) => <button key={id} onClick={() => cite(id)} className="chip mx-0.5">{evIndex.get(id) ?? '?'}</button>)}</p>
-                  ))}
-                </div>
-              )}
-            </div>
+            <button className="btn mt-4" onClick={submit}>Submit application</button>
           </section>
         )}
 
         {out && (
-          <section className="card p-4" style={{ borderColor: approved ? 'var(--accent)' : 'var(--bad)', borderWidth: 2 }}>
-            <div className="flex flex-wrap items-center gap-3">
-              <span className="text-xl font-bold">{out.outcome === 'APPROVE' ? 'Approved' : out.outcome === 'COUNTEROFFER' ? 'Counteroffer' : out.outcome === 'DECLINE' ? 'Declined' : 'Sent to review'}</span>
-              {approved && <span>Net {out.term_days} · limit {usd(out.limit_cents)}{out.deposit_pct ? ` · ${out.deposit_pct}% deposit` : ''}</span>}
-              {out.tightened_from_scorecard && <Chip kind="plain">analyst tightened the scorecard</Chip>}
-              <span className="text-xs muted">Scorecard {data?.app?.scorecard_json?.total ?? '…'}/100, tier {data?.app?.scorecard_json?.ceiling?.tier ?? '…'}</span>
+          <section className="card p-5 sm:p-6" style={{ borderTop: `4px solid ${approved ? 'var(--good)' : out.outcome === 'DECLINE' ? 'var(--bad)' : 'var(--warn)'}` }}>
+            <div className="flex flex-wrap items-end gap-x-8 gap-y-3">
+              <div>
+                <div className="small muted font-semibold">Decision</div>
+                <div className="text-[28px] font-extrabold" style={{ color: approved ? 'var(--good)' : out.outcome === 'DECLINE' ? 'var(--bad)' : 'var(--warn)' }}>
+                  {out.outcome === 'APPROVE' ? 'Approved' : out.outcome === 'COUNTEROFFER' ? 'Counteroffer' : out.outcome === 'DECLINE' ? 'Declined' : 'Sent to human review'}
+                </div>
+              </div>
+              {approved && <div><div className="small muted font-semibold">Credit limit</div><div className="text-[28px] font-extrabold" style={{ color: 'var(--navy)' }}>{usd(out.limit_cents)}</div></div>}
+              {approved && <div><div className="small muted font-semibold">Terms</div><div className="text-xl font-bold" style={{ color: 'var(--navy)' }}>Net {out.term_days}{out.deposit_pct ? ` · ${out.deposit_pct}% deposit` : ''}</div></div>}
+              {sc && <div><div className="small muted font-semibold">Scorecard (plain code)</div><div className="text-xl font-bold" style={{ color: 'var(--navy)' }}>{sc.total}/100 · tier {sc.ceiling.tier}</div><div className="small muted">Ceiling {sc.ceiling.outcome === 'DECLINE' ? 'decline' : usd(sc.ceiling.limitCents)}. The AI can only go lower.</div></div>}
+              {out.tightened_from_scorecard && <span className="chip chip-warn">Analyst went below the scorecard</span>}
             </div>
+            {out.summary && <p className="mt-4 text-[17px]">{out.summary}</p>}
+            {out.tightening_reason && <p className="small mt-2"><b>Why the analyst went below the scorecard:</b> {out.tightening_reason}</p>}
             {out.outcome === 'DECLINE' && (
-              <div className="mt-2 text-sm">
-                <ul className="list-disc pl-5">{out.factor_codes.slice(0, 3).map((c: string) => <li key={c}>{REASONS[c]} ({c})</li>)}</ul>
-                <p className="mt-2">You can still pay now on the checkout page.</p>
-                <p className="text-xs muted mt-1">Illustrative notice for a concept demo. Not legal advice.</p>
+              <div className="mt-4">
+                <div className="font-semibold">Main reasons</div>
+                <ul className="list-disc pl-5 mt-1">{out.factor_codes.filter((c: string) => REASONS[c]).sort((a: string, b: string) => (['OB07', 'VR06'].includes(b) ? 1 : 0) - (['OB07', 'VR06'].includes(a) ? 1 : 0)).slice(0, 3).map((c: string) => <li key={c}>{REASONS[c]}</li>)}</ul>
+                <p className="small mt-2">The café can still pay now at checkout. <span className="muted">Illustrative notice for a concept demo. Not legal advice.</span></p>
               </div>
             )}
             {approved && !saved && (
-              <div className="mt-3">
-                <blockquote className="text-sm border-l-4 pl-3" style={{ borderColor: 'var(--accent)' }}>You authorise TermSheet Funding to charge this PayPal account on each order&apos;s due date for amounts you owe, up to your {usd(out.limit_cents)} limit. We message you 3 days before each charge.</blockquote>
+              <div className="mt-5 pt-5 border-t" style={{ borderColor: 'var(--line)' }}>
+                <p className="small rounded-xl p-3" style={{ background: 'var(--blue-soft)', color: 'var(--navy)' }}>You authorise TermSheet Funding to charge this PayPal account on each order&apos;s due date for amounts you owe, up to your {usd(out.limit_cents)} limit. We message you 3 days before each charge.</p>
                 <button className="btn mt-3" disabled={saving} onClick={save}>{saving ? 'Opening PayPal…' : 'Save my PayPal account with TermSheet Funding'}</button>
-                <p className="text-xs muted mt-1">Opens PayPal. Nothing is charged today. Log in as larkspur.termsheet@example.com.</p>
-                {err && <p className="text-sm mt-1" style={{ color: 'var(--bad)' }}>{err}</p>}
+                <p className="small muted mt-2">Opens PayPal. Nothing is charged today. Judges: log in as <span className="mono">larkspur.termsheet@example.com</span>.</p>
+                {err && <p className="small mt-1" style={{ color: 'var(--bad)' }}>{err}</p>}
               </div>
             )}
             {saved && (
-              <div className="mt-3 text-sm space-y-1">
-                <p>✅ PayPal account saved with TermSheet Funding. Charged today: <b>$0.00</b>.</p>
-                <p>✅ Ridgeline paid {usd(data.payout.amount_cents)} by PayPal Payout · batch <span className="mono">{data.payout.batch_id}</span> · {data.payout.status}</p>
-                <p className="text-xs muted">Due in {out.term_days} days. See the café phone and funder ledger.</p>
+              <div className="mt-5 pt-5 border-t space-y-2" style={{ borderColor: 'var(--line)' }}>
+                <div className="callout-good">PayPal account saved with TermSheet Funding. Charged today: <b>$0.00</b>.</div>
+                <div className="callout-good">Ridgeline paid {usd(data.payout.amount_cents)} by PayPal Payout · batch <span className="mono">{data.payout.batch_id}</span> · {data.payout.status}</div>
+                <p className="small muted">Due in {out.term_days} days. Follow it on the café phone and the funder ledger.</p>
               </div>
             )}
           </section>
@@ -150,24 +141,69 @@ export default function Apply({ params }: { params: Promise<{ orderId: string }>
 
         {(saved || q.get('saved')) && <MoneyStrip s={s} />}
 
-        {evidence.length > 0 && (
-          <section className="card p-4" ref={gridRef}>
-            <div className="font-bold mb-2">Evidence ({evidence.length})</div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead><tr className="text-left muted"><th className="pr-2">#</th><th className="pr-2">Evidence ID</th><th className="pr-2">Source</th><th>Summary</th></tr></thead>
-                <tbody>
-                  {evidence.map((e, i) => (
-                    <tr key={e.evidence_id} id={`ev-${e.evidence_id}`} style={{ background: hl === e.evidence_id ? 'var(--accent-soft)' : undefined }}>
-                      <td className="pr-2 align-top">{i + 1}</td>
-                      <td className="pr-2 align-top mono break-all">{e.evidence_id}</td>
-                      <td className="pr-2 align-top">{e.source}{/Seeded|seed|Orders API/i.test(e.source) || e.evidence_id.startsWith('txn:') || e.evidence_id.startsWith('sales:') ? <> <Chip kind="seeded">SEEDED</Chip></> : null}</td>
-                      <td className="align-top">{e.summary}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+        {started && (
+          <section className="grid lg:grid-cols-2 gap-5">
+            <div className="card p-5 min-w-0">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <h2 className="font-bold">How the AI analyst worked</h2>
+                {mode === 'live'
+                  ? <span className="chip chip-blue">Claude · {model} · {tools.length} tool calls{totalMs ? ` · ${(totalMs / 1000).toFixed(1)}s` : ''}</span>
+                  : mode === 'fallback' ? <span className="chip chip-warn" title="The AI call failed or its budget was used up. Same live PayPal reads; plain code wrote the memo.">AI unavailable · rule-based fallback</span>
+                  : mode ? <span className="chip chip-warn" title="Same live PayPal reads. Plain code wrote the memo. No AI call.">Practice mode · no AI call</span> : null}
+              </div>
+              <ol className="mt-3 space-y-2">
+                {tools.map((t, i) => (
+                  <li key={i} className="flex gap-3 items-start">
+                    <span className="chip chip-blue shrink-0">{TOOL_LABEL[t.name || ''] || t.name}</span>
+                    <div className="min-w-0 flex-1">
+                      <div className="small break-words" style={{ color: t.status === 'error' ? 'var(--bad)' : undefined }}>{t.summary}</div>
+                      <div className="h-1 rounded-full mt-1" style={{ background: 'var(--blue-soft)' }}><div className="h-1 rounded-full" style={{ width: `${Math.max(4, ((t.ms || 0) / maxMs) * 100)}%`, background: 'var(--blue)' }} /></div>
+                    </div>
+                    <span className="mono muted shrink-0">{((t.ms || 0) / 1000).toFixed(1)}s</span>
+                  </li>
+                ))}
+                {validate && <li className={validate.errors?.length ? 'callout-bad small' : 'callout-good small'}>{validate.errors?.length ? `Checks failed: ${validate.errors.join('; ')}` : '✓ Every sentence cites real evidence · within the scorecard ceiling · policy rules pass'}</li>}
+                {!out && <li className="small muted animate-pulse">Reading PayPal…</li>}
+              </ol>
             </div>
+
+            <div className="card p-5 min-w-0">
+              <h2 className="font-bold">Credit memo</h2>
+              <p className="small muted">Tap a number to see the PayPal record behind each sentence.</p>
+              {!out && <p className="small muted mt-3">The memo appears when the analyst finishes.</p>}
+              {out && (
+                <div className="mt-3 space-y-3">
+                  {out.memo?.map((m: any, i: number) => <p key={i}>{m.text} <Cites ids={m.evidence_ids} /></p>)}
+                  {out.contradictions?.map((m: any, i: number) => <p key={'c' + i} className="callout-bad"><b>Contradiction.</b> {m.text} <Cites ids={m.evidence_ids} /></p>)}
+                  {out.would_change && <p className="small muted"><b>What would change this decision:</b> {out.would_change}</p>}
+                </div>
+              )}
+            </div>
+          </section>
+        )}
+
+        {evidence.length > 0 && (
+          <section className="card p-5">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <h2 className="font-bold">Evidence the analyst read ({evidence.length})</h2>
+              <button className="btn btn-ghost btn-sm" onClick={() => setShowAll(!showAll)}>{showAll ? 'Hide sources' : `Show all ${evidence.length} sources`}</button>
+            </div>
+            {!showAll && <p className="small muted mt-2">{groups.map((g) => `${g.rows.length} from ${g.source.split('.')[0]}`).join(' · ')}</p>}
+            {showAll && groups.map((g) => (
+              <div key={g.source} className="mt-4">
+                <div className="small font-semibold" style={{ color: 'var(--navy)' }}>{g.source.split('.')[0]} {/Orders API|seed/i.test(g.source) || g.rows[0].evidence_id.startsWith('txn:') || g.rows[0].evidence_id.startsWith('sales:') || g.rows[0].evidence_id.startsWith('inv:') ? <Chip kind="seeded" /> : null}</div>
+                {g.source.includes('.') && <div className="small muted">{g.source.split('.').slice(1).join('.').trim()}</div>}
+                <div className="mt-1 divide-y" style={{ borderColor: 'var(--line)' }}>
+                  {g.rows.map((e) => (
+                    <div key={e.evidence_id} id={`ev-${e.evidence_id}`} className={`grid sm:grid-cols-[2.5rem_14rem_1fr] gap-x-3 py-1.5 px-2 rounded ${hl === e.evidence_id ? 'hl' : ''}`}>
+                      <span className="small font-bold" style={{ color: 'var(--blue)' }}>{evIndex.get(e.evidence_id)}</span>
+                      <span className="mono muted break-all">{e.evidence_id}</span>
+                      <span className="small">{e.summary}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
           </section>
         )}
       </main>

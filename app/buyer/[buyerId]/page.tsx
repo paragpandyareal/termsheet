@@ -1,6 +1,6 @@
 'use client';
 // Buyer phone view (PRD 4). Limit, open orders, due dates, message thread, plan offer with Accept.
-import { use, useEffect, useState } from 'react';
+import { use, useEffect, useRef, useState } from 'react';
 import { Nav, ClockChip, Chip, usd } from '@/components/money';
 
 export default function Buyer({ params }: { params: Promise<{ buyerId: string }> }) {
@@ -8,6 +8,9 @@ export default function Buyer({ params }: { params: Promise<{ buyerId: string }>
   const [v, setV] = useState<any>(null);
   const [text, setText] = useState('Espresso machine died, can pay half Friday.');
   const [busy, setBusy] = useState('');
+  const threadRef = useRef<HTMLDivElement>(null);
+  const msgCount = useRef(0);
+  useEffect(() => { const n = v?.messages?.length || 0; if (n !== msgCount.current && threadRef.current) { threadRef.current.scrollTop = threadRef.current.scrollHeight; msgCount.current = n; } });
   const load = () => fetch(`/api/buyer/${buyerId}`, { cache: 'no-store' }).then((r) => r.json()).then(setV);
   useEffect(() => { load(); const t = setInterval(load, 3000); return () => clearInterval(t); }, [buyerId]);
 
@@ -41,10 +44,10 @@ export default function Buyer({ params }: { params: Promise<{ buyerId: string }>
               {ins.filter((i: any) => i.status !== 'PAID').map((i: any) => (
                 <div key={i.id} className="card px-3 py-2 text-sm flex justify-between"><span>Due {i.due}</span><span className="font-semibold">{usd(i.amount_cents)}</span></div>
               ))}
-              <div className="space-y-2 max-h-[340px] overflow-y-auto">
+              <div ref={threadRef} className="space-y-2 max-h-[360px] overflow-y-auto">
                 {v.messages.map((m: any) => (
                   <div key={m.id} className={`text-sm px-3 py-2 rounded-2xl max-w-[85%] ${m.sender === 'BUYER' ? 'ml-auto' : ''}`} style={{ background: m.sender === 'BUYER' ? 'var(--accent)' : 'var(--card)', color: m.sender === 'BUYER' ? 'white' : 'var(--ink)', border: m.sender === 'BUYER' ? 'none' : '1px solid var(--line)' }}>
-                    {m.sender === 'SYSTEM' && <span className="text-xs muted block">Automatic</span>}{m.body}
+                    <span className="block text-[11px] opacity-70">{m.sender === 'SYSTEM' ? 'Automatic · ' : ''}{new Date(m.created_at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</span>{m.body}
                   </div>
                 ))}
               </div>
@@ -62,13 +65,22 @@ export default function Buyer({ params }: { params: Promise<{ buyerId: string }>
                   <button className="btn" disabled={!!busy || !text.trim()} onClick={send}>{busy === 'send' ? '…' : 'Send'}</button>
                 </div>
               )}
-              {busy === 'send' || (pastDue && v.messages.at(-1)?.sender === 'BUYER') ? <p className="text-xs muted">The analyst is checking your story against your recent PayPal sales…</p> : null}
+              {busy === 'send' || (pastDue && v.messages.at(-1)?.sender === 'BUYER') ? <p className="small muted">TermSheet's analyst is checking your message against your recent PayPal sales…</p> : null}
             </div>
           </div>
         </div>
 
         <div className="space-y-4 min-w-0">
           <ClockChip s={v} onChange={load} />
+          {(() => { const p = v.plans[0]; if (!p) return null; const pj = p.proposal_json || {}; const sc = pj.story_check || {}; const md = pj.mode?.mode; return (
+            <div className="card p-5 min-w-0">
+              <div className="flex flex-wrap items-center justify-between gap-2"><h2 className="font-bold">Why this plan</h2>
+                <span className={md === 'live' ? 'chip chip-blue' : 'chip chip-warn'}>{md === 'live' ? 'Claude · ' + (pj.mode?.model || '') : md === 'fallback' ? 'AI unavailable · rule-based fallback' : 'Practice mode · no AI call'}</span></div>
+              {sc.claim && <p className="small mt-2"><b>What the café said it can do:</b> {sc.claim}</p>}
+              <p className={'mt-2 ' + (sc.consistent ? 'callout-good' : 'callout-bad')}><b>{sc.consistent ? 'Story checks out.' : 'Story does not fully check out.'}</b> {sc.text}</p>
+              {(pj.memo || []).map((m: any, i: number) => <p key={i} className="small mt-2">{m.text}</p>)}
+              <p className="small muted mt-2">Plan checked by plain code against the policy: at most 2 parts, first part at least 25% today, done within 15 days, no fees. {p.policy_check_json?.ok ? '✓ Passed' : '✗ Failed'}</p>
+            </div>); })()}
           <div className="card p-4 min-w-0">
             <div className="font-bold mb-2">Charges on this account</div>
             {!attempts.length && <p className="text-sm muted">No charges yet. Jump to the next due date to run the collection job.</p>}
@@ -78,7 +90,7 @@ export default function Buyer({ params }: { params: Promise<{ buyerId: string }>
                   {attempts.map((a: any) => (
                     <tr key={a.id} className="align-top">
                       <td className="pr-2 py-1">{a.status === 'COMPLETED' ? '✅' : '❌'}</td>
-                      <td className="pr-2 py-1">{a.status === 'COMPLETED' ? 'Charged' : a.error_name}{a.mode.startsWith('MOCK') && <> <Chip kind="sim">SIMULATED DECLINE (sandbox negative testing)</Chip></>}</td>
+                      <td className="pr-2 py-1">{a.status === 'COMPLETED' ? 'Charged' : a.error_name}{a.mode.startsWith('MOCK') && <> <Chip kind="sim">Simulated decline (sandbox negative testing)</Chip></>}</td>
                       <td className="pr-2 py-1 mono break-all">{a.capture_id || ''}</td>
                       <td className="py-1 mono">debug {a.debug_id}</td>
                     </tr>
