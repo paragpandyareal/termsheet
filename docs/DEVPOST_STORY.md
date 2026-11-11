@@ -113,3 +113,4 @@ Break-even is at about a 2% loss rate. Three levers keep losses below that: smal
 - **Claude Opus 5.5** (Anthropic API, `claude-opus-5-5`) is the credit analyst and collections analyst in the live app.
 - **PayPal Agent Toolkit** provides the analyst's read tools on the supplier's PayPal account.
 - **Claude Code** (Anthropic) wrote the code, ran the sandbox tests and evaluations, and wrote the docs with me.
+- **Microsoft Edge neural text-to-speech** (voice "Andrew", via edge-tts) read the video voiceover. Claude Code also drove the browser with Playwright to record the demo.

@@ -133,6 +133,7 @@ Every dollar on screen is a real PayPal sandbox transaction: saved account appro
 - **Claude Opus 5.5** (Anthropic API, model `claude-opus-5-5`) is the credit analyst and the collections analyst in the live app, using tool use. Capped at 20 runs an hour and 100 a day.
 - **PayPal Agent Toolkit** provides the analyst's read tools on the supplier's PayPal account.
 - **Claude Code** (Anthropic) wrote the code, ran the sandbox tests, ran the evaluations and wrote the docs with the entrant.
+- **Microsoft Edge neural text-to-speech** (voice "Andrew", via edge-tts) read the video voiceover. Claude Code also drove the browser with Playwright to record the demo.
 
 ## Built with
 
