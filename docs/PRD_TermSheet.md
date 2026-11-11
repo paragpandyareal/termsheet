@@ -281,7 +281,7 @@ POST /v3/vault/payment-tokens
 ```
 Store the returned `id` as `vaultId`, plus the PayPal customer ID and payer email. Setup tokens expire after 3 days.
 
-Field names above are from memory of the PayPal docs. Confirm each against the live API reference during spike S1 and adjust.
+**Spike result, 11 Nov 2026. This no purchase path is the one in use, so "Larkspur charged $0" stays true.** The body above worked as written (setup token debug `f66980480ff30`, payment token debug `f825872f8efad`). The first three tries returned 403, because PayPal kept handing back an access token issued before the Vault feature was ticked. A fresh token fixed it. The $1 deposit fallback (6.7) also works and its $1 was refunded, but it is not used.
 
 ### 6.4 Charge with the buyer absent
 ```

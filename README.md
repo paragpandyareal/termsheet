@@ -21,7 +21,7 @@ Last updated Tuesday 10 Nov 2026, 22.00 UTC.
 
 | Test | Result | Lock the build to |
 |---|---|---|
-| S1 save account without purchase | **FAIL.** `/v3/vault/setup-tokens` returns 403 NOT_AUTHORIZED. The app token has no vault payment token scope even with "Save payment methods" ticked | **Fallback passes.** Save during a $1 deposit order with `attributes.vault.store_in_vault: ON_SUCCESS` (PRD 6.7). Retry the setup token once PayPal applies the feature, it is the nicer demo |
+| S1 save account without purchase | **PASS on retry, 11 Nov 12.28 Sydney.** The first 3 tries got 403 because PayPal reused an access token issued before Vault was ticked. A fresh token (about 3 hours later) had the vault, invoicing and reporting scopes | PRD 6.3 as written. Café is charged $0. The deposit fallback also works but is not used |
 | S2 buyer absent charge, business payer | **PASS.** COMPLETED at create | PRD 6.4 as written |
 | S3 test decline | **PASS with method C,** with both intent AUTHORIZE and intent CAPTURE. A returned 403, B did not apply | Mock header on order create. Label SIMULATED DECLINE |
 | S4 payout to supplier | **PASS.** Batch and item SUCCESS by polling | PRD 6.5. Webhook not yet tested (no public address) |

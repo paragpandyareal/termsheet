@@ -362,3 +362,106 @@ Capture 4EM07518CA296962F, refund 18G485739D0474422 status COMPLETED.
 }
 ```
 </details>
+
+## S1. Save PayPal account without purchase. PASS
+Run at 2026-11-11T01:27:58.758Z
+
+Vault ID came back and is stored in the git ignored file scripts/spikes/.state.json. payment_source keys returned: paypal.
+
+- `POST /v3/vault/setup-tokens` -> **201**, debug ID `f66980480ff30`
+  <details><summary>sent</summary>
+
+```json
+{
+  "payment_source": {
+    "paypal": {
+      "description": "Net 30 for Business (concept). Charged on each order's due date, up to your limit.",
+      "usage_type": "MERCHANT",
+      "customer_type": "BUSINESS",
+      "permit_multiple_payment_tokens": false,
+      "experience_context": {
+        "brand_name": "TermSheet Funding",
+        "shipping_preference": "NO_SHIPPING",
+        "return_url": "https://example.com/apply/return",
+        "cancel_url": "https://example.com/apply/cancel"
+      }
+    }
+  }
+}
+```
+</details>
+- `POST /v3/vault/payment-tokens` -> **200**, debug ID `f825872f8efad`
+  <details><summary>sent</summary>
+
+```json
+{
+  "payment_source": {
+    "token": {
+      "id": "98N27541SR311901L",
+      "type": "SETUP_TOKEN"
+    }
+  }
+}
+```
+</details>
+
+## S2. Charge vault ID, buyer absent, intent CAPTURE. PASS
+Run at 2026-11-11T01:28:09.154Z
+
+Order status COMPLETED, capture status COMPLETED, order 1FA19092MJ990710K, capture 90770893SM086721E.
+
+- `POST /v2/checkout/orders` -> **201**, debug ID `f77816880793b`
+  <details><summary>sent</summary>
+
+```json
+{
+  "intent": "CAPTURE",
+  "purchase_units": [
+    {
+      "reference_id": "S2-1794360485484",
+      "invoice_id": "TS-S2-1794360485484-1",
+      "description": "Net 30 repayment, Ridgeline order SPIKE",
+      "amount": {
+        "currency_code": "USD",
+        "value": "20.00"
+      }
+    }
+  ],
+  "payment_source": {
+    "paypal": {
+      "vault_id": "<vault id masked>"
+    }
+  }
+}
+```
+</details>
+
+## Cleanup. Delete the old fallback saved account (PRD 6.8 close a line). PASS
+Run at 2026-11-11T01:28:12.308Z
+
+Delete 204, then read back 404 (404 means gone).
+
+- `DELETE /v3/vault/payment-tokens/<old vault id>` -> **204**, debug ID `f595334d7cd4f`
+- `GET /v3/vault/payment-tokens/<old vault id>` -> **404**, debug ID `f35352771bdbb`
+  <details><summary>response</summary>
+
+```json
+{
+  "name": "RESOURCE_NOT_FOUND",
+  "message": "The specified resource does not exist.",
+  "debug_id": "f35352771bdbb",
+  "details": [
+    {
+      "issue": "TOKEN_NOT_FOUND",
+      "description": "The specified token id does not exist."
+    }
+  ],
+  "links": [
+    {
+      "href": "https://developer.paypal.com/docs/limited-release/payment-tokens/v3/api/#error-INVALID_RESOURCE_ID",
+      "method": "GET"
+    }
+  ]
+}
+```
+</details>

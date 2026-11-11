@@ -119,3 +119,20 @@ The vault ID, customer ID and order IDs are kept in `scripts/spikes/.state.json`
 - Tests S5 to S8 have not been run.
 - The rest of the sandbox cast and the REST apps for the buyers and supplier are not made yet (PRD 5.3).
 - Make the termsheet repo public before submitting.
+
+## 8. Addendum, 11 Nov 10.22 to 12.30 Sydney (after an outside review)
+
+An outside AI review raised seven points. Each was checked.
+
+| Point | Finding | Action and evidence |
+|---|---|---|
+| Missing scopes, maybe a reused access token | **Confirmed.** At 10.26 the token endpoint returned a fresh token (`expires_in` 32400) with 33 scopes instead of 28, now including vault payment tokens, invoicing and reporting. The earlier 28 scope token was issued before the features were ticked and was reused. A new app is not needed | `scripts/spikes/token-age.mjs`, `scopes.mjs` |
+| S1 no purchase save | **PASS.** Setup token 201 (debug `f66980480ff30`), entrant approved as Larkspur at about 12.27, payment token 200 (debug `f825872f8efad`) | `s1-save-account.mjs` |
+| S2 rerun with the new vault ID | **PASS.** Order `1FA19092MJ990710K` and capture `90770893SM086721E` COMPLETED (debug `f77816880793b`) | `s2-charge-absent.mjs` |
+| Decline only tested with AUTHORIZE | Method C with intent CAPTURE also **PASSES**. 422 INSTRUMENT_DECLINED (debug `f7866046ff4b4`), no order created | `s3c-capture.mjs` |
+| $1 deposit breaks "charged $0" | Deposit refunded as a verification charge. Capture `4EM07518CA296962F`, refund 201 (debug `f17861065bc81`). The no purchase path is now in use, so $0 holds. PRD 6.3 says which path is in use | `refund-deposit.mjs` |
+| Old vault ID in git history | The old fallback saved account was deleted. DELETE 204 (debug `f595334d7cd4f`), read back 404 (debug `f35352771bdbb`). The ID in history is now dead. History was not rewritten | `delete-old-vault.mjs` |
+| README and PRD contradicted the results | README 1b, the README research note and section 4, and PRD 6.3 and 6.6 were updated | Commits on `main` |
+| Vault ID and local path visible | Masked in RESULTS.md (and in future runs by `lib.mjs`) and in this log | |
+
+Still not run. S5 (two SDK copies), S6 (Agent Toolkit reads on the supplier app) and S7 (café's own sales). All three need REST apps for Ridgeline and Larkspur, which do not exist yet.
