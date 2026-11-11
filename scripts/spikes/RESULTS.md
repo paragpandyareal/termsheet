@@ -617,3 +617,10 @@ Call works: true. Reporting scope on the Larkspur token: true. Rows 1, net 5000.
 - `GET /v1/reporting/transactions?<last 30 days>` -> **200**, debug ID `f193197508b78`
 
 Note on S6 and S7. S6 rows were the sandbox opening balance (event T1900) and similar setup rows, not seeded sales yet, but the toolkit read path is proven. S7 is marked PASS above only because the call and the reporting scope work. Treat S7 as **PARTIAL** until seeded walk in sales exist and the totals are compared.
+
+## S5. Two SDK copies on one page. INCONCLUSIVE
+Run at 2026-11-11T01:48Z to 01:53Z
+
+Page `scripts/spikes/s5-two-sdk.mjs` (localhost:4455). Both SDK v5 scripts load with namespaces `paypalSupplier` and `paypalFunder`, both `render()` promises resolve, and both containers hold 2 iframes after 5 s with a 45 px slot. **No clash between the two copies was seen.** But the buttons flash and then show blank, in Edge, Chrome and an Edge private window, and the single button pages (`?only=supplier`, `?only=funder`) behave the same. A headless Edge test with PayPal's generic `client-id=sb` also showed a blank button. So the blank buttons are not caused by having two copies. Cause unknown; not yet checked: browser devtools Network tab for the `www.sandbox.paypal.com/smart/buttons` iframe, and a public HTTPS host instead of localhost. No payment was made through the page.
+
+**Fallback that is already proven.** The redirect approval link (`/v3/vault/setup-tokens` then the `approve` link, used in S1) works end to end. The app can use redirects for the save account step if the JS buttons stay blank.

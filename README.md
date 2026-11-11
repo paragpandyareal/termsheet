@@ -29,14 +29,19 @@ Last updated Tuesday 10 Nov 2026, 22.00 UTC.
 | S2 buyer absent charge, business payer | **PASS with a Business payer** (see above). Earlier pass was a personal payer | PRD 6.4 as written |
 | S3 test decline | **PASS with method C,** with both intent AUTHORIZE and intent CAPTURE. A returned 403, B did not apply | Mock header on order create. Label SIMULATED DECLINE |
 | S4 payout to supplier | **PASS.** Batch and item SUCCESS by polling | PRD 6.5. Webhook not yet tested (no public address) |
+| S5 two SDK copies on one page | **INCONCLUSIVE.** Both copies load and render without clashing, but every PayPal button shows blank on this PC, even a single button with PayPal's generic test ID | Use the proven redirect approval link for saving the account, until the blank buttons are solved |
+| S6 Agent Toolkit reads, supplier app | **PASS.** `list_transactions` returned rows | `@paypal/agent-toolkit` 1.11.0, `openai` export, `handleToolCall` |
+| S7 café reads own sales | **PARTIAL.** Call and reporting scope work; no seeded sales yet to compare | Recheck after seeding (PRD 11) |
 
-Sandbox setup that now exists (US, all Business). TermSheet Funding `funder@termsheet.example.com` with REST app "TermSheet Funding". Ridgeline Roasters `ridgeline.termsheet@example.com`. Larkspur `larkspur.termsheet@example.com` (recreated as **Business** on 11 Nov 12.38, REST app "Larkspur Cafe" made). Second Shot, Northgate, Pier 9 and the walk in account are not made yet. Ridgeline and Larkspur have no REST apps yet.
+Sandbox setup that now exists (US, all Business). TermSheet Funding `funder@termsheet.example.com` with REST app "TermSheet Funding". Ridgeline Roasters `ridgeline.termsheet@example.com`. Larkspur `larkspur.termsheet@example.com` (recreated as **Business** on 11 Nov 12.38, REST app "Larkspur Cafe" made). Second Shot, Northgate, Pier 9 and the walk in account are not made yet. REST apps "Ridgeline Roasters" and "Larkspur Cafe" exist (made 11 Nov). Keys are in `.env` as SUPPLIER_CLIENT_ID/SECRET and LARKSPUR_CLIENT_ID/SECRET. ANTHROPIC_API_KEY is also set. **Anthropic credit is low.** Use mocked analyst replies while building, Haiku for real runs, and ask the entrant before any real call.
 
 Full record of this session for checking by another tool. `docs/SESSION_LOG_2026-11-11.md`.
 
 How to run the spikes. Secrets live in `.env` at the repo root (git ignored). Run `node --env-file=.env scripts/spikes/<name>.mjs`. The saved vault ID lives in `scripts/spikes/.state.json` (git ignored). `scopes.mjs` lists which permissions the funder app has.
 
-Next step. Report to the entrant, then seed history (PRD 11), then build in PRD 13 order.
+Next steps. 1) Solve or work around the blank PayPal buttons (S5). 2) Seed history (PRD 11). 3) Build PRD 13 phases 1 to 5, P0 only. Render account not yet made. No app code exists yet.
+
+Safety rule on the entrant's PC. A Claude Code hook blocks any AI from reading `.env`. Only `node --env-file=.env scripts/spikes/<name>.mjs` may run. `scripts/spikes/check-env.mjs` shows which keys are filled in without showing them.
 
 ## 2. What to read, in order
 

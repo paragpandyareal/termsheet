@@ -148,3 +148,10 @@ What this changes. Section 1 and section 8 say "business payer" for S2. That is 
 ## 10. Business payer rerun
 
 **Business payer proven, 11 Nov 12.45 Sydney.** The personal Larkspur account was deleted and `larkspur.termsheet@example.com` was recreated as a **Business** account. On it, S1 no purchase save PASS (payment token debug `f434131f90084`), S2 buyer absent CAPTURE PASS (order `7LL66346VM5734515`, capture `9TG326348T078043C`, debug `f201904e51969`), and S3 method C with CAPTURE PASS (422 INSTRUMENT_DECLINED, debug `f156045203d2d`). Earlier vault IDs belonged to the deleted personal account and are dead.
+
+## 11. S5, S6 and S7, 11 Nov 12.45 to 12.55 Sydney
+
+- S6 **PASS**. Agent Toolkit `list_transactions` on the Ridgeline app returned rows (opening balance rows). `list_invoices` returned empty, none exist yet. The toolkit hides PayPal debug IDs.
+- S7 **PARTIAL**. Larkspur app token has the reporting scope and `/v1/reporting/transactions` returns 200, with one row (opening balance). No seeded sales yet to compare totals.
+- S5 **INCONCLUSIVE**. See RESULTS.md. Two SDK copies do not clash, but all PayPal JS buttons render blank on the entrant's PC, in Edge, Chrome and a private window, and even with PayPal's generic test ID. The redirect approval link works and is the fallback.
+- Bugs fixed on the way. The Bash tool on this PC turns `\` into `` inside heredocs, which first broke the test page script. Write files with an editor tool, not heredocs, when they contain backslashes.
