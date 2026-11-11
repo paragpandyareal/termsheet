@@ -10,8 +10,8 @@ const CATALOG: Record<string, { sku: string; name: string; detail: string; qty: 
     { sku: 'RR-SO-ETH-5', name: 'Single origin, washed', detail: '5 lb bag · light roast', qty: 8, unit: 8750 },
   ],
   northgate: [
-    { sku: 'RR-HOUSE-5', name: 'House espresso blend', detail: '5 lb bag · medium roast', qty: 120, unit: 6500 },
-    { sku: 'RR-SO-ETH-5', name: 'Single origin, washed', detail: '5 lb bag · light roast', qty: 29, unit: 8750 },
+    { sku: 'RR-HOUSE-5', name: 'House espresso blend', detail: '5 lb bag · medium roast', qty: 30, unit: 6500 },
+    { sku: 'RR-SO-ETH-5', name: 'Single origin, washed', detail: '5 lb bag · light roast', qty: 5, unit: 8750 },
   ],
 };
 const BUYERS = [{ key: 'larkspur', label: 'Larkspur Café' }, { key: 'northgate', label: 'Northgate Resale LLC' }];

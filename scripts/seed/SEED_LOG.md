@@ -14,3 +14,5 @@ Written by scripts/seed/seed.mjs. Real PayPal sandbox calls. No secrets or saved
 - 2026-11-11T03:52:05.581Z Larkspur invoice RR-INV-LA-01 $840.00: create 201, send 200, reminder 200, reminder 200, record payment 200 (debug ca58a5791bd3d).
 - 2026-11-11T03:52:09.698Z Larkspur invoice RR-INV-LA-02 $1265.00: create 201, send 200, reminder 200, reminder 200, record payment 200 (debug ca58a57aa6be0).
 - 2026-11-11T03:52:12.848Z Second Shot invoice RR-INV-SE-01 $970.00: create 201, send 200, reminder 200, reminder 200, record payment 200 (debug ca58a57bf2e3a).
+- 2026-11-11T04:58:02.999Z Saved northgate account on the supplier app. Debug f75148128b231.
+- 2026-11-11T04:58:33.257Z Ridgeline history for northgate: 8 captures, $14400.00.

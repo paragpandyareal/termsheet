@@ -7,7 +7,7 @@ import { Nav, MoneyStrip, ClockChip, useAppState, Chip } from '@/components/mone
 const STORIES = [
   { n: 1, t: 'Approve a café', d: 'Larkspur orders $2,000 of beans and asks for Net 30. The AI analyst reads its PayPal history and approves. Ridgeline is paid $1,940 today.', h: '/shop', cta: 'Open checkout', time: '2 min' },
   { n: 2, t: 'A payment fails, then recovers', d: 'Jump to the due date. The charge is declined, the café explains in its own words, and the AI checks the story against real sales before offering a plan.', h: '/buyer/buyer_secondshot', cta: 'Open café phone', time: '2 min' },
-  { n: 3, t: 'Catch a bad application', d: 'Northgate says it is a café, ships to a freight forwarder, and its letter contradicts its form and tries to instruct the AI.', h: '/shop?buyer=northgate', cta: 'See the decline', time: '1 min' },
+  { n: 3, t: 'The AI catches what the rules miss', d: 'Northgate has 8 paid orders, so the rules alone would approve it. The AI notices it ships to a freight forwarder, its letter contradicts its form, and the letter tries to instruct the AI.', h: '/shop?buyer=northgate', cta: 'See the AI step in', time: '1 min' },
 ];
 
 function Flow() {
@@ -107,7 +107,8 @@ export default function Hub() {
             <h2 className="t-h3 mt-1">PayPal sandbox login</h2>
             <p className="small mt-3">Larkspur Café</p>
             <p className="mono mt-1 text-[14px]">larkspur.termsheet@example.com</p>
-            <p className="small muted mt-3">The password is in the project README. Free hosting sleeps, so the first load can take up to a minute.</p>
+            <p className="mono mt-1 text-[14px]">larkspurtermsheet</p>
+            <p className="small muted mt-3">A PayPal sandbox test account with fake money. Free hosting sleeps, so the first load can take up to a minute.</p>
           </div>
         </section>
       </main>

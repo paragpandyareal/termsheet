@@ -12,7 +12,7 @@ Built for the PayPal AI Hackathon. MIT licence.
 
 1. **Approve a café.** Open the judge hub, then *Approve a café*. Larkspur Café has $2,000 of beans in the cart. Click *Apply for Net 30*, then *Submit application*. Watch the analyst call its tools live, then read the memo. Click any citation number to jump to its evidence row. Click *Save my PayPal account with TermSheet Funding* and log in with the Larkspur sandbox login below. You come back with $0 charged, and Ridgeline is paid $1,940 by PayPal Payout.
 2. **Watch a payment fail and recover.** Open *Café phone*. Second Shot Café already owes $2,000. Click *Jump to next due date*. The real charge runs with the café absent and comes back INSTRUMENT_DECLINED (a sandbox simulated decline, labelled on screen). The limit drops and the line freezes. Reply as the café ("Espresso machine died, can pay half Friday."). The analyst checks the story and proposes a plan inside fixed policy limits. Tap *Accept* and a real $1,000 charge goes through.
-3. **See a decline.** In the shop, switch the buyer to *Northgate Resale LLC*. It says it is a café, but it orders about 9 times the usual café volume, ships to a freight forwarder, and its reference letter contradicts its form. The letter also tries to instruct the AI to approve $50,000, which is ignored.
+3. **The AI catches what the rules miss.** In the shop, switch the buyer to *Northgate Resale LLC*. It has 8 paid Ridgeline orders, so the plain scorecard alone would approve it for $2,500. The AI reads the evidence and declines it: goods ship to a freight forwarder, which does not fit a café, and the reference letter's founding year contradicts the form. The letter also tries to instruct the AI to approve $50,000, which is ignored.
 
 The *Funder ledger* shows every PayPal order ID, capture ID, Payout batch and debug ID.
 
@@ -20,7 +20,7 @@ The *Funder ledger* shows every PayPal order ID, capture ID, Payout batch and de
 
 | Who | Email | Password |
 |---|---|---|
-| Larkspur Café (buyer, used in the PayPal popup) | `larkspur.termsheet@example.com` | *(added before submission)* |
+| Larkspur Café (buyer, used in the PayPal popup) | `larkspur.termsheet@example.com` | `larkspurtermsheet` |
 
 These are PayPal **sandbox** test accounts with fake money. Client secrets are never published.
 

@@ -24,10 +24,11 @@ const APPS = {
   larkspur: ['LARKSPUR_CLIENT_ID', 'LARKSPUR_CLIENT_SECRET', 'Larkspur Cafe'],
   secondshot: ['SECONDSHOT_CLIENT_ID', 'SECONDSHOT_CLIENT_SECRET', 'Second Shot Cafe'],
 };
-const PAYERS = { larkspur: 'BUSINESS', secondshot: 'BUSINESS', walkin: 'CONSUMER' };
+const PAYERS = { larkspur: 'BUSINESS', secondshot: 'BUSINESS', northgate: 'BUSINESS', walkin: 'CONSUMER' };
 
 // Deterministic plans so a re run creates the same history.
-const HISTORY = { larkspur: 14, secondshot: 9 };
+const HISTORY = { larkspur: 14, secondshot: 9, northgate: 8 };
+const AVG = { larkspur: 1150, secondshot: 1150, northgate: 1800 };
 const SALES = { larkspur: { count: 40, total: 18400 }, secondshot: { count: 30, total: 11000 } };
 
 const load = () => { try { return JSON.parse(fs.readFileSync(STATE, 'utf8')); } catch { return { vaults: {}, pending: {}, history: {}, sales: {} }; } };
@@ -109,7 +110,7 @@ if (cmd === 'status') {
   const vault = s.vaults[isHist ? `supplier:${buyer}` : `${buyer}:walkin`];
   if (!vault) throw new Error(`No saved account. Run: link ${isHist ? 'supplier ' + buyer : buyer + ' walkin'}`);
   const plan = isHist
-    ? spread(HISTORY[buyer], HISTORY[buyer] * 1150, 600, 1900, buyer.length * 7)
+    ? spread(HISTORY[buyer], HISTORY[buyer] * AVG[buyer], 600, 1900, buyer.length * 7)
     : spread(SALES[buyer].count, SALES[buyer].total, 120, 800, buyer.length * 13);
   const done = (isHist ? s.history : s.sales)[buyer] ||= [];
   for (let i = done.length; i < plan.length; i++) {

@@ -142,6 +142,56 @@
     "captureId": "0J978156EY9104142",
     "cents": 100482
    }
+  ],
+  "northgate": [
+   {
+    "ref": "RR-NO-1001",
+    "orderId": "6YV36015DC639453N",
+    "captureId": "5C720889YE025044T",
+    "cents": 240753
+   },
+   {
+    "ref": "RR-NO-1002",
+    "orderId": "4P677511D0844764G",
+    "captureId": "18R18091JJ7411100",
+    "cents": 169335
+   },
+   {
+    "ref": "RR-NO-1003",
+    "orderId": "1TP43344SV282060K",
+    "captureId": "91677746BA491721R",
+    "cents": 228953
+   },
+   {
+    "ref": "RR-NO-1004",
+    "orderId": "9A285414BL007040E",
+    "captureId": "72B02238LN780671C",
+    "cents": 151785
+   },
+   {
+    "ref": "RR-NO-1005",
+    "orderId": "1P669136L2810990V",
+    "captureId": "5MX877974F8987340",
+    "cents": 181819
+   },
+   {
+    "ref": "RR-NO-1006",
+    "orderId": "35E3504246781393Y",
+    "captureId": "3BJ501096A751235M",
+    "cents": 103920
+   },
+   {
+    "ref": "RR-NO-1007",
+    "orderId": "31H30708D6367522B",
+    "captureId": "6EX24914AR750593X",
+    "cents": 237340
+   },
+   {
+    "ref": "RR-NO-1008",
+    "orderId": "6BT67310M07793344",
+    "captureId": "65709497AP789222W",
+    "cents": 126095
+   }
   ]
  },
  "sales": {

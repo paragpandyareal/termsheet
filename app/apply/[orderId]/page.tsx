@@ -125,7 +125,7 @@ export default function Apply({ params }: { params: Promise<{ orderId: string }>
               <div className="mt-8 pt-8 border-t">
                 <p className="small callout-blue">You authorise TermSheet Funding to charge this PayPal account on each order&apos;s due date for amounts you owe, up to your {usd(out.limit_cents)} limit. We message you 3 days before each charge.</p>
                 <button className="btn btn-lg mt-4" disabled={saving} onClick={save}>{saving ? 'Opening PayPal…' : 'Save my PayPal account with TermSheet Funding'}</button>
-                <p className="small muted mt-2">Opens PayPal. Nothing is charged today. Judges: log in as <span className="mono">larkspur.termsheet@example.com</span>.</p>
+                <p className="small muted mt-2">Opens PayPal. Nothing is charged today. Judges: log in as <span className="mono">larkspur.termsheet@example.com</span>, password <span className="mono">larkspurtermsheet</span>.</p>
                 {err && <p className="small mt-1" style={{ color: 'var(--bad)' }}>{err}</p>}
               </div>
             )}
