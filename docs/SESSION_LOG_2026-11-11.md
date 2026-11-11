@@ -155,3 +155,10 @@ What this changes. Section 1 and section 8 say "business payer" for S2. That is 
 - S7 **PARTIAL**. Larkspur app token has the reporting scope and `/v1/reporting/transactions` returns 200, with one row (opening balance). No seeded sales yet to compare totals.
 - S5 **INCONCLUSIVE**. See RESULTS.md. Two SDK copies do not clash, but all PayPal JS buttons render blank on the entrant's PC, in Edge, Chrome and a private window, and even with PayPal's generic test ID. The redirect approval link works and is the fallback.
 - Bugs fixed on the way. The Bash tool on this PC turns `\` into `` inside heredocs, which first broke the test page script. Write files with an editor tool, not heredocs, when they contain backslashes.
+
+## 12. S5 blank buttons, likely cause (checked from a cloud session, 11 Nov about 12.56 to 13.01 Sydney)
+
+- Likely cause is PayPal, not the PC. The sandbox button iframe (`www.sandbox.paypal.com/smart/buttons`) returns HTTP 500 in bursts, with the body error `__PAYPAL_DOMAIN__ is not defined`. 8 of 18 loads failed between 01:56Z and 01:58Z, then 40 of 40 were fine. Debug IDs and detail are in RESULTS.md under "S5 follow up".
+- A 500 gives the same symptoms seen in S5 (flash, then blank, `render()` resolves, no `onError`).
+- Not yet confirmed on the entrant's PC. Check the Status of `smart/buttons` in the devtools Network tab.
+- `s5-two-sdk.mjs` now redraws a blank button up to 3 times, using `onInit` as the "button is really up" signal. S5 still needs a real rerun.

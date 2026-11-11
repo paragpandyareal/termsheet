@@ -39,14 +39,22 @@ ${only !== 'supplier' ? `<script src="https://www.paypal.com/sdk/js?client-id=${
 <script>
 const log=(m)=>{document.getElementById('log').textContent+=m+'\\n';fetch('/api/log?m='+encodeURIComponent(location.search+' '+m),{method:'POST'})};window.onerror=(m)=>log('Page error: '+m);window.addEventListener('unhandledrejection',(e)=>log('Unhandled: '+(e.reason&&e.reason.message||e.reason)));setTimeout(()=>log('After 5s: sup iframes '+document.querySelectorAll('#sup iframe').length+', fun iframes '+document.querySelectorAll('#fun iframe').length),5000);const ce=console.error;console.error=(...a)=>{log('Console error: '+a.map(String).join(' ').slice(0,400));ce(...a)};const cw=console.warn;console.warn=(...a)=>{log('Console warn: '+a.map(String).join(' ').slice(0,400));cw(...a)};log('Supplier script blocked: '+!!window.supErr+', funder script blocked: '+!!window.funErr);
 const post=(u)=>fetch(u,{method:'POST'}).then(r=>r.json());
-try{paypalSupplier.Buttons({fundingSource:'paypal',
+// Watchdog. PayPal's sandbox sometimes answers the button iframe (www.sandbox.paypal.com/smart/buttons) with HTTP 500.
+// render() still resolves and onError never fires, so the button just looks blank. onInit only fires when the real
+// button is up, so if it has not fired after 8 s the button is closed and drawn again, up to 3 tries.
+function mount(name,sel,ns,opts,tries){tries=tries||1;let ok=false;let b;
+  try{b=ns.Buttons(Object.assign({fundingSource:'paypal',onInit:()=>{ok=true;log(name+' button ready (try '+tries+')')},onError:(e)=>log(name+' error: '+e)},opts));
+    b.render(sel).then(()=>log(name+' render done'),(e)=>log(name+' render rejected: '+(e&&e.message||e)));}catch(e){return log(name+' SDK failed: '+e)}
+  setTimeout(()=>{if(ok)return;
+    if(tries>=3)return log(name+' button still blank after 3 tries. PayPal sandbox is probably returning 500 for /smart/buttons (check the devtools Network tab). Use the redirect approval link for now.');
+    log(name+' button blank after 8 s (try '+tries+'), drawing it again');
+    Promise.resolve(b.close()).catch(()=>{}).then(()=>{document.querySelector(sel).innerHTML='';mount(name,sel,ns,opts,tries+1)});},8000);}
+if(window.paypalSupplier)mount('Supplier','#sup',paypalSupplier,{
   createOrder:()=>post('/api/supplier/order').then(j=>j.id),
-  onApprove:(d)=>post('/api/supplier/capture/'+d.orderID).then(j=>log('Supplier payment: '+j.status)),
-  onError:(e)=>log('Supplier error: '+e)}).render('#sup').then(()=>log('Supplier render done'),(e)=>log('Supplier render rejected: '+(e&&e.message||e)));log('Supplier buttons loaded');}catch(e){log('Supplier SDK failed: '+e)}
-try{paypalFunder.Buttons({fundingSource:'paypal',
+  onApprove:(d)=>post('/api/supplier/capture/'+d.orderID).then(j=>log('Supplier payment: '+j.status))});
+if(window.paypalFunder)mount('Funder','#fun',paypalFunder,{
   createVaultSetupToken:()=>post('/api/funder/setup-token').then(j=>j.id),
-  onApprove:(d)=>post('/api/funder/payment-token/'+d.vaultSetupToken).then(j=>log('Funder save: '+j.status)),
-  onError:(e)=>log('Funder error: '+e)}).render('#fun').then(()=>log('Funder render done'),(e)=>log('Funder render rejected: '+(e&&e.message||e)));log('Funder button loaded');}catch(e){log('Funder SDK failed: '+e)}
+  onApprove:(d)=>post('/api/funder/payment-token/'+d.vaultSetupToken).then(j=>log('Funder save: '+j.status))});
 </script></body></html>`;
 
 http.createServer(async (req, res) => {
