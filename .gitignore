@@ -4,3 +4,7 @@
 node_modules/
 scripts/spikes/.state.json
 scripts/seed/.seed-state.json
+.next/
+.data/
+next-env.d.ts
+*.tsbuildinfo

@@ -1,0 +1,35 @@
+services:
+  - type: web
+    name: termsheet
+    runtime: node
+    plan: free
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase: { name: termsheet-db, property: connectionString }
+      - key: NODE_VERSION
+        value: "22"
+      - { key: FUNDER_CLIENT_ID, sync: false }
+      - { key: FUNDER_CLIENT_SECRET, sync: false }
+      - { key: FUNDER_WEBHOOK_ID, sync: false }
+      - { key: SUPPLIER_CLIENT_ID, sync: false }
+      - { key: SUPPLIER_CLIENT_SECRET, sync: false }
+      - { key: SUPPLIER_WEBHOOK_ID, sync: false }
+      - { key: SUPPLIER_EMAIL, sync: false }
+      - { key: LARKSPUR_CLIENT_ID, sync: false }
+      - { key: LARKSPUR_CLIENT_SECRET, sync: false }
+      - { key: SECONDSHOT_CLIENT_ID, sync: false }
+      - { key: SECONDSHOT_CLIENT_SECRET, sync: false }
+      - { key: BUYER_LARKSPUR_EMAIL, sync: false }
+      - { key: BUYER_SECONDSHOT_EMAIL, sync: false }
+      - { key: ANTHROPIC_API_KEY, sync: false }
+      - { key: ANTHROPIC_MODEL, value: claude-haiku-5-5 }
+      - { key: ANALYST_MODE, value: live }
+      - { key: ANALYST_RUNS_PER_HOUR, value: "10" }
+      - { key: ADMIN_TOKEN, generateValue: true }
+      - { key: APP_BASE_URL, sync: false }
+databases:
+  - name: termsheet-db
+    plan: free

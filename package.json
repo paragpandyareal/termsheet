@@ -2,12 +2,15 @@
   "name": "termsheet",
   "version": "1.0.0",
   "description": "This repo holds the research and the build briefs for two entries to the PayPal AI Hackathon on Devpost. **No app code exists yet.** This file tells a new developer or AI model exactly where things stand and what to do next.",
-  "main": "index.js",
   "directories": {
     "doc": "docs"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "next dev -p 3000",
+    "build": "next build",
+    "start": "next start -p ${PORT:-3000}",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
   },
   "repository": {
     "type": "git",
@@ -16,12 +19,28 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
   "bugs": {
     "url": "https://github.com/paragpandyareal/termsheet/issues"
   },
   "homepage": "https://github.com/paragpandyareal/termsheet#readme",
   "dependencies": {
-    "@paypal/agent-toolkit": "^1.11.0"
-  }
+    "@anthropic-ai/sdk": "^0.65.0",
+    "@electric-sql/pglite": "^0.3.7",
+    "@paypal/agent-toolkit": "^1.11.0",
+    "next": "^15.5.4",
+    "pg": "^8.16.3",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.13",
+    "@types/node": "^22.20.5",
+    "@types/pg": "^8.23.1",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "tailwindcss": "^4.1.13",
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
+  },
+  "private": true
 }
