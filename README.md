@@ -107,7 +107,7 @@ The riskiest calls were tested before any app code was written. The full record,
 - **Claude Code** (Anthropic) wrote the code, ran the sandbox tests and wrote the docs with the entrant.
 - **Claude Opus 5.5** (Anthropic API, `claude-opus-5-5`) is the credit analyst and collections analyst in live mode.
 - **PayPal Agent Toolkit** gives the analyst its read tools on the supplier's PayPal account.
-- **Microsoft Edge neural text-to-speech** (voice "Andrew", via edge-tts) reads the video voiceover. Claude Code drove the browser with Playwright to record the demo and to check every page for accessibility (axe-core).
+- **Microsoft Edge neural text-to-speech** (voice "Andrew", via edge-tts) reads the video voiceover. Claude Code drove the browser with Playwright to record the demo and to check every page for accessibility (axe-core), built the motion graphics as HTML rendered frame by frame, and edited the video with ffmpeg (no music).
 
 **Other tools.** Next.js, TypeScript, Postgres and Vitest. **Render** (hackathon sponsor) hosts the live demo: a web service plus a Render Postgres database, defined in `render.yaml` as a Blueprint and deployed automatically on every push to `main`. A GitHub Action pings the health check every 10 minutes so the free instance stays awake during judging.
 

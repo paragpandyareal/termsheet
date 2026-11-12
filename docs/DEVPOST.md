@@ -111,7 +111,7 @@ TermSheet adds a **Net 30 for Business** option under the PayPal buttons on a su
 - **Claude Opus 5.5** (Anthropic API) is the credit analyst and collections analyst in the live app.
 - **PayPal Agent Toolkit** provides the analyst's PayPal read tools.
 - **Claude Code** (Anthropic) wrote the code, ran the sandbox tests and evaluations, and wrote the docs with me.
-- **Microsoft Edge neural text-to-speech** (voice "Andrew", via edge-tts) reads the video voiceover. Claude Code drove the browser with Playwright to record the demo.
+- **Microsoft Edge neural text-to-speech** (voice "Andrew", via edge-tts) reads the video voiceover. Claude Code drove the browser with Playwright to record the demo, built the motion graphics as HTML rendered frame by frame, and edited the video with ffmpeg.
 
 ## Challenges we ran into
 
@@ -145,7 +145,7 @@ TermSheet adds a **Net 30 for Business** option under the PayPal buttons on a su
 ## FIELD 4. Built with (type each as a tag)
 
 ```
-paypal, paypal-rest-api, paypal-vault, paypal-orders, paypal-payouts, paypal-transaction-search, paypal-webhooks, paypal-agent-toolkit, claude, claude-opus, anthropic, claude-code, next.js, react, typescript, postgresql, render, playwright, edge-tts, vitest, axe-core
+paypal, paypal-rest-api, paypal-vault, paypal-orders, paypal-payouts, paypal-transaction-search, paypal-webhooks, paypal-agent-toolkit, claude, claude-opus, anthropic, claude-code, next.js, react, typescript, postgresql, render, playwright, edge-tts, ffmpeg, vitest, axe-core
 ```
 
 ## FIELD 5. Try it out links

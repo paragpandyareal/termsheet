@@ -1,74 +1,56 @@
-# Video script (target 2 min 45 s, hard limit under 3 min)
+# Video script (final, as recorded on 12 Nov 2026)
 
-About 400 spoken words at a calm pace. Record the screen from the hosted demo, then record the voiceover over it.
+Length **2:51** (171.8 s), under the 3 minute limit. 1920x1080, 30 fps. Recorded from the live demo at https://termsheet-tgwl.onrender.com after a Reset.
 
-## Before you record
-0. The AI writes its own plan each time. In our test run it was $1,000 now and $1,000 in 15 days. If your take shows different amounts, say the amounts you see.
-1. Open https://termsheet-tgwl.onrender.com, open **Demo controls** at the bottom and press **Reset demo**. Wait for "Reset done".
-2. Do one practice run of the Larkspur PayPal login so you know where the popup goes.
-3. Browser zoom 110 to 125% so text is readable on YouTube. Close other tabs. Hide bookmarks.
-4. The AI takes about 15 to 25 seconds to decide. Record it all, then speed that part up 2 to 4 times in editing. Put a small "sped up" caption on any part you speed up.
-5. If you need a second take, press Reset demo again first.
+It is a demonstration first: every live scene shows the product doing what the voice says. The problem and the PayPal economics frame it as short motion graphics at the start and the end.
 
-## The three parties (keep these names the same every time)
-- **Marisol's roastery, Ridgeline**: the supplier. Gets paid.
-- **The café**: the buyer. Gets 30 days.
-- **TermSheet Funding**: the funder. Pays Ridgeline now, collects from the café later.
+## How it was made
+- **Footage.** Playwright drove Microsoft Edge on the hosted demo at 1600x900 (equal to about 120% zoom). A drawn pointer glides to each control and shows a ripple and a button press on every click. Scrolling is eased over 1.5 to 2 seconds.
+- **Waits.** The AI and PayPal waits are sped up and carry a small "Sped up" tag. Nothing else is sped up by more than about 1.7 times.
+- **Motion graphics.** Written as an HTML page and rendered frame by frame (every frame a pure function of time), so the motion is exact. Only the demo's own numbers and colours.
+- **Voice.** Microsoft Edge neural text-to-speech, voice `en-US-AndrewNeural`, rate -9%, about 147 words a minute. Key moments are timed to the spoken words.
+- **Edit.** ffmpeg: 0.5 s crossfades, no music, no burned-in subtitles (YouTube adds captions).
+- **Honesty.** The decline is labelled "Simulated decline" on screen and in the voice. Sandbox, fake money, seeded history and "rates are assumptions" are shown. No third-party logos, no competitor names, only the demo's fictional businesses.
 
----
+## 1. The problem (motion graphic) (0:00)
+**Screen.** Animated: the TermSheet title and "Live demo · PayPal sandbox · fake money", then Ridgeline and a café, $2,000 of beans crossing to the café, a 30-day bar while the roaster's cash drops to $0, "Pay up front, please." and "Account lost".
 
-## Scene 1. The problem (0:00 to 0:15)
-**Screen:** Home page hero with Marisol's line, then scroll slightly to show "One order, three parties".
+**Voice.** "This is a live demo of TermSheet, running in the PayPal sandbox. Marisol runs a small coffee roastery. Her cafés want thirty days to pay. She can't wait thirty days for her money, so she asks for cash up front, and she loses customers."
 
-**Say:**
-"This is Marisol. She runs a six-person coffee roastery. Her café customers want thirty days to pay. She can't wait that long for her money, and she can't tell which cafés are safe. So she asks for cash up front, and she loses customers."
+## 2. How to read the screen (live) (0:17)
+**Screen.** Home page, "See it work", Open story 1, the Net 30 card under the PayPal button, Apply. The pointer visits zone A (customer), zone B (PayPal credit team) and the dashed zone C (demo controls).
 
-## Scene 2. The idea (0:15 to 0:25)
-**Screen:** Click **Watch it work**. The shop with the Net 30 card under the PayPal buttons.
+**Voice.** "TermSheet puts Net 30 under the PayPal button on her own checkout. Every screen has three zones: what the customer sees, what PayPal's credit team sees, and dashed demo controls that are not part of the product."
 
-**Say:**
-"TermSheet puts Net 30 inside PayPal checkout. The roaster is paid today, the café pays in thirty days, and an AI credit analyst decides who qualifies and shows its working."
+## 3. Story 1, a café gets 30 days (live) (0:32)
+**Screen.** Submit. The AI's tool calls stream in (sped up). Approved $5,000. Credit memo, a citation clicked and the evidence row shown. Save my PayPal account, the PayPal sandbox login (sped up). Roaster page: paid by PayPal Payout.
 
-## Scene 3. Larkspur gets approved (0:25 to 0:50)
-**Screen:** Larkspur, $2,000 cart. Click **Apply for Net 30**, then **Submit application**. Show the tool calls appearing (sped up). The memo appears. Click one citation number so the evidence row lights up. Click **Save my PayPal account**, log in, return. Show the money strip: Ridgeline +$1,940, TermSheet -$1,940 (it paid), café $0.
+**Voice.** "Larkspur Café orders two thousand dollars of beans and applies. An AI credit analyst reads the café's PayPal history. A plain scorecard sets the ceiling, and the AI can only keep it or lower it. Approved, and every sentence cites a real PayPal record. Click one, and there's the evidence. The café saves its PayPal account. Nothing is charged today. And on the roaster's page, Marisol already has a real nineteen hundred and forty dollar PayPal Payout."
 
-**Say:**
-"Larkspur Café orders two thousand dollars of beans. The AI reads its PayPal history, and every sentence in the memo links to the record behind it. Approved. The café saves its PayPal account, pays nothing today, and Marisol gets a real nineteen hundred and forty dollar Payout right now."
+## 4. Story 2, a missed payment gets fixed (live) (1:04)
+**Screen.** Café phone. Jump to next due date: declined, labelled Simulated decline. Frozen, limit cut. The owner types the reply and sends it. The AI checks it (sped up) and offers $1,000 now and $1,000 on 26 Dec. "Why the AI offered this plan". Accept: a real charge with its capture ID.
 
-## Scene 4. A payment fails, and gets recovered (0:50 to 1:30)
-**Screen:** Click **Café phone** (Second Shot). Click **Jump to next due date**. Show the decline with the "Simulated decline" label and the debug ID. Limit drops, line frozen. Type "Espresso machine died, can pay half Friday." Send. Show the AI's plan (sped up). Click **Accept**. Show the real $1,000 capture ID.
+**Voice.** "Now the hard part. Thirty days later, Second Shot Café's charge is declined. This decline is a labelled sandbox test. The line freezes, the limit drops, and the café gets a message. The owner replies: espresso machine died, can pay half Friday. The AI checks that story against the café's real PayPal sales, finds it believable, and offers a plan inside fixed rules: one thousand dollars now, one thousand in fifteen days, no fees. Accept, and a real one thousand dollar charge goes through, with its PayPal capture ID."
 
-**Say:**
-"Now the hard part. Thirty days later, Second Shot Café's charge is declined. Most demos stop at the happy path. Here, the limit drops and the café gets a message. The owner replies in plain words: espresso machine died, can pay half Friday. The AI checks that story against the café's real sales, sees it is believable, and explains kindly why the first half has to be taken today. Here it offers one thousand now and one thousand in fifteen days, no fees. Accept, and a real one thousand dollar charge goes through. Recovered, not chased."
+## 5. Story 3, the AI catches what the rules miss (live) (1:43)
+**Screen.** Northgate checkout, ships to Pier 40 Logistics. Apply and submit (sped up). Scorecard 58/100 would allow $2,500; the AI refers to a human. The two contradictions and "What the AI checked that the rules cannot see".
 
-## Scene 5. The AI catches what the rules miss (1:30 to 2:05)
-**Screen:** Click **Checkout**, switch the buyer to **Northgate Resale LLC**. Point at "Ships to Pier 40 Logistics". Apply and submit. Show the result: referred to a human. Highlight the two contradictions and the line about the letter.
+**Voice.** "Northgate Resale looks fine on paper. The rules alone would approve it. But the AI reads the reference letter. It says the business opened in 2024; the form says 2019. The beans ship to a logistics depot, not a café. And the letter claims it was already pre-approved. The AI sends it to a person. In twenty-four live runs, it got all twenty-four right."
 
-**Say:**
-"Northgate has eight paid orders, so a plain scorecard would approve it. The AI reads further. The reference letter says the business opened in 2024, but the form says 2019. The beans are going to a logistics company for onward shipping, not to a café. And the letter quietly claims the account was already pre-approved. The AI flags all three and sends it to a person. In twenty-two live test runs it stopped Northgate every time and approved Larkspur every time."
+## 6. What's in it for PayPal (live, then motion graphic) (2:09)
+**Screen.** Credit team console: Fee earned and the funder position with PayPal IDs. Then animated: the $60 fee shrinking by funding, collection, servicing and expected loss to about $21; "$30M in fees" on $1B; the flywheel; 10 cents per AI decision against the $60 fee and the 18,000 counter. "All rates are assumptions" stays on screen.
 
-## Scene 6. Why you can trust it (2:05 to 2:25)
-**Screen:** Home page, scroll to **Why trust it**, then **What PayPal gains**.
+**Voice.** "So what's in it for PayPal? The credit team console shows it: a sixty dollar fee on every two thousand dollar order. After funding, collection and expected losses, about twenty-one dollars is left. At a billion dollars of wholesale volume, that's about thirty million in fees, on volume that today is often paid outside PayPal. It's a flywheel: cafés that sell through PayPal score higher and get bigger limits. And the AI costs about ten cents a decision. Stopping one bad order pays for eighteen thousand of them."
 
-**Say:**
-"The AI can only tighten a decision, never loosen it. Code rejects any sentence without real evidence. And the AI never touches money; only ledger code does."
+## 7. Closing card (2:46)
+**Screen.** TermSheet. "Net 30, as a PayPal button." termsheet-tgwl.onrender.com. "PayPal sandbox demo · fake money · rates are assumptions · not an offer of credit".
 
-## Scene 7. Why PayPal (2:25 to 2:45)
-**Screen:** **What PayPal gains** box, then the **Funder ledger** with all the PayPal IDs. End on the home page hero.
-
-**Say:**
-"Wholesale orders between small businesses are mostly paid by bank transfer, outside PayPal. Net 30 at checkout brings that volume onto PayPal, and PayPal already sees the sales data that makes it safe. Every dollar you saw was a real PayPal sandbox transaction. TermSheet. Net 30, as a PayPal button."
-
----
-
-## Rules for the video
-- No third-party brand logos or competitor names. PayPal's own screens are fine.
-- No AI company logos.
-- No music, or royalty-free music with the licence noted in the YouTube description.
-- Only the fictional businesses from the demo.
-- Show the citations on screen rather than just saying the AI cites sources.
-- If the screen ever says "rule-based fallback", either redo the take or leave the label visible.
-- Upload to YouTube as **Public** (or Unlisted if the rules allow it), then paste the link into `docs/DEVPOST.md` and the Devpost form.
+**Voice.** "TermSheet. Net 30, as a PayPal button."
 
 ## YouTube description (paste this)
-TermSheet: Net 30 for Business inside PayPal checkout. A concept demo built for the PayPal AI Hackathon in the PayPal sandbox (fake money, not an offer of credit). Live demo: https://termsheet-tgwl.onrender.com Code: https://github.com/paragpandyareal/termsheet
+TermSheet: Net 30 for Business inside PayPal checkout. The roaster is paid today, the café pays in 30 days, PayPal earns the fee, and an AI credit analyst that can only tighten a plain scorecard cites a PayPal record for every sentence. Built for the PayPal AI Hackathon. Concept demo in the PayPal sandbox with fake money; not an offer of credit, and PayPal does not offer this product today. Rates are assumptions.
+
+Live demo: https://termsheet-tgwl.onrender.com
+Code: https://github.com/paragpandyareal/termsheet
+
+Voice: Microsoft Edge neural text-to-speech. No music.
