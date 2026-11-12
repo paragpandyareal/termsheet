@@ -1,16 +1,4 @@
-<!-- Paste into the Devpost "About the project" field. -->
-
-*Concept demo in the PayPal sandbox with fake money. Not an offer of credit. PayPal does not offer this product today.*
-
-**What's next for PayPal: trade credit as a PayPal button.**
-
-**One order, three winners.** A café buys $2,000 of coffee beans. **The roaster** is paid **$1,940 today** by PayPal Payout and carries no credit risk. **The café** gets **30 days** to sell the coffee, then pays $2,000, with no fee and no interest. **PayPal** earns a **$60 fee**, about **$21 after all assumed costs**, on an order that today is often paid outside PayPal.
-
-**The AI pays for itself about 18,000 times over.** The AI credit analyst costs **8 to 11 cents** a decision, and one bad $2,000 order it stops covers about 18,000 decisions. It made the right call in **24 of 24 live runs** on our two test cases. It can only tighten a plain scorecard, never loosen it. Every dollar in the demo is a real PayPal sandbox transaction (fake money) with its PayPal ID on screen.
-
-**Try it in five minutes:** https://termsheet-tgwl.onrender.com (PayPal popup login `larkspur.termsheet@example.com` / `larkspurtermsheet`, a sandbox test account). Free hosting, so the first load can take up to a minute. Press Reset demo if a story looks half done.
-**Code:** https://github.com/paragpandyareal/termsheet (MIT licence). Built in November 2026 for this hackathon.
-**Video:** TODO YouTube link
+<!-- Paste into the Devpost "About the project" field. Uses only the seven Devpost headings. -->
 
 ## Inspiration
 
@@ -22,7 +10,11 @@
 
 ## What it does
 
-TermSheet adds a **Net 30 for Business** option under the PayPal buttons on a supplier's own checkout.
+TermSheet adds a **Net 30 for Business** option under the PayPal buttons on a supplier's own checkout: **what's next for PayPal is trade credit as a PayPal button.**
+
+**One order, three winners.** A café buys $2,000 of coffee beans. **The roaster** is paid **$1,940 today** by PayPal Payout and carries no credit risk. **The café** gets **30 days** to sell the coffee, then pays $2,000, with no fee and no interest. **PayPal** earns a **$60 fee**, about **$21 after all assumed costs**, on an order that today is often paid outside PayPal.
+
+**The AI pays for itself about 18,000 times over.** The AI credit analyst costs **8 to 11 cents** a decision, and one bad $2,000 order it stops covers about 18,000 decisions. It made the right call in **24 of 24 live runs** on our two test cases. It can only tighten a plain scorecard, never loosen it. Every dollar in the demo is a real PayPal sandbox transaction (fake money) with its PayPal ID on screen.
 
 | Who | What they get | Shown live in the demo |
 |---|---|---|
@@ -44,12 +36,7 @@ TermSheet adds a **Net 30 for Business** option under the PayPal buttons on a su
 - **A missed payment gets fixed.** Second Shot's day-30 charge is declined. The owner replies "Espresso machine died, can pay half Friday." The AI checks that against its sales and offers a plan (in our runs, $1,000 now and $1,000 in 15 days, no fees). Accept, and a real $1,000 charge goes through.
 - **The AI catches what the rules miss.** Northgate's numbers look fine, so the scorecard alone approves its $2,387.50 order. The AI notices the reference letter's opening date contradicts the form, the beans ship to a logistics company for onward shipping, and the letter claims it was "already pre-approved". It sends the file to a person.
 
-**Proof it works.**
-- **24 of 24 live AI decisions correct** on the hosted demo: Larkspur approved 11 of 11, Northgate stopped 13 of 13 (22 logged runs on 11 Nov with every memo published in the repo, plus 2 checks on 12 Nov). Median 18 seconds per decision. Two cases, repeated: this shows consistency, not accuracy on all buyers.
-- **35 unit tests,** 20 of which feed deliberately bad AI outputs (invented evidence, a raised limit, a plan that does not add up) to the validators and confirm each is rejected.
-- **axe-core found no WCAG 2.2 AA violations** on any page at desktop and phone width.
-
-## What PayPal earns, and what the AI is worth
+**What PayPal earns, and what the AI is worth.**
 
 **$60 on every $2,000 order.** The supplier pays a 3% fee in place of PayPal's normal processing fee, so it is new revenue whenever the order would otherwise be paid outside PayPal. After cost of funds ($10), collection ($6), servicing ($3) and expected loss ($20), PayPal keeps **about $21, a 1.05% contribution.**
 
@@ -63,7 +50,18 @@ TermSheet adds a **Net 30 for Business** option under the PayPal buttons on a su
 
 **What the AI is worth in money.** One decision costs **8 to 11 cents** at list price: **under 0.2% of the $60 fee.** The AI guards the $20 expected-loss line, so **one bad $2,000 order it stops pays for about 18,000 AI decisions.** That gap is real: in our backtest of 100 synthetic buyers, the plain scorecard approved **all 25** whose only warning sign was in a document or shipping address, every one at the full $5,000 limit. Reading documents, addresses and contradictions is exactly what the AI adds. (The synthetic buyers measure the size of the gap, not the AI.)
 
+**Try it in five minutes:** https://termsheet-tgwl.onrender.com (PayPal popup login `larkspur.termsheet@example.com` / `larkspurtermsheet`, a sandbox test account). Free hosting, so the first load can take up to a minute. Press Reset demo if a story looks half done.
+**Code:** https://github.com/paragpandyareal/termsheet (MIT licence). Built in November 2026 for this hackathon.
+**Video:** TODO YouTube link
+
+*Concept demo in the PayPal sandbox with fake money. Not an offer of credit. PayPal does not offer this product today.*
+
 ## How we built it
+
+**Proof it works.**
+- **24 of 24 live AI decisions correct** on the hosted demo: Larkspur approved 11 of 11, Northgate stopped 13 of 13 (22 logged runs on 11 Nov with every memo published in the repo, plus 2 checks on 12 Nov). Median 18 seconds per decision. Two cases, repeated: this shows consistency, not accuracy on all buyers.
+- **35 unit tests,** 20 of which feed deliberately bad AI outputs (invented evidence, a raised limit, a plan that does not add up) to the validators and confirm each is rejected.
+- **axe-core found no WCAG 2.2 AA violations** on any page at desktop and phone width.
 
 **Six PayPal products in one flow:** Vault, Payouts, Orders, Transaction Search, Webhooks and the Agent Toolkit, across three sandbox business accounts (café, roaster, funder).
 
