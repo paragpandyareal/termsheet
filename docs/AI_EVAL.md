@@ -9,6 +9,13 @@ Runs that fell back to the rule-based writer (AI unavailable) are not counted as
 | Larkspur Café, $2,000 | Approve up to $5,000 | Approve, covering the order | 10 | 10 of 10 |
 | Northgate Resale, $2,387.50 | Approve up to $2,500 | Do not approve (refer or decline) | 12 | 12 of 12 |
 
+## Two more live checks on 12 Nov 2026
+Run at 10:15 Sydney on the hosted demo with `TermSheet-private/tools/livecheck.mjs`, after the 12 Nov changes (cited "what the AI checked beyond the rules" note, new fallback):
+- Larkspur Café: APPROVE $5,000 in 19 seconds, passed validation first time.
+- Northgate Resale: REFER to a human in 20 seconds, passed validation first time.
+
+**Running total: 24 of 24 live AI decisions correct.** Larkspur approved 11 of 11, Northgate stopped 13 of 13.
+
 ## What the AI noticed on Northgate (12 runs)
 - The letter's 2024 opening date against the form's 2019: 12 of 12
 - Goods going to a logistics company for onward shipping: 12 of 12

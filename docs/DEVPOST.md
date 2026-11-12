@@ -1,151 +1,153 @@
-# TermSheet: Net 30 for Business, inside PayPal checkout
+# TermSheet. Devpost submission text
 
-> Paste each section into the matching Devpost field. Replace the two links marked TODO before you submit.
+> Paste each block into the matching Devpost field. The About story is also on its own in `docs/DEVPOST_STORY.md`. Every number is backed by `docs/STATS_VERIFIED.md`, `docs/AI_EVAL.md`, `docs/BACKTEST.md` or the economics table in the app.
 
-**Net 30, as a PayPal button. The supplier is paid today, the café pays in 30 days, and an AI credit analyst shows its working.**
+## FIELD 1. Project name
 
-- Live demo: https://termsheet-tgwl.onrender.com (PayPal sandbox, fake money)
-- Code: https://github.com/paragpandyareal/termsheet (MIT licence)
-- Video: TODO YouTube link
-- Judge login for the PayPal popup: `larkspur.termsheet@example.com` / `larkspurtermsheet` (sandbox test account)
+```
+TermSheet. Net 30 inside PayPal checkout
+```
+(40 characters. If Devpost wants it shorter, use just `TermSheet`.)
 
-*Concept demo in the PayPal sandbox. Not an offer of credit. PayPal does not offer this product today.*
+## FIELD 2. Elevator pitch / tagline (under 200 characters)
+
+```
+Net 30, as a PayPal button. The roaster is paid today, the café pays in 30 days, PayPal earns $60 per $2,000 order, and an AI credit analyst decides for about 10 cents.
+```
+(172 characters.)
+
+## FIELD 3. About the project (paste everything between the two lines)
 
 ---
 
-## The problem
+*Concept demo in the PayPal sandbox with fake money. Not an offer of credit. PayPal does not offer this product today.*
 
-Marisol runs Ridgeline Roasters, a six-person coffee roastery that sells to cafés. Her café customers want 30 days to pay, because big distributors give them that. Marisol cannot wait 30 days for her money, and she has no way to judge whether a new café will pay. So she asks for payment up front, and she loses accounts.
+**In one order, everyone wins.** A café buys $2,000 of coffee beans. The roaster is paid **$1,940 today** by PayPal Payout. The café gets **30 days** to sell the coffee before paying. PayPal earns a **$60 fee** and about **$21 after all costs**. The AI credit analyst that made the call cost **8 to 11 cents**. Every dollar in the demo is a real PayPal sandbox transaction with its PayPal ID on screen.
 
-This is common. In a 2025 survey of 2,487 US small businesses, 56% said they were owed money on unpaid invoices, $17,500 on average among those owed (Intuit QuickBooks Small Business Late Payments Report 2025).
+**Try it in five minutes:** https://termsheet-tgwl.onrender.com (PayPal popup login `larkspur.termsheet@example.com` / `larkspurtermsheet`, a sandbox test account).
+**Video:** TODO YouTube link
+
+## Inspiration
+
+**Small suppliers are stuck being the bank.** Marisol runs Ridgeline Roasters, a six-person roastery that sells to cafés. Her cafés want 30 days to pay, because big distributors give them that. Marisol cannot wait 30 days for her money, and she cannot tell which new café will pay. So she asks for cash up front, and she loses accounts. She is not alone: in a 2025 survey of 2,487 US small businesses, **56% were owed money on unpaid invoices, $17,500 on average** among those owed (Intuit QuickBooks, Small Business Late Payments Report 2025).
+
+**PayPal already holds what a lender needs.** It sees the supplier's trade history with the café, and the café's own sales landing in its PayPal account. Yet PayPal's credit products serve shoppers (Pay in 4, Pay Monthly) and sellers (Working Capital, Business Loan). **None serves the business that is buying.** We built that missing piece.
 
 ## What it does
 
-TermSheet adds a **Net 30 for Business** option under the PayPal buttons on a supplier's checkout page.
+TermSheet adds a **Net 30 for Business** option under the PayPal buttons on a supplier's own checkout.
 
-1. The café applies in under a minute.
-2. An AI credit analyst reads the café's PayPal history and writes a credit memo. Every sentence links to the PayPal record it came from.
-3. If approved, the café saves its PayPal account with the funder in the normal PayPal popup. Nothing is charged today.
-4. The roaster is paid the same day by PayPal Payout, less a 3% fee.
-5. On day 30 the funder charges the café's saved PayPal account, with the café not present.
-6. If that charge fails, the café explains in its own words. The AI checks the story against the café's real sales and offers a payment plan inside fixed rules. The café taps Accept, and a real charge goes through.
+| Who | What they get | Shown live in the demo |
+|---|---|---|
+| **The roaster** (Ridgeline) | Paid today, $0 waiting on cafés, no credit risk | A real $1,940 PayPal Payout for a $2,000 order |
+| **The café** (Larkspur) | 30 days to pay, with the PayPal login it already has, and a fair plan if a payment fails | Approved up to $5,000, $0 charged today |
+| **PayPal** (the funder, called TermSheet Funding in the demo) | A 3% fee on each order and new wholesale volume on PayPal | "Fee earned" in the credit team console |
+| **The AI analyst** | Costs 8 to 11 cents a decision | Stopped a risky order the rules alone approve, every time |
 
-There are three parties: the **supplier** (Ridgeline), the **buyer** (the café) and the **funder** (TermSheet Funding, a stand-in for a PayPal credit unit). The funder buys the invoice, so the café owes the funder, and that is why the PayPal popup names TermSheet Funding.
+**How one order works.**
+1. The café applies at checkout in under a minute.
+2. An AI credit analyst reads the café's PayPal history and writes a credit memo. **Every sentence links to the PayPal record it came from.**
+3. If approved, the café saves its PayPal account in the normal PayPal popup. Nothing is charged today.
+4. The roaster is paid the same day by PayPal Payout, less the 3% fee.
+5. On day 30, PayPal charges the café's saved account with the café not present.
+6. **If that charge fails,** the café explains in its own words, the AI checks the story against the café's real sales and offers a payment plan inside fixed rules, and a real charge recovers the money.
+
+**Three live stories you can run yourself.**
+- **A café gets 30 days.** Larkspur is approved and Ridgeline receives a real $1,940 Payout.
+- **A missed payment gets fixed.** Second Shot's day-30 charge is declined. The owner replies "Espresso machine died, can pay half Friday." The AI checks that against its sales and offers a plan (in our runs, $1,000 now and $1,000 in 15 days, no fees). Accept, and a real $1,000 charge goes through.
+- **The AI catches what the rules miss.** Northgate's numbers look fine, so the scorecard alone approves its $2,387.50 order. The AI notices the reference letter's opening date contradicts the form, the beans ship to a logistics company for onward shipping, and the letter claims it was "already pre-approved". It sends the file to a person.
+
+## What PayPal earns, and what the AI is worth
+
+**$60 on every $2,000 order.** The supplier pays a 3% fee, which replaces PayPal's normal processing fee on that order. After cost of funds ($10), collection ($6), servicing ($3) and expected loss ($20), PayPal keeps **about $21, a 1.05% contribution.**
+
+**At scale: about $30M in fees and $10.5M in contribution per $1B of wholesale volume.** All rates are our assumptions, not PayPal figures.
+
+**New volume, not just new fees.** Orders between small businesses, like a café buying beans, are mostly paid by bank transfer or cheque, outside PayPal. Net 30 at checkout gives that volume a reason to move onto PayPal.
+
+**A flywheel.** The analyst reads the café's own PayPal sales, so cafés that sell through PayPal score higher and get bigger limits. Every café that wants terms has a reason to become a PayPal merchant.
+
+**Is a 1% loss realistic?** As a sense check, PayPal's own merchant loan book (Q2 2026 10-Q: a $1.9B pool, $84M gross charge-offs and $9M recoveries in the first half) works out to about 0.65% to 0.73% per 30 days. That book is different credit, so it is a sense check, not a forecast. Break-even is about a 2% loss rate, and a pilot would reprice or stop if losses passed 2% for two cycles.
+
+**What the AI is worth in money.** One decision costs **8 to 11 cents** at list price: **under 0.2% of the $60 fee.** The AI guards the $20 expected-loss line, so **one bad $2,000 order it stops pays for about 18,000 AI decisions.** That gap is real: in our backtest of 100 synthetic buyers, the plain scorecard approved **all 25** whose only warning sign was in a document or shipping address, every one at the full $5,000 limit. Reading documents, addresses and contradictions is exactly what the AI adds.
+
+## How we built it
+
+**Real money movement in the PayPal sandbox, with every ID on screen.**
+- **Vault** saves the café's PayPal account with no purchase (`/v3/vault/setup-tokens`, `/v3/vault/payment-tokens`).
+- **Payouts** pays the roaster on day 0 (`/v1/payments/payouts`).
+- **Orders** charges the café on day 30 with the café absent (`/v2/checkout/orders` with `payment_source.paypal.vault_id`). The decline test uses PayPal's sandbox header `PayPal-Mock-Response: INSTRUMENT_DECLINED`, labelled "Simulated decline" on screen.
+- **Transaction Search** reads the café's own sales with the café's own app. **Webhooks** are signature-verified.
+- **PayPal Agent Toolkit** gives the AI its read tools on the supplier's account: `list_transactions`, `list_invoices`, `list_disputes`.
+
+**The AI analyst is Claude Opus 5.5 with tool use.** Like a human analyst, it chooses which records to pull, then submits a structured decision. Every record gets a stable evidence ID such as `txn:0G042576G7005140W`.
+
+**Guardrails in plain code, checked before anyone sees an AI output.**
+- **The AI can only tighten.** A versioned scorecard sets the most a café can get. The AI may keep, lower, decline or refer to a person. It can never raise a limit.
+- **No citation, no sentence.** Every memo sentence must cite evidence a tool really returned. A contradiction must cite both sides.
+- **The AI never moves money.** Only ledger code calls the money APIs.
+- **Documents are evidence, never instructions.** A letter that tries to steer the decision is flagged.
+- **Safe failure.** If the AI is unavailable or fails checks twice, a labelled rule-based writer takes over, and any file with documents goes to a person.
+
+**Proof it works.**
+- **24 of 24 live AI decisions correct** on the hosted demo: Larkspur approved 11 of 11, Northgate stopped 13 of 13 (22 logged runs on 11 Nov, every memo published in the repo, plus 2 checks on 12 Nov). Median 18 seconds per decision.
+- **35 unit tests,** 20 of which feed deliberately bad AI outputs (invented evidence, a raised limit, a plan that does not add up) to the validators and confirm each is rejected.
+- **Every page passes WCAG 2.2 AA** checks (axe-core) at desktop and phone width.
+
+**Designed as a real product with three sides.** Every page has three labelled zones: **A, what the customer sees** (in a device frame with a desktop and phone toggle), **B, what PayPal's credit team sees** (the AI's tool calls, the cited memo, every PayPal ID and the fee earned), and **C, demo controls** for judges only, drawn with a dashed border so it never reads as product. Seeded history, the app clock, the simulated decline and any AI fallback are labelled on screen.
+
+**Stack.** Next.js, TypeScript, Postgres, hosted on Render.
+
+**AI tools used.**
+- **Claude Opus 5.5** (Anthropic API) is the credit analyst and collections analyst in the live app.
+- **PayPal Agent Toolkit** provides the analyst's PayPal read tools.
+- **Claude Code** (Anthropic) wrote the code, ran the sandbox tests and evaluations, and wrote the docs with me.
+- **Microsoft Edge neural text-to-speech** (voice "Andrew", via edge-tts) reads the video voiceover. Claude Code drove the browser with Playwright to record the demo.
+
+## Challenges we ran into
+
+- **Making a payment fail on purpose.** We tried three ways to make the sandbox decline a charge. Only the mock-response header on the order call worked, so the demo uses that and labels it.
+- **The sandbox button sometimes failed to load,** so saving the account uses PayPal's redirect approval page, which has been reliable.
+- **Sandbox history cannot be backdated.** Seeded orders carry this month's dates, so the AI is told the dates are clustered and not to treat that as risk.
+- **A fair AI test.** Our first suspicious letter said "ignore your rules", which was too easy. We rewrote it to be subtle. The AI still caught all three warning signs in every run.
+- **One public demo for many judges.** A spend cap Reset cannot clear, a per-visitor limit on AI runs, and single-use claims so a plan is charged once and an order is paid out once.
+
+## Accomplishments that we're proud of
+
+- **Real money moves end to end:** a saved PayPal account, a real Payout to the roaster, a real charge with the café absent, a real decline and a real recovery charge.
+- **The failure path is the best part.** A declined payment ends in a conversation and a recovered $1,000, not a collections letter.
+- **An AI you can audit.** Click any citation in the memo and the exact PayPal record lights up.
+- **The AI earns its keep.** It catches what the rules miss, every time we tested, for about 10 cents.
+
+## What we learned
+
+- **An AI is easiest to trust when plain code checks its work.** Requiring every sentence to cite a real record means the AI cannot point at evidence that does not exist.
+- **The AI's best job was not replacing the scorecard** but covering what it cannot see: documents, addresses and contradictions.
+- **In payments, the recovery path convinces people more than the happy path.**
+
+## What's next for TermSheet
+
+- **See a missed payment coming:** read the café's balance a few days before the due date and offer a plan before the charge fails.
+- **Limits that grow** with each on-time payment, shown to the café as a ladder.
+- **A pilot with a handful of suppliers,** with a stop rule: if losses pass 2% for two cycles, reprice or stop.
 
 ---
 
-## Technological Implementation
+## FIELD 4. Built with (type each as a tag)
 
-**Real money movement in the PayPal sandbox.** Nothing on screen is a mockup. Every dollar is a real sandbox call with its PayPal ID shown in the credit team console.
+```
+paypal, paypal-rest-api, paypal-vault, paypal-orders, paypal-payouts, paypal-transaction-search, paypal-webhooks, paypal-agent-toolkit, claude, claude-opus, anthropic, claude-code, next.js, react, typescript, postgresql, render, playwright, edge-tts, vitest, axe-core
+```
 
-| Step | PayPal API |
-|---|---|
-| Save the café's PayPal account with no purchase | `POST /v3/vault/setup-tokens`, then `POST /v3/vault/payment-tokens` (funder's app, redirect approval) |
-| Pay the roaster on day 0 | `POST /v1/payments/payouts`, then `GET /v1/payments/payouts/{id}` |
-| Charge the café on day 30 with the café absent | `POST /v2/checkout/orders` with `payment_source.paypal.vault_id`, intent CAPTURE |
-| Test a failed charge | The same call with PayPal's sandbox header `PayPal-Mock-Response: INSTRUMENT_DECLINED`, labelled "Simulated decline" on screen |
-| Normal pay now | `POST /v2/checkout/orders` and `/capture` on the supplier's app |
-| Read the café's own sales | `GET /v1/reporting/transactions` on the café's own app |
-| Webhooks | `POST /v1/notifications/verify-webhook-signature`, then the ledger updates |
-| Analyst read tools | **PayPal Agent Toolkit** (`@paypal/agent-toolkit`): `list_transactions`, `list_invoices`, `list_disputes` on the supplier's account |
+## FIELD 5. Try it out links
 
-Six sandbox accounts (funder, supplier, three cafés and a walk-in shopper), with REST apps for the funder, the supplier and the two cafés that read their own sales. The riskiest calls (saving a business account with no purchase, charging a business buyer who is absent, the decline test, Payouts) were proven in standalone tests before any app code was written. The debug IDs are in `scripts/spikes/RESULTS.md`.
+```
+https://termsheet-tgwl.onrender.com
+https://github.com/paragpandyareal/termsheet
+```
 
-**The AI analyst (Claude Opus 5.5, tool use).**
-- It works like a human credit analyst. It decides which tools to call: the application, Ridgeline's history with the buyer (Agent Toolkit), invoices, disputes, the café's own PayPal sales, its repayment record and any uploaded documents. Then it submits a structured decision.
-- Every record a tool returns gets a stable evidence ID, such as `txn:0G042576G7005140W` or `sales:larkspur:30d`.
-- **Plain code checks every AI output before anyone sees it.** Every memo sentence must cite evidence IDs that a tool really returned. A contradiction must cite both sides. The AI may not go above the scorecard's limit or term, may not approve when the scorecard says no, and an approval must cover the order. A failed check goes back to the AI once, then to a human.
-- **The AI can only tighten.** A plain, versioned scorecard (`sc-1`) sets the most the café can get. The AI can keep that, lower it, decline or refer to a human. It can never raise it.
-- **The AI never moves money.** Only ledger code calls the money APIs.
-- **Documents are evidence, never instructions.** A letter that tries to steer the decision is flagged and ignored.
-- **Protected for a shared public demo.** A spend cap that Reset cannot clear, a per-visitor limit on AI runs, and single-use claims so a plan is charged once and an order is paid out once.
-- **Safe failure.** If the AI is unavailable, over its spending cap or fails validation twice, a plain rule-based writer drafts the memo from the same live PayPal evidence, and the screen labels it. It does not try to judge documents: any file with documents goes to a person.
+## FIELD 6. Video demo link
 
-**Proof it works.**
-- **22 live AI runs** on the hosted demo (`docs/AI_EVAL.md`, with every memo in `docs/ai-eval-runs.json`). Larkspur approved 10 times out of 10. Northgate stopped 12 times out of 12, even though the rules alone would approve it. Median 18 seconds per decision.
-- **What the AI costs against what it earns.** About 14k tokens in and 1.3k out per decision: 8 to 11 cents at Claude Opus 5.5 list price, under 0.2% of the $60 fee. It guards the expected-loss line (1% of each order), so one stopped bad $2,000 approval pays for about 18,000 AI decisions.
-- **Scorecard backtest** on 100 synthetic buyers (`docs/BACKTEST.md`, free to rerun). The plain scorecard approves all 25 buyers whose only warning sign is in a document or the shipping address. That is the gap the AI covers.
-- **35 unit tests.** 20 of them feed hand-made bad AI outputs to the validators (invented evidence, uncited sentences, a raised limit, a plan that does not add up) and confirm each is rejected. The rest check the scorecard, the rule-based fallback (without the AI, any file with documents goes to a person) and the AI's cited note of what it checked beyond the rules.
-
-Stack: Next.js, TypeScript, Postgres, hosted on Render.
-
-## Design
-
-TermSheet is a complete product with three sides, not a single API call.
-
-- **Product and scaffolding never mix.** Every page has three labelled zones: **A, what the customer sees**, inside a device frame with a desktop and phone toggle; **B, what PayPal's credit team sees**: the AI's tool trace, the cited credit memo, the evidence, the scorecard and every PayPal ID; and **C, demo controls for judges only** (app clock, reset, story bar, sandbox login), drawn with a dashed border so it never reads as product.
-- **Checkout (the supplier's shop).** A Net 30 card sits under the PayPal buttons. The café applies and gets a decision in plain words. Clicking a citation number in the credit team's memo jumps to the exact evidence row.
-- **Café view.** What the café sees on its phone: what it owes and when, the failed-charge message, a free-text reply box and the plan to accept.
-- **Roaster view.** What Marisol sees: paid today by PayPal Payout, $0 waiting on cafés, the 3% fee, and the Payout status.
-- **Credit team console.** Every PayPal order ID, capture ID, Payout batch and debug ID, with a money strip showing the fee earned and the funder's position: cash out, cash in, still owed.
-- **A home page that gets judges to the demo fast.** The problem, the solution and what PayPal earns in one screen, the three live stories next, and the detail behind each answer one click away.
-- **Accessible.** Every page passes automated WCAG 2.2 AA checks (axe-core) at desktop and phone width, and works by keyboard.
-- **The recovery path is designed, not an error screen.** A declined charge freezes the line, cuts the limit, opens a conversation and ends in a real recovery charge.
-- **Honesty labels everywhere.** Seeded history, the app clock, the simulated decline and the AI fallback are each labelled on screen.
-- **A story bar** on every page shows where the judge is in the three stories, and one money format and one date format are used throughout.
-- Built to PayPal's colour guide, checked at desktop and phone widths.
-
-## Potential Impact
-
-**What PayPal earns.** A 3% fee on every Net 30 order, about 1.05% contribution after funding, collection, servicing and expected losses: roughly $30M in fees and $10.5M in contribution per $1B of wholesale volume (all rates are assumptions). The 3% replaces PayPal's normal processing fee on that order rather than adding to it. And it is a flywheel: the analyst reads the café's own PayPal sales, so cafés that sell through PayPal score higher and get bigger limits, which gives every café that wants terms a reason to become a PayPal merchant.
-
-**For PayPal, the prize is wholesale volume.** Orders between small businesses, like a café buying beans, are usually paid by bank transfer or cheque against an invoice, outside PayPal. Net 30 at checkout gives those orders a reason to move onto PayPal. PayPal is also in an unusual position to lend safely here, because it sees both sides: the supplier's trade history with the buyer, and the buyer's own sales landing in its PayPal account.
-
-**For the supplier**, it means being paid today and offering terms without carrying the risk. **For the café**, it means 30 days to sell the coffee before paying for it, and a fair plan if something goes wrong.
-
-**Per-order economics** for a $2,000 order. All rates are assumptions, not PayPal figures.
-
-| Line | Rate | Amount |
-|---|---|---|
-| Fee paid by the supplier | 3.0% | +$60 |
-| Cost of funds, 30 days at 6% a year | 0.5% | -$10 |
-| Collection cost | 0.3% | -$6 |
-| Servicing | 0.15% | -$3 |
-| Expected loss | 1.0% | -$20 |
-| **Contribution** | **1.05%** | **+$21** |
-
-| Loss rate | Contribution per order |
-|---|---|
-| 0.5% | +1.55% |
-| 1.0% | +1.05% |
-| 2.05% | 0 (break even) |
-| 3.0% | -0.95% |
-
-**Is 1% a realistic loss rate?** PayPal's own merchant loan book is a useful sense check. Its Q2 2026 10-Q shows a $1.9B pool with $84M of gross charge-offs and $9M of recoveries in the first half of 2026: about 8% a year net. Spread over 30 days, that is about 0.65% to 0.73% per order, below the 1% per order we assume. That book is unsecured working capital to sellers, not 30-day credit for stock, so it is a sense check, not a forecast.
-
-The idea works only if losses stay near 2% or lower. Three levers keep them there: small limits that grow with on-time payment, an AI that can only tighten the scorecard, and collection from the same PayPal account the café's sales land in. A pilot would stop or reprice if losses passed 2% for two cycles.
-
-## Innovation/Idea
-
-**"Doesn't this exist already?"** The closest thing is a wholesale marketplace such as Faire, which offers approved retailers net 60 and pays the brand up front. That works inside the marketplace: both sides join it and order through it. TermSheet needs no marketplace. It sits under the PayPal buttons on the supplier's own checkout, the café applies with the PayPal login it already has, and the decision uses data only PayPal holds: the supplier's trade history with the café and the café's own sales. PayPal's existing credit products serve shoppers (Pay in 4, Pay Monthly, PayPal Credit) and sellers (PayPal Working Capital, PayPal Business Loan). None serves the business that is buying.
-
-- **A saved PayPal account used as a repayment method.** The café saves its account once with no purchase, and the funder collects on day 30 with the café not present.
-- **Underwriting from both sides of the PayPal network.** The supplier's trade history with the café, read through the PayPal Agent Toolkit, plus the café's own PayPal sales, read with its own app.
-- **AI that shows its working.** Every sentence must cite a record a tool actually returned, and plain code checks that before anyone sees it.
-- **AI that can only tighten.** The AI adds judgement the rules cannot (a letter that contradicts the form, a shipping address that does not fit a café, an attempt to steer the reviewer), but it cannot loosen a decision.
-- **Credit for the business buyer, at checkout.** PayPal Pay in 4 lends to shoppers and PayPal Working Capital lends to sellers. TermSheet is credit for the business that is buying, offered at the supplier's checkout and repaid from the buyer's own PayPal account.
-- **A payment plan at the moment of failure.** Instead of a collections letter, the café explains in its own words, the AI checks the story against real sales, and a real charge recovers the money.
-
-## Presentation
-
-- **Video (under 3 minutes):** TODO YouTube link
-- **Try it yourself in five minutes** at https://termsheet-tgwl.onrender.com. Three stories, each started from the home page:
-  1. **A café gets 30 days.** Larkspur applies for a $2,000 order, the AI approves it, the café saves its PayPal account and Ridgeline gets a $1,940 Payout.
-  2. **A missed payment gets fixed.** Second Shot's day 30 charge is declined. The café replies "Espresso machine died, can pay half Friday." The AI checks that against its sales, explains kindly why the first payment has to be today, and offers a plan inside the rules (in our test run, $1,000 now and $1,000 in 15 days). Accept, and a real $1,000 charge goes through.
-  3. **The AI catches what the rules miss.** Northgate's numbers look fine, so the rules alone would approve it. The AI spots that its reference letter's opening date contradicts the form, that goods go to a logistics company for onward shipping, and that the letter claims it was "already pre-approved". It sends the file to a human.
-- The README has the full walkthrough, the API list and how to run it locally.
-
-## What is real and what is seeded
-
-Every dollar on screen is a real PayPal sandbox transaction: saved account approvals, charges with the buyer absent, and Payouts. The analyst's tool calls read the PayPal sandbox live. Seeded items are the buyers' past history (created this month, because sandbox history cannot be backdated), the app clock and the test decline. All rates are assumptions.
-
-## AI tools used
-
-- **Claude Opus 5.5** (Anthropic API, model `claude-opus-5-5`) is the credit analyst and the collections analyst in the live app, using tool use. Capped at 20 runs an hour and 100 a day.
-- **PayPal Agent Toolkit** provides the analyst's read tools on the supplier's PayPal account.
-- **Claude Code** (Anthropic) wrote the code, ran the sandbox tests, ran the evaluations and wrote the docs with the entrant.
-- **Microsoft Edge neural text-to-speech** (voice "Andrew", via edge-tts) read the video voiceover. Claude Code also drove the browser with Playwright to record the demo.
-
-## Built with
-
-PayPal REST APIs (Vault, Orders, Payouts, Transaction Search, Webhooks), PayPal Agent Toolkit, Claude Opus 5.5, Next.js, TypeScript, Postgres, Render.
+```
+TODO YouTube link (YouTube, public)
+```
